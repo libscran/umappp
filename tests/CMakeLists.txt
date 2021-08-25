@@ -12,6 +12,7 @@ enable_testing()
 
 add_executable(
     libtest 
+    src/find_components.cpp
     src/spectral_init.cpp
 )
 
