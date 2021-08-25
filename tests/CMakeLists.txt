@@ -14,6 +14,7 @@ add_executable(
     libtest 
     src/find_components.cpp
     src/spectral_init.cpp
+    src/create_sets.cpp
 )
 
 target_link_libraries(
