@@ -37,26 +37,25 @@ void neighbor_weights(
                 }
             }
 
-            // Find rho, the distance to the nearest (non-identical) neighbor,
-            // possibly with interpolation.
-            double rho = 0;
-            if (non_zero_distances.size() >= local_connectivity) {
-                int index = std::floor(local_connectivity);
-                const double interpolation = local_connectivity - index;
-                const double lower = (index > 0 ? non_zero_distances[index - 1] : 0); // 'index' is 1-based, so -1.
-                const double upper = non_zero_distances[index];
-                rho = lower + interpolation * (upper - lower);
-            } else if (non_zero_distances.size() > 0) {
-                rho = *std::max_element(non_zero_distances.begin(), non_zero_distances.end());
-            } else {
-                // If rho == 0, this implies that all distances were zero as well.
-                // If so, the choice of sigma doesn't matter, as the resulting
-                // weights will always be equal to 1; so we just compute that here.
+            if (non_zero_distances.size() <= local_connectivity) {
+                // When this happens, 'rho' is just theoretically set to the
+                // maximum distance. In such cases, the weights are always just
+                // set to 1 in the remaining code, because no distance can be
+                // greater than 'rho'. If that's the case, we might as well
+                // save some time and compute it here.
                 for (int k = 0; k < n_neighbors; ++k) {
                     all_neighbors[k].second = 1;
                 }
                 continue;
             }
+
+            // Find rho, the distance to the nearest (non-identical) neighbor,
+            // possibly with interpolation.
+            int index = std::floor(local_connectivity);
+            const double interpolation = local_connectivity - index;
+            const double lower = (index > 0 ? non_zero_distances[index - 1] : 0); // 'index' is 1-based, so -1.
+            const double upper = non_zero_distances[index];
+            const double rho = lower + interpolation * (upper - lower);
 
             // Iterating to find a good sigma, just like how t-SNE does so for beta.
             double sigma = 1.0;
