@@ -3,6 +3,8 @@
 #include "umappp/create_sets.hpp"
 #include "knncolle/knncolle.hpp"
 
+#include <map>
+
 class SetCreationTest : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
     template<class Param>
@@ -81,7 +83,7 @@ TEST_P(SetCreationTest, EdgeCases) {
     assemble(GetParam());
     auto stored = generate_neighbors();
 
-    // Forcing a different choice of rho.
+    // Forcing the fallback when local_connectivity is too high.
     umappp::neighbor_weights(stored, 64, 100); 
 
     for (const auto& s : stored) {
@@ -90,8 +92,7 @@ TEST_P(SetCreationTest, EdgeCases) {
         }
     }
 
-    // Clone first vector into the next 'k' neighbors; this forces calculation
-    // of the mean distance across all neighbors, to be used for these points.
+    // Clone first vector into the next 'k' neighbors; this results in all-zero distances.
     for (int i = 1; i < k; ++i) {
         std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim * i);
     }
@@ -104,6 +105,73 @@ TEST_P(SetCreationTest, EdgeCases) {
             EXPECT_EQ(j.second, 1);
         }
     }
+}
+
+template<class Searched>
+void check_symmetry(const Searched& x) {
+    std::map<std::pair<int, int>, double> probs;
+
+    for (size_t i = 0; i < x.size(); ++i) {
+        const auto& y = x[i];
+        for (const auto& z : y) {
+            EXPECT_TRUE(z.second > 0); // double-check that probabilities are positive.
+
+            std::pair<int, int> target;
+            target.first = std::max(z.first, static_cast<int>(i));
+            target.second = std::min(z.first, static_cast<int>(i));
+
+            auto it = probs.find(target);
+            if (it != probs.end()) {
+                EXPECT_EQ(it->second, z.second); 
+                probs.erase(it);
+            } else {
+                probs[target] = z.second;
+            }
+        }
+    }
+
+    // if it's symmetric, all element should be lost.
+    EXPECT_EQ(probs.size(), 0);
+}
+
+TEST_P(SetCreationTest, Combining) {
+    assemble(GetParam());
+    auto stored = generate_neighbors();
+    umappp::neighbor_weights(stored);
+
+    auto Union = stored;
+    umappp::combine_neighbor_sets(Union, 1);
+    check_symmetry(Union);
+
+    auto intersect = stored;
+    umappp::combine_neighbor_sets(intersect, 0);
+    check_symmetry(intersect);
+
+    auto middle = stored;
+    umappp::combine_neighbor_sets(middle, 0.5);
+    check_symmetry(middle);
+
+    // Comparing the number of edges.
+    size_t total_u = 0, total_i = 0, total_o = 0;
+    for (size_t i = 0; i < stored.size(); ++i) {
+        const auto& uvec = Union[i];
+        const auto& ivec = intersect[i];
+        const auto& mvec = middle[i];
+        const auto& orig = stored[i];
+        
+        EXPECT_TRUE(uvec.size() == mvec.size());
+        EXPECT_TRUE(uvec.size() >= ivec.size());
+        EXPECT_TRUE(uvec.size() >= orig.size());
+        EXPECT_TRUE(ivec.size() <= orig.size());
+
+        total_u += uvec.size();
+        total_i += ivec.size();
+        total_o += orig.size();
+    }
+
+    EXPECT_TRUE(total_u > total_i);
+    EXPECT_TRUE(total_u > total_o);
+    EXPECT_TRUE(total_i < total_o);
 }
 
 INSTANTIATE_TEST_SUITE_P(
