@@ -108,30 +108,71 @@ TEST_P(SetCreationTest, EdgeCases) {
 }
 
 template<class Searched>
-void check_symmetry(const Searched& x) {
+void slow_symmetrization(const Searched& original, const Searched& combined, double mix_ratio = 1) {
     std::map<std::pair<int, int>, double> probs;
 
-    for (size_t i = 0; i < x.size(); ++i) {
-        const auto& y = x[i];
+    // Filling 'probs'.
+    for (size_t i = 0; i < original.size(); ++i) {
+        const auto& y = original[i];
         for (const auto& z : y) {
-            EXPECT_TRUE(z.second > 0); // double-check that probabilities are positive.
-
             std::pair<int, int> target;
             target.first = std::max(z.first, static_cast<int>(i));
             target.second = std::min(z.first, static_cast<int>(i));
 
             auto it = probs.find(target);
             if (it != probs.end()) {
-                EXPECT_EQ(it->second, z.second); 
-                probs.erase(it);
+                it->second *= -1;
+                if (mix_ratio == 1) {
+                    it->second += z.second - z.second * it->second;
+                } else if (mix_ratio == 0) {
+                    it->second *= z.second;
+                } else {
+                    double prod = it->second * z.second;
+                    it->second = mix_ratio * (z.second + it->second - prod) + (1 - mix_ratio) * prod;
+                }
             } else {
-                probs[target] = z.second;
+                probs[target] = -z.second;
             }
         }
     }
 
-    // if it's symmetric, all element should be lost.
-    EXPECT_EQ(probs.size(), 0);
+    auto it = probs.begin();
+    while (it != probs.end()) {
+        auto& x = *it;
+        if (x.second < 0) {
+            if (mix_ratio == 0) {
+                probs.erase(it++);
+                continue;
+            }
+            
+            if (mix_ratio == 1) {
+                x.second *= -1;
+            } else {
+                x.second *= -mix_ratio;
+            }
+        }
+        ++it;
+    }
+
+    // Comparing to the combined results.
+    std::map<std::pair<int, int>, bool> found;
+    for (size_t i = 0; i < combined.size(); ++i) {
+        const auto& y = combined[i];
+        for (const auto& z : y) {
+            std::pair<int, int> target;
+            target.first = std::max(z.first, static_cast<int>(i));
+            target.second = std::min(z.first, static_cast<int>(i));
+
+            auto it = probs.find(target);
+            EXPECT_TRUE(it != probs.end());
+            if (it != probs.end()) {
+                EXPECT_FLOAT_EQ(it->second, z.second);
+            }
+            found[target] = true;
+        }
+    }
+
+    EXPECT_EQ(probs.size(), found.size());
 }
 
 TEST_P(SetCreationTest, Combining) {
@@ -141,15 +182,15 @@ TEST_P(SetCreationTest, Combining) {
 
     auto Union = stored;
     umappp::combine_neighbor_sets(Union, 1);
-    check_symmetry(Union);
+    slow_symmetrization(stored, Union, 1);
 
     auto intersect = stored;
     umappp::combine_neighbor_sets(intersect, 0);
-    check_symmetry(intersect);
+    slow_symmetrization(stored, intersect, 0);
 
     auto middle = stored;
     umappp::combine_neighbor_sets(middle, 0.5);
-    check_symmetry(middle);
+    slow_symmetrization(stored, middle, 0.5);
 
     // Comparing the number of edges.
     size_t total_u = 0, total_i = 0, total_o = 0;
