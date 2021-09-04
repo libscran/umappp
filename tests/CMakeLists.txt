@@ -16,6 +16,7 @@ add_executable(
     src/spectral_init.cpp
     src/create_sets.cpp
     src/optimize.cpp
+    src/find_ab.cpp
 )
 
 target_link_libraries(
