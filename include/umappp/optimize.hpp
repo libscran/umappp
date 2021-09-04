@@ -10,13 +10,51 @@
 
 namespace umappp {
 
+struct EpochData {
+    std::vector<size_t> head;
+    std::vector<int> tail;
+    std::vector<double> epochs_per_sample;
+    int num_epochs;
+};
+
+template<class Probabilities>
+EpochData probabilities_to_epochs(const Probabilities& p, int num_epochs) {
+    double maxed = 0;
+    size_t count = 0;
+    for (const auto& x : p) {
+        count += x.size();
+        for (const auto& y : x) {
+            maxed = std::max(maxed, y.second);
+        }
+    }
+
+    EpochData output;
+    output.num_epochs = num_epochs;
+    output.head.resize(p.size());
+    output.tail.reserve(count);
+    output.epochs_per_sample.reserve(count);
+    const double limit = maxed / num_epochs;
+
+    size_t last = 0;
+    for (size_t i = 0; i < p.size(); ++i) {
+        const auto& x = p[i];
+        for (const auto& y : x) {
+            if (y.second >= limit) {
+                output.tail.push_back(y.first);
+                output.epochs_per_sample.push_back(y.second / limit);
+                ++last;
+            }
+        }
+        output.head[i] = last;
+    }
+
+    return output;       
+}
+
 inline void optimize_layout(
     int num_dim,
     double* embedding, 
-    const std::vector<size_t>& head, 
-    const std::vector<int>& tail, 
-    const std::vector<double>& epochs_per_sample,
-    int num_epochs,
+    EpochData& epochs,
     double a, 
     double b, 
     double gamma,
@@ -25,9 +63,11 @@ inline void optimize_layout(
 ) {
     constexpr double dist_eps = std::numeric_limits<double>::epsilon();
     std::mt19937_64 overlord(123456790);
-    const size_t num_obs = head.size(); 
+    const size_t num_obs = epochs.head.size(); 
+    const int num_epochs = epochs.num_epochs;
 
     // Defining epoch-related constants.
+    const std::vector<double>& epochs_per_sample = epochs.epochs_per_sample;
     std::vector<double> epoch_of_next_sample(epochs_per_sample); 
     std::vector<double> epoch_of_next_negative_sample(epochs_per_sample);
     for (auto& e : epoch_of_next_negative_sample) {
@@ -41,8 +81,8 @@ inline void optimize_layout(
     for (int n = 0; n < num_epochs; ++n) {
         const double alpha = initial_alpha * (1.0 - static_cast<double>(n) / num_epochs);
 
-        for (size_t i = 0; i < head.size(); ++i) {
-            size_t start = (i == 0 ? 0 : head[i-1]), end = head[i];
+        for (size_t i = 0; i < epochs.head.size(); ++i) {
+            size_t start = (i == 0 ? 0 : epochs.head[i-1]), end = epochs.head[i];
             double* left = embedding + i * num_dim;
 
             for (size_t j = start; j < end; ++j) {
@@ -51,7 +91,7 @@ inline void optimize_layout(
                 }
 
                 double dist2 = 0;
-                double* right = embedding + tail[j] * num_dim;
+                double* right = embedding + epochs.tail[j] * num_dim;
                 {
                     const double* lcopy = left;
                     const double* rcopy = right;
@@ -73,8 +113,8 @@ inline void optimize_layout(
                     }
                 }
 
-                // const double epochs_per_negative_sample = epochs_per_sample[j] / negative_sample_rate;
-                const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * (negative_sample_rate / epochs_per_sample[i]);
+                const double epochs_per_negative_sample = epochs_per_sample[j] / negative_sample_rate;
+                const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) / epochs_per_negative_sample;
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
                     size_t sampled = (overlord() % num_obs) * num_dim; // TODO: fix the sampler
@@ -104,7 +144,7 @@ inline void optimize_layout(
                 }
 
                 epoch_of_next_sample[j] += epochs_per_sample[j];
-                epoch_of_next_negative_sample[j] = n; // i.e., num_neg_samples * epochs_per_negative_sample;
+                epoch_of_next_negative_sample[j] = num_neg_samples * epochs_per_negative_sample;
             }
         }
     }
