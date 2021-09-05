@@ -1,5 +1,5 @@
-#ifndef UMAPPP_OPTIMIZE_HPP
-#define UMAPPP_OPTIMIZE_HPP
+#ifndef UMAPPP_OPTIMIZE_LAYOUT_HPP
+#define UMAPPP_OPTIMIZE_LAYOUT_HPP
 
 #include <random>
 #include <cstdint>
@@ -7,6 +7,8 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+
+#include "NeighborList.hpp"
 
 namespace umappp {
 
@@ -17,8 +19,7 @@ struct EpochData {
     int num_epochs;
 };
 
-template<class Probabilities>
-EpochData probabilities_to_epochs(const Probabilities& p, int num_epochs) {
+inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs) {
     double maxed = 0;
     size_t count = 0;
     for (const auto& x : p) {
@@ -54,7 +55,7 @@ EpochData probabilities_to_epochs(const Probabilities& p, int num_epochs) {
 inline void optimize_layout(
     int num_dim,
     double* embedding, 
-    EpochData& epochs,
+    const EpochData& epochs,
     double a, 
     double b, 
     double gamma,

@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "umappp/create_sets.hpp"
-#include "umappp/optimize.hpp"
+#include "umappp/neighbor_similarities.hpp"
+#include "umappp/combine_neighbor_sets.hpp"
+#include "umappp/optimize_layout.hpp"
 #include <vector>
 #include "knncolle/knncolle.hpp"
 
@@ -26,7 +27,7 @@ protected:
             stored.push_back(searcher.find_nearest_neighbors(i, k));
         }
 
-        umappp::neighbor_weights(stored);
+        umappp::neighbor_similarities(stored);
         umappp::combine_neighbor_sets(stored, 1);
         return;
     }
@@ -41,7 +42,7 @@ TEST_P(OptimizeTest, Epochs) {
     assemble(GetParam());
     stored[0][0].second = 1e-8; // check for correct removal.
 
-    auto epoch = umappp::probabilities_to_epochs(stored, 500);
+    auto epoch = umappp::similarities_to_epochs(stored, 500);
     EXPECT_EQ(epoch.head.size(), nobs);
     EXPECT_EQ(epoch.tail.size(), epoch.epochs_per_sample.size());
     EXPECT_EQ(epoch.tail.size(), epoch.head.back());
