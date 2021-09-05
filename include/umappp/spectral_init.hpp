@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <random>
+#include <algorithm>
 
 #include "find_components.hpp"
 #include "NeighborList.hpp"
@@ -29,21 +30,24 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
 
     std::vector<double> sums(which.size());
     for (size_t c = 0; c < which.size(); ++c) {
+        const auto& current = edges[which[c]];
         double& sum = sums[c];
-        for (const auto& f : edges[which[c]]) {
+        for (const auto& f : current) {
             sum += f.second;
         }
         sum = std::sqrt(sum);
     }
 
     // Creating a normalized sparse matrix.
-    std::vector<int> sizes(which.size());
-    for (size_t c = 0; c < which.size(); ++c) {
-        sizes[c] = edges[which[c]].size();
-    }
-
     Eigen::SparseMatrix<double> mat(which.size(), which.size());
-    mat.reserve(sizes);
+    {
+        std::vector<int> sizes(which.size());
+        for (size_t c = 0; c < which.size(); ++c) {
+            const auto& current = edges[which[c]];
+            sizes[c] = current.size();
+        }
+        mat.reserve(sizes);
+    }
 
     for (size_t c = 0; c < which.size(); ++c) {
         auto current = edges[which[c]]; // deliberate copy.
