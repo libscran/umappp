@@ -18,6 +18,7 @@ add_executable(
     src/neighbor_similarities.cpp
     src/optimize_layout.cpp
     src/find_ab.cpp
+    src/Umap.cpp
 )
 
 target_link_libraries(
