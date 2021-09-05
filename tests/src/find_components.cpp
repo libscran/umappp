@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "umappp/spectral_init.hpp"
+#include "umappp/find_components.hpp"
 
 #include <random>
 #include <vector>

@@ -6,12 +6,12 @@
 #include "Eigen/Sparse"
 
 #include <vector>
-#include <unordered_map>
 #include <random>
 
-namespace umappp {
+#include "find_components.hpp"
+#include "NeighborList.hpp"
 
-typedef std::vector<Eigen::Triplet<double> > Edges;
+namespace umappp {
 
 /* Peeled from the function of the same name in the uwot package,
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
@@ -23,40 +23,53 @@ typedef std::vector<Eigen::Triplet<double> > Edges;
  * We also assume that there is always a self-edge, i.e., the diagonal
  * of the adjacency matrix is non-zero. 
  */
-inline Eigen::MatrixXd normalized_laplacian_init(Edges edges, int order, int ndim) {
-    std::vector<double> sums(order);
+inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edges, const ComponentIndices& comp_info, int component, int ndim) {
+    const auto& which = comp_info.reversed[component];
+    const auto& indices = comp_info.new_indices;
 
-    // Normalizing the values.
-    for (const auto& e : edges) {
-        sums[e.row()] += e.value();
-        if (e.row() != e.col()) {
-            sums[e.col()] += e.value();
+    std::vector<double> sums(which.size());
+    for (size_t c = 0; c < which.size(); ++c) {
+        double& sum = sums[c];
+        for (const auto& f : edges[which[c]]) {
+            sum += f.second;
+        }
+        sum = std::sqrt(sum);
+    }
+
+    // Creating a normalized sparse matrix.
+    std::vector<int> sizes(which.size());
+    for (size_t c = 0; c < which.size(); ++c) {
+        sizes[c] = edges[which[c]].size();
+    }
+
+    Eigen::SparseMatrix<double> mat(which.size(), which.size());
+    mat.reserve(sizes);
+
+    for (size_t c = 0; c < which.size(); ++c) {
+        auto current = edges[which[c]]; // deliberate copy.
+        std::sort(current.begin(), current.end());
+
+        for (const auto& f : current) {
+            auto new_index = indices[f.first];
+            if (c < new_index) { // lower-triangular only.
+                break;
+            }
+
+            double val = f.second / sums[new_index] / sums[c];
+            if (c == new_index) {
+                val = 1 - val;
+            } 
+            mat.insert(new_index, c) = val;
         }
     }
-
-    for (auto& s : sums) {
-        s = std::sqrt(s);
-    }
-
-    for (auto& e : edges) {
-        double val = -e.value() / (sums[e.row()] * sums[e.col()]);
-        if (e.row() == e.col()) {
-            val = 1 - val;
-        }
-        e = Eigen::Triplet<double>(e.row(), e.col(), val);
-    }
+    mat.makeCompressed();
 
     // Finding the smallest eigenvalues & their eigenvectors,
     // using the shift-and-invert mode as recommended.
-    Eigen::SparseMatrix<double> mat(order, order);
-    mat.setFromTriplets(edges.begin(), edges.end());
-    mat.makeCompressed();
-
+    // We follow Spectra's recommendation to take 2 * nev.
+    int nev = std::min(ndim + 1, static_cast<int>(mat.rows()));
     Spectra::SparseSymShiftSolve<double> op(mat);
-    Spectra::SymEigsShiftSolver<decltype(op)> eigs(op, 
-                                                   ndim + 1, // nev 
-                                                   2 * (ndim + 1), // following recommendation to take 2 * nev.
-                                                   0.0);
+    Spectra::SymEigsShiftSolver<decltype(op)> eigs(op, nev, 2 * nev, 0.0); 
 
     eigs.init();
     eigs.compute(Spectra::SortRule::LargestMagn);
@@ -65,6 +78,8 @@ inline Eigen::MatrixXd normalized_laplacian_init(Edges edges, int order, int ndi
         return eigs.eigenvectors().leftCols(ndim);
 
     } else {
+        size_t order = which.size();
+
         // Falling back to random initialization.
         Eigen::MatrixXd output(order, ndim);
         std::mt19937_64 rng(1234567890);
@@ -78,73 +93,15 @@ inline Eigen::MatrixXd normalized_laplacian_init(Edges edges, int order, int ndi
     }
 }
 
-/* Finds the connected components of the graph. Pretty sure this
- * is not the most efficient way to do it, but whatever.
- */
-inline std::pair<int, std::vector<int> > find_components(const Edges& edges, int order) {
-    std::unordered_map<int, std::vector<int> > friends;
-    for (const auto& e : edges) {
-        friends[e.row()].push_back(e.col());
-        friends[e.col()].push_back(e.row());
-    }
-    
-    std::pair<int, std::vector<int> > output(0, std::vector<int>(order, -1));
-    int& counter = output.first;
-    auto& mapping = output.second;
+inline void spectral_init(const NeighborList& edges, int ndim, double * vals) {
+    auto mapping = find_components(edges);
 
-    for (int current = 0; current< order; ++current) {
-        if (mapping[current] != -1) {
-            continue;
-        }
+    for (size_t c = 0; c < mapping.ncomponents(); ++c) {
+        auto eigs = normalized_laplacian_by_component(edges, mapping, c, ndim);
+        const auto& reversed = mapping.reversed[c];
 
-        std::vector<int> remaining(1, current);
-        mapping[current] = counter;
-        do {
-            int curfriend = remaining.back();
-            remaining.pop_back();
-
-            for (auto ff : friends[curfriend]) {
-                if (mapping[ff] == -1) {
-                    remaining.push_back(ff);
-                    mapping[ff] = counter;
-                }
-            }
-        } while (remaining.size());
-
-        ++counter;
-    }
-
-    return output;
-}
-
-inline void spectral_init(const Edges& edges, int order, int ndim, double * vals) {
-    auto mapping = find_components(edges, order);
-
-    // Building the new indices.
-    std::vector<int> cumulative(mapping.first);
-    std::vector<int> new_indices(order);
-    std::vector<std::vector<int> > reversed(mapping.first);
-
-    for (size_t i = 0; i < mapping.second.size(); ++i) {
-        auto m = mapping.second[i];
-        new_indices[i] = cumulative[m];
-        reversed[m].push_back(i);
-        ++cumulative[m];
-    }
-
-    // Splitting nodes into their categories.
-    std::vector<Edges> components(mapping.first);
-    for (const auto& e : edges) {
-        int comp = mapping.second[e.row()];
-        components[comp].emplace_back(new_indices[e.row()], new_indices[e.col()], e.value());
-    }
-
-    // Initializing each of them separately.
-    for (size_t c = 0; c < components.size(); ++c) {
-        auto eigs = normalized_laplacian_init(std::move(components[c]), reversed[c].size(), ndim);
-
-        for (size_t r = 0; r < reversed[c].size(); ++r) {
-            size_t offset = reversed[c][r] * ndim;
+        for (size_t r = 0; r < reversed.size(); ++r) {
+            size_t offset = reversed[r] * ndim;
             for (int d = 0; d < ndim; ++d) {
                 vals[offset + d] = eigs(r, d);
             }
