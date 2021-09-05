@@ -60,6 +60,16 @@ TEST_P(OptimizeTest, Epochs) {
     }
 }
 
+TEST_P(OptimizeTest, BasicRun) {
+    assemble(GetParam());
+    auto epoch = umappp::similarities_to_epochs(stored, 500);
+
+    std::vector<double> embedding(data);
+    optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, 5);
+
+    EXPECT_NE(embedding, data); // some kind of change happened!
+}
+
 INSTANTIATE_TEST_SUITE_P(
     Optimize,
     OptimizeTest,

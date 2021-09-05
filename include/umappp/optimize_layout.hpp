@@ -53,7 +53,7 @@ inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs) {
 }
 
 inline void optimize_layout(
-    int num_dim,
+    int ndim,
     double* embedding, 
     const EpochData& epochs,
     double a, 
@@ -84,7 +84,7 @@ inline void optimize_layout(
 
         for (size_t i = 0; i < epochs.head.size(); ++i) {
             size_t start = (i == 0 ? 0 : epochs.head[i-1]), end = epochs.head[i];
-            double* left = embedding + i * num_dim;
+            double* left = embedding + i * ndim;
 
             for (size_t j = start; j < end; ++j) {
                 if (epoch_of_next_sample[j] > n) {
@@ -92,11 +92,11 @@ inline void optimize_layout(
                 }
 
                 double dist2 = 0;
-                double* right = embedding + epochs.tail[j] * num_dim;
+                double* right = embedding + epochs.tail[j] * ndim;
                 {
                     const double* lcopy = left;
                     const double* rcopy = right;
-                    for (int d = 0; d < num_dim; ++d, ++lcopy, ++rcopy) {
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
                         dist2 += (*lcopy - *rcopy) * (*lcopy - *rcopy);
                     }
                     dist2 = std::max(dist_eps, dist2);
@@ -107,7 +107,7 @@ inline void optimize_layout(
                 {
                     double* lcopy = left;
                     double* rcopy = right;
-                    for (int d = 0; d < num_dim; ++d, ++lcopy, ++rcopy) {
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
                         double gradient = alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
                         *lcopy += gradient;
                         *rcopy -= gradient;
@@ -118,17 +118,17 @@ inline void optimize_layout(
                 const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) / epochs_per_negative_sample;
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
-                    size_t sampled = (overlord() % num_obs) * num_dim; // TODO: fix the sampler
+                    size_t sampled = (overlord() % num_obs) * ndim; // TODO: fix the sampler
                     if (sampled == i) {
                         continue;
                     }
 
                     double dist2 = 0;
-                    double* right = embedding + sampled * num_dim;
+                    double* right = embedding + sampled * ndim;
                     {
                         const double* lcopy = left;
                         const double* rcopy = right;
-                        for (int d = 0; d < num_dim; ++d, ++lcopy, ++rcopy) {
+                        for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
                             dist2 += (*lcopy - *rcopy) * (*lcopy - *rcopy);
                         }
                         dist2 = std::max(dist_eps, dist2);
@@ -138,7 +138,7 @@ inline void optimize_layout(
                     {
                         double* lcopy = left;
                         const double* rcopy = right;
-                        for (int d = 0; d < num_dim; ++d, ++lcopy, ++rcopy) {
+                        for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
                             *lcopy += alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
                         }
                     }
