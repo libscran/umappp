@@ -50,9 +50,7 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
     }
 
     for (size_t c = 0; c < which.size(); ++c) {
-        auto current = edges[which[c]]; // deliberate copy.
-        std::sort(current.begin(), current.end());
-
+        const auto& current = edges[which[c]]; 
         for (const auto& f : current) {
             auto new_index = indices[f.first];
             if (c < new_index) { // lower-triangular only.

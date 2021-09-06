@@ -80,6 +80,14 @@ inline void combine_neighbor_sets(NeighborList& x, double mix_ratio = 1) {
             std::swap(current, replacement);
         }
     }
+
+    // Sorting everything by index so downstream functions are happier.
+    // (more cache-friendly, and Eigen needs increasing inserts).
+    for (auto& current : x) {
+        std::sort(current.begin(), current.end());
+    }
+
+    return;
 }
 
 }
