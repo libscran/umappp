@@ -49,7 +49,7 @@ inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs, d
         for (const auto& y : x) {
             if (y.second >= limit) {
                 output.tail.push_back(y.first);
-                output.epochs_per_sample.push_back(y.second / limit);
+                output.epochs_per_sample.push_back(maxed / y.second);
                 ++last;
             }
         }
@@ -142,8 +142,8 @@ inline void optimize_layout(
                     }
                 }
 
-                const double epochs_per_negative_sample = epochs_per_sample[j] / negative_sample_rate;
-                const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) / epochs_per_negative_sample;
+                // Here, we divide by epochs_per_negative_sample, defined as epochs_per_sample[j] / negative_sample_rate.
+                const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
                     // Correctly sample in the uniform range.
@@ -178,7 +178,10 @@ inline void optimize_layout(
                 }
 
                 epoch_of_next_sample[j] += epochs_per_sample[j];
-                epoch_of_next_negative_sample[j] = num_neg_samples * epochs_per_negative_sample;
+
+                // The update involves adding num_neg_samples * epoch_of_next_negative_sample[j],
+                // which eventually boils down to setting this to 'n'.
+                epoch_of_next_negative_sample[j] = n;
             }
         }
     }
