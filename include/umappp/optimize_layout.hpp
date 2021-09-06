@@ -13,13 +13,21 @@
 namespace umappp {
 
 struct EpochData {
+    EpochData(size_t nobs) : head(nobs) {}
+
+    int total_epochs;
+    int current_epoch = 0;
+
     std::vector<size_t> head;
     std::vector<int> tail;
     std::vector<double> epochs_per_sample;
-    int num_epochs;
+
+    std::vector<double> epoch_of_next_sample;
+    std::vector<double> epoch_of_next_negative_sample;
+    double negative_sample_rate;
 };
 
-inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs) {
+inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs, double negative_sample_rate) {
     double maxed = 0;
     size_t count = 0;
     for (const auto& x : p) {
@@ -29,9 +37,8 @@ inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs) {
         }
     }
 
-    EpochData output;
-    output.num_epochs = num_epochs;
-    output.head.resize(p.size());
+    EpochData output(p.size());
+    output.total_epochs = num_epochs;
     output.tail.reserve(count);
     output.epochs_per_sample.reserve(count);
     const double limit = maxed / num_epochs;
@@ -49,41 +56,62 @@ inline EpochData similarities_to_epochs(const NeighborList& p, int num_epochs) {
         output.head[i] = last;
     }
 
+    // Filling in some epoch-related running statistics.
+    output.epoch_of_next_sample = output.epochs_per_sample;
+    output.epoch_of_next_negative_sample = output.epochs_per_sample;
+    for (auto& e : output.epoch_of_next_negative_sample) {
+        e /= negative_sample_rate;
+    }
+    output.negative_sample_rate = negative_sample_rate;
+
     return output;       
 }
 
+template<class Setup, class Rng>
 inline void optimize_layout(
     int ndim,
     double* embedding, 
-    const EpochData& epochs,
+    Setup& setup,
     double a, 
     double b, 
     double gamma,
-    double initial_alpha, 
-    double negative_sample_rate
+    double initial_alpha,
+    Rng& rng,
+    int epoch_limit
 ) {
-    constexpr double dist_eps = std::numeric_limits<double>::epsilon();
-    std::mt19937_64 overlord(123456790);
-    const size_t num_obs = epochs.head.size(); 
-    const int num_epochs = epochs.num_epochs;
-
-    // Defining epoch-related constants.
-    const std::vector<double>& epochs_per_sample = epochs.epochs_per_sample;
-    std::vector<double> epoch_of_next_sample(epochs_per_sample); 
-    std::vector<double> epoch_of_next_negative_sample(epochs_per_sample);
-    for (auto& e : epoch_of_next_negative_sample) {
-        e /= negative_sample_rate;
+    auto& n = setup.current_epoch;
+    auto num_epochs = setup.total_epochs;
+    auto limit_epochs = num_epochs;
+    if (limit_epochs > 0) {
+        limit_epochs = std::min(limit_epochs, num_epochs);
     }
+
+    auto& head = setup.head;
+    auto& tail = setup.tail;
+    auto& epochs_per_sample = setup.epochs_per_sample;
+    auto& epoch_of_next_sample = setup.epoch_of_next_sample;
+    auto& epoch_of_next_negative_sample = setup.epoch_of_next_negative_sample;
+
+    const size_t num_obs = head.size(); 
+    constexpr double dist_eps = std::numeric_limits<double>::epsilon();
+    const double negative_sample_rate = setup.negative_sample_rate;
 
     // Defining the gradient parameters.
     constexpr double min_gradient = -4;
     constexpr double max_gradient = 4;
 
-    for (int n = 0; n < num_epochs; ++n) {
+    // Defining Rng-related constants.
+    static_assert(rng.min() == 0);
+    auto limit = rng.max();
+    if (limit % num_obs != num_obs - 1) {
+        limit -= limit % num_obs + 1; 
+    }
+    
+    for (; n < limit_epochs; ++n) {
         const double alpha = initial_alpha * (1.0 - static_cast<double>(n) / num_epochs);
 
-        for (size_t i = 0; i < epochs.head.size(); ++i) {
-            size_t start = (i == 0 ? 0 : epochs.head[i-1]), end = epochs.head[i];
+        for (size_t i = 0; i < setup.head.size(); ++i) {
+            size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
             double* left = embedding + i * ndim;
 
             for (size_t j = start; j < end; ++j) {
@@ -92,7 +120,7 @@ inline void optimize_layout(
                 }
 
                 double dist2 = 0;
-                double* right = embedding + epochs.tail[j] * ndim;
+                double* right = embedding + setup.tail[j] * ndim;
                 {
                     const double* lcopy = left;
                     const double* rcopy = right;
@@ -118,7 +146,12 @@ inline void optimize_layout(
                 const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) / epochs_per_negative_sample;
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
-                    size_t sampled = (overlord() % num_obs) * ndim; // TODO: fix the sampler
+                    // Correctly sample in the uniform range.
+                    auto draw = rng();
+                    while (draw > limit) {
+                        draw = rng();
+                    }
+                    size_t sampled = (draw % num_obs); 
                     if (sampled == i) {
                         continue;
                     }
