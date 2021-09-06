@@ -1,8 +1,9 @@
 #ifndef UMAPPP_SPECTRAL_INIT_HPP
 #define UMAPPP_SPECTRAL_INIT_HPP
 
-#include "Spectra/SymEigsShiftSolver.h"
-#include "Spectra/MatOp/SparseSymShiftSolve.h"
+#include "Spectra/SymEigsSolver.h"
+//#include "Spectra/SymEigsShiftSolver.h"
+#include "Spectra/MatOp/SparseSymMatProd.h"
 #include "Eigen/Sparse"
 
 #include <vector>
@@ -16,13 +17,6 @@ namespace umappp {
 
 /* Peeled from the function of the same name in the uwot package,
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
- *
- * Edges are assumed to be such that the larger node index is first,
- * i.e., the corresponding adjacency matrix is lower triangular. This 
- * fits with the defaults for SparseSymShiftSolve.
- *
- * We also assume that there is always a self-edge, i.e., the diagonal
- * of the adjacency matrix is non-zero. 
  */
 inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edges, const ComponentIndices& comp_info, int component, int ndim) {
     const auto& which = comp_info.reversed[component];
@@ -53,28 +47,32 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
         const auto& current = edges[which[c]]; 
         for (const auto& f : current) {
             auto new_index = indices[f.first];
-            if (c < new_index) { // lower-triangular only.
+            if (c < new_index) { // upper-triangular only.
                 break;
             }
-
-            double val = f.second / sums[new_index] / sums[c];
-            if (c == new_index) {
-                val = 1 - val;
-            } 
-            mat.insert(new_index, c) = val;
+            mat.insert(new_index, c) = -f.second / sums[new_index] / sums[c];
         }
+        mat.insert(c, c) = 1;
     }
     mat.makeCompressed();
 
     // Finding the smallest eigenvalues & their eigenvectors,
     // using the shift-and-invert mode as recommended.
-    // We follow Spectra's recommendation to take 2 * nev.
-    int nev = std::min(ndim + 1, static_cast<int>(mat.rows()));
-    Spectra::SparseSymShiftSolve<double> op(mat);
-    Spectra::SymEigsShiftSolver<decltype(op)> eigs(op, nev, 2 * nev, 0.0); 
+    const int nobs = mat.rows();
+    int nev = std::min(ndim + 1, nobs); // +1 from uwot:::normalized_laplacian_init
+    int ncv = std::min(nobs, std::max(2 * nev, 20)); // from RSpectra:::eigs_real_sym. I don't make the rules.
+
+    Spectra::SparseSymMatProd<double, Eigen::Upper> op(mat);
+    Spectra::SymEigsSolver<typename std::remove_reference<decltype(op)>::type> eigs(op, nev, ncv); 
 
     eigs.init();
-    eigs.compute(Spectra::SortRule::LargestMagn);
+    eigs.compute(Spectra::SortRule::SmallestMagn);
+
+//    Spectra::SparseSymShiftSolve<double, Eigen::Upper> op(mat);
+//    Spectra::SymEigsShiftSolver<Spectra::SparseSymShiftSolve<double, Eigen::Upper> > eigs(op, nev, ncv, 0.0); 
+//
+//    eigs.init();
+//    eigs.compute(Spectra::SortRule::LargestMagn);
 
     if (eigs.info() == Spectra::CompInfo::Successful) {
         return eigs.eigenvectors().leftCols(ndim);
