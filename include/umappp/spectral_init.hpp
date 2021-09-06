@@ -100,10 +100,15 @@ inline void spectral_init(const NeighborList& edges, int ndim, double * vals) {
         auto eigs = normalized_laplacian_by_component(edges, mapping, c, ndim);
         const auto& reversed = mapping.reversed[c];
 
+        // Getting the maximum value; this is assumed to be non-zero,
+        // otherwise this entire thing is futile.
+        const double max_val = std::max(std::abs(eigs.minCoeff()), std::abs(eigs.maxCoeff()));
+        const double expansion = (max_val > 0 ? 10 / max_val : 1);
+
         for (size_t r = 0; r < reversed.size(); ++r) {
             size_t offset = reversed[r] * ndim;
             for (int d = 0; d < ndim; ++d) {
-                vals[offset + d] = eigs(r, d);
+                vals[offset + d] = eigs(r, d) * expansion; // TODO: put back the jitter step.
             }
         }
     }
