@@ -64,7 +64,7 @@ inline void neighbor_similarities(
             double hi = max_val;
             double sigma_best = sigma;
             double adiff_min = max_val;
-            const double target = std::log2(all_neighbors.size());
+            const double target = std::log2(all_neighbors.size() + 1); // include self. Dunno why, but uwot does it.
 
             bool converged = false;
             for (int iter = 0; iter < max_iter; ++iter) {
