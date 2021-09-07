@@ -1,5 +1,9 @@
 # A C++ library for UMAP
 
+![Unit tests](https://github.com/LTLA/umappp/actions/workflows/run-tests.yaml/badge.svg)
+![Documentation](https://github.com/LTLA/umappp/actions/workflows/doxygenate.yaml/badge.svg)
+[![Codecov](https://codecov.io/gh/LTLA/umappp/branch/master/graph/badge.svg?token=IKFEAP5J55)](https://codecov.io/gh/LTLA/umappp)
+
 ## Overview 
 
 **umappp** is a header-only C++ implementation of the Uniform Manifold Approximation and Projection (UMAP) algorithm (McInnes, Healy and Melville, 2018).
@@ -87,6 +91,6 @@ If you are instead supplying your own neighbor search, this dependency can be el
 
 ## References
 
-McInnes L, Healy J, Melville J (2018).
+McInnes L, Healy J, Melville J (2020).
 UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.
 _arXiv_, https://arxiv.org/abs/1802.03426
