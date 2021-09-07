@@ -279,7 +279,7 @@ public:
      * @return A reference to this `Umap` object.
      */
     Umap& set_negative_sample_rate(double n = Defaults::negative_sample_rate) {
-        learning_rate = l;
+        negative_sample_rate = n;
         return *this;
     }
 
@@ -430,7 +430,7 @@ public:
      * It will use vantage point trees for the search - see the other `initialize()` methods to specify a custom search algorithm.
      */
     template<typename Input = double>
-    auto initialize(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding) { 
+    Status initialize(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding) { 
         knncolle::VpTreeEuclidean<> searcher(ndim_in, nobs, input); 
         return initialize(&searcher, ndim_out, embedding);
     }
@@ -453,7 +453,7 @@ public:
      * `embedding` is updated with the embedding at that point.
      */
     template<typename Input = double>
-    auto run(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding, int epoch_limit = 0) {
+    Status run(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding, int epoch_limit = 0) {
         auto status = initialize(ndim_in, nobs, input, ndim_out, embedding);
         run(status, ndim_out, embedding, epoch_limit);
         return status;
@@ -473,7 +473,7 @@ public:
      * otherwise it is ignored.
      */
     template<class Algorithm>
-    auto initialize(const Algorithm* searcher, int ndim, double* embedding) { 
+    Status initialize(const Algorithm* searcher, int ndim, double* embedding) { 
         NeighborList output;
         const size_t N = searcher->nobs();
         output.reserve(N);
@@ -502,7 +502,7 @@ public:
      * `embedding` is updated with the embedding at that point.
      */
     template<class Algorithm> 
-    auto run(const Algorithm* searcher, int ndim, double* embedding, int epoch_limit = 0) {
+    Status run(const Algorithm* searcher, int ndim, double* embedding, int epoch_limit = 0) {
         auto status = initialize(searcher, ndim, embedding);
         run(status, ndim, embedding, epoch_limit);
         return status;

@@ -22,7 +22,6 @@ protected:
                     edges[c].emplace_back(r, val);
                 }
             }
-            edges[r].emplace_back(r, dist(rng)); // diagonal.
         }
         return edges;
     }

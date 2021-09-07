@@ -26,7 +26,6 @@ protected:
         stored.reserve(nobs);
         for (size_t i = 0; i < searcher.nobs(); ++i) {
             stored.push_back(searcher.find_nearest_neighbors(i, k));
-            stored.back().push_back(umappp::Neighbor(i, 0)); // inserting self.
         }
         return;
     }

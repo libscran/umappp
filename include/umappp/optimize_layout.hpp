@@ -101,7 +101,7 @@ inline void optimize_layout(
     constexpr double max_gradient = 4;
 
     // Defining Rng-related constants.
-    static_assert(rng.min() == 0);
+    static_assert(std::remove_reference<decltype(rng)>::type::min() == 0);
     auto limit = rng.max();
     if (limit % num_obs != num_obs - 1) {
         limit -= limit % num_obs + 1; 
