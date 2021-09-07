@@ -33,8 +33,8 @@ namespace umappp {
  * though this particular implementation is derived from the C++ code in the [**uwot** R package](https://github.com/jlmelville/uwot).
  *
  * @see
- * McInnes L and Healy J (2018).
- * UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction 
+ * McInnes L, Healy J and Melville J (2020).
+ * UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.
  * _arXiv_, https://arxiv.org/abs/1802.03426
  */
 class Umap {
@@ -372,13 +372,10 @@ public:
      * @param ndim Number of dimensions of the embedding.
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations.
      * This contains the initial coordinates and is updated to store the final embedding.
-     * @param epoch_limit Number of epochs to run.
+     * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
      * @return `s` and `embedding` are updated for the given number of epochs. 
-     *
-     * The number of epochs that are actually used is determined from the difference between `Status::epoch()` and the smaller of `epoch_limit` and the maximum number of epochs.
-     * Setting the epoch limit is helpful for running the iterations one at a time.
      */
     void run(Status& s, int ndim, double* embedding, int epoch_limit = 0) const {
         optimize_layout(
@@ -401,7 +398,7 @@ public:
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations.
      * This is filled with the final embedding on output.
      * If `set_initialize()` is false, this is assumed to contain the initial coordinates on input.
-     * @param epoch_limit Number of epochs to run, see `run()`.
+     * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()` - see `run()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
      * @return The status of the algorithm is returned after running up to `epoch_limit`, for re-use in `run()`.
@@ -449,7 +446,7 @@ public:
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations (`searcher->nobs()`).
      * This is filled with the final embedding on output.
      * If `set_initialize()` is false, this is assumed to contain the initial coordinates on input.
-     * @param epoch_limit Number of epochs to run, see `run()`.
+     * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()` - see `run()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
      * @return The status of the algorithm is returned after running up to `epoch_limit`, for re-use in `run()`.
@@ -498,7 +495,7 @@ public:
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations (`searcher->nobs()`).
      * This is filled with the final embedding on output.
      * If `set_initialize()` is false, this is assumed to contain the initial coordinates on input.
-     * @param epoch_limit Number of epochs to run.
+     * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()` - see `run()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
      * @return A `Status` object containing the state of the algorithm after running epochs up to `epoch_limit`.
