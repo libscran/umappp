@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['initialize_0',['initialize',['../classumappp_1_1Umap.html#a612ca0310d865a625f50e75399b9f8a2',1,'umappp::Umap::initialize(NeighborList x, int ndim, double *embedding) const'],['../classumappp_1_1Umap.html#a5b0804f2bfbc3592951cdfdebdf819a6',1,'umappp::Umap::initialize(int ndim_in, size_t nobs, const Input *input, int ndim_out, double *embedding)'],['../classumappp_1_1Umap.html#a671a1292cf999e05d4f61427d207b2c2',1,'umappp::Umap::initialize(const Algorithm *searcher, int ndim, double *embedding)']]]
+];
