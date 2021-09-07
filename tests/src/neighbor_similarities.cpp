@@ -84,7 +84,7 @@ TEST_P(SimilarityTest, EdgeCases) {
     auto stored = generate_neighbors();
 
     // Forcing the fallback when local_connectivity is too high.
-    umappp::neighbor_similarities(stored, 64, 100); 
+    umappp::neighbor_similarities(stored, 100); 
 
     for (const auto& s : stored) {
         for (const auto& v : s){ 
