@@ -15,37 +15,102 @@
 #include <random>
 #include <cstdint>
 
+/**
+ * @file Umap.hpp
+ *
+ * @brief Run the UMAP algorithm.
+ */
+
 namespace umappp {
 
+/**
+ * @brief Wrapper class to run UMAP.
+ *
+ * The Uniform Manifold Approximation and Projection (UMAP) algorithm is an efficient dimensionality reduction method based on nearest neighbors.
+ * The general idea is to find a low-dimensional embedding that preserves the neighborhood of each observation from the original space;
+ * this is achieved by applying attractive forces between each observation and its neighbors while repelling to all other cells.
+ * Further theoretical details can be found in the [original UMAP documentation](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html),
+ * though this particular implementation is derived from the C++ code in the [**uwot** R package](https://github.com/jlmelville/uwot).
+ *
+ * @see
+ * McInnes L and Healy J (2018).
+ * UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction 
+ * _arXiv_, https://arxiv.org/abs/1802.03426
+ */
 class Umap {
 public:
+    /**
+     * @brief Default values for all UMAP parameters.
+     */
     struct Defaults {
+        /**
+         * See `set_local_connectivity()`.
+         */
         static constexpr double local_connectivity = 1.0;
 
+        /**
+         * See `set_bandwidth()`.
+         */
         static constexpr double bandwidth = 1;
 
+        /**
+         * See `set_mix_ratio()`.
+         */
         static constexpr double mix_ratio = 1;
 
+        /**
+         * See `set_spread()`.
+         */
         static constexpr double spread = 1;
 
+        /**
+         * See `set_min_dist()`.
+         */
         static constexpr double min_dist = 0.01;
 
+        /**
+         * See `set_a()`.
+         */
         static constexpr double a = 0;
 
+        /**
+         * See `set_b()`.
+         */
         static constexpr double b = 0;
 
-        static constexpr double gamma = 1;
+        /**
+         * See `set_repulsion_strength()`.
+         */
+        static constexpr double repulsion_strength = 1;
 
-        static constexpr bool init = true;
+        /**
+         * See `set_initialize()`.
+         */
+        static constexpr bool initialize = true;
 
+        /**
+         * See `set_num_epochs()`.
+         */
         static constexpr int num_epochs = 500;
 
+        /**
+         * See `set_learning_rate()`.
+         */
         static constexpr double learning_rate = 1; 
 
+        /**
+         * See `set_negative_sample_rate()`.
+         */
         static constexpr double negative_sample_rate = 5;
 
+        /**
+         * See `set_num_neighbors()`.
+         */
         static constexpr int num_neighbors = 15;
 
+        /**
+         * See `set_seed()`.
+         */
         static constexpr uint64_t seed = 1234567890;
     };
 
@@ -64,9 +129,9 @@ private:
 
     double b = Defaults::b;
 
-    double gamma = Defaults::gamma;
+    double repulsion_strength = Defaults::repulsion_strength;
 
-    bool init = Defaults::init;
+    bool init = Defaults::initialize;
 
     int num_epochs = Defaults::num_epochs;
 
@@ -79,13 +144,163 @@ private:
     uint64_t seed = Defaults::seed;
 
 public:
-    Umap& set_a(double a_ = Defaults::a) {
-        a = a_;
+    /**
+     * @param l The number of nearest neighbors that are assumed to be always connected, with maximum membership confidence.
+     * Larger values increase the connectivity of the embedding and reduce the focus on local structure.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_local_connectivity(double l = Defaults::local_connectivity) {
+        local_connectivity = l;
         return *this;
     }
 
-    Umap& set_b(double b_ = Defaults::b) {
-        b = b_;
+    /**
+     * @param b Effective bandwidth of the kernel when converting the distance to a neighbor into a fuzzy set membership confidence.
+     * Larger values reduce the decay in confidence with respect to distance, increasing connectivity and favoring global structure. 
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_bandwidth(double b = Defaults::bandwidth) {
+        bandwidth = b;
+        return *this;
+    }
+
+    /**
+     * @param m Mixing ratio to use when combining fuzzy sets.
+     * This symmetrizes the sets by ensuring that the confidence of $A$ belonging to $B$'s set is the same as the confidence of $B$ belonging to $A$'s set.
+     * A mixing ratio of 1 will take the union of confidences, a ratio of 0 will take the intersection, and intermediate values will interpolate between them.
+     * Larger values (up to 1) favor connectivity and more global structure.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_mix_ratio(double m = Defaults::mix_ratio) {
+        mix_ratio = m;
+        return *this;
+    }
+
+    /**
+     * @param s Scale of the coordinates of the final low-dimensional embedding.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_spread(double s = Defaults::spread) {
+        spread = s;
+        return *this;
+    }
+
+    /**
+     * @param m Minimum distance between observations in the final low-dimensional embedding.
+     * Smaller values will increase local clustering while larger values favors a more even distribution.
+     * This is interpreted relative to the spread of points in `set_spread()`.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_min_dist(double m = Defaults::min_dist) {
+        min_dist = m;
+        return *this;
+    }
+
+    /**
+     * @param a Positive value for the $a$ parameter for the fuzzy set membership strength calculations.
+     * Larger values yield a sharper decay in membership strength with increasing distance between observations.
+     *
+     * If this or `set_b()` is set to zero, a suitable value for this parameter is automatically determined from the values provided to `set_spread()` and `set_min_dist()`.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_a(double a = Defaults::a) {
+        this->a = a;
+        return *this;
+    }
+
+    /**
+     * @param b Value in $(0, 1)$ for the $b$ parameter for the fuzzy set membership strength calculations.
+     * Larger values yield an earlier decay in membership strength with increasing distance between observations.
+     *
+     * If this or `set_a()` is set to zero, a suitable value for this parameter is automatically determined from the values provided to `set_spread()` and `set_min_dist()`.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_b(double b = Defaults::b) {
+        this->b = b;
+        return *this;
+    }
+
+    /** 
+     * @param r Modifier for the repulsive force.
+     * Larger values increase repulsion and favor local structure.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_repulsion_strength(double r = Defaults::repulsion_strength) {
+        repulsion_strength = r;
+        return *this;
+    }
+
+    /** 
+     * @param i Whether to initialize the embedding based on a spectral decomposition of the fuzzy set graph.
+     * If false, the existing coordinates provided to `run()` via `embedding` are directly used.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_initialize(bool i = Defaults::initialize) {
+        init = i;
+        return *this;
+    }
+
+    /**
+     * @param n Number of epochs for the gradient descent, i.e., optimization iterations.
+     * Larger values improve convergence at the cost of computational work.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_num_epochs(int n = Defaults::num_epochs) {
+        num_epochs = n;
+        return *this;
+    }
+
+    /**
+     * @param l Initial learning rate used in the gradient descent.
+     * Larger values can improve the speed of convergence but at the cost of stability.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_learning_rate(double l = Defaults::learning_rate) {
+        learning_rate = l;
+        return *this;
+    }
+
+    /**
+     * @param n Rate of sampling negative observations to compute repulsive forces.
+     * This is interpreted with respect to the number of neighbors with attractive forces, i.e., for each attractive interaction, `n` negative samples are taken for repulsive interactions.
+     * Smaller values can improve the speed of convergence but at the cost of stability.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_negative_sample_rate(double n = Defaults::negative_sample_rate) {
+        learning_rate = l;
+        return *this;
+    }
+
+    /**
+     * @param n Number of neighbors to use to define the fuzzy sets.
+     * Larger values improve connectivity and favor preservation of global structure, at the cost of increased computational work.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_num_neighbors(double n = Defaults::num_neighbors) {
+        num_neighbors = n;
+        return *this;
+    }
+
+    /**
+     * @param s Seed to use for the Mersenne Twister when sampling negative observations.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_seed(uint64_t s = Defaults::seed) {
+        seed = s;
         return *this;
     }
 
@@ -136,7 +351,7 @@ public:
             s.epochs,
             s.a,
             s.b,
-            gamma,
+            repulsion_strength,
             learning_rate,
             s.engine,
             epoch_limit
@@ -216,7 +431,6 @@ public:
         #pragma omp parallel for
         for (size_t i = 0; i < N; ++i) {
             auto out = searcher->find_nearest_neighbors(i, num_neighbors);
-            out.emplace_back(i, 0);
             output.emplace_back(std::move(out));
         }
 
