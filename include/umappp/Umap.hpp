@@ -474,14 +474,22 @@ public:
      */
     template<class Algorithm>
     Status initialize(const Algorithm* searcher, int ndim, double* embedding) { 
-        NeighborList output;
         const size_t N = searcher->nobs();
+
+#ifdef _OPENMP
+        NeighborList output(N);
+#else
+        NeighborList output;
         output.reserve(N);
+#endif
 
         #pragma omp parallel for
         for (size_t i = 0; i < N; ++i) {
-            auto out = searcher->find_nearest_neighbors(i, num_neighbors);
-            output.emplace_back(std::move(out));
+#ifdef _OPENMP
+            output[i] = searcher->find_nearest_neighbors(i, num_neighbors);
+#else
+            output.emplace_back(searcher->find_nearest_neighbors(i, num_neighbors));
+#endif
         }
 
         return initialize(output, ndim, embedding);
