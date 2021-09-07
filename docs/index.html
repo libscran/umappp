@@ -67,7 +67,8 @@ $(function() {
   <div class="headertitle"><div class="title">A C++ library for UMAP </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md__github_workspace_README"></a> </p><h1>Overview</h1>
+<div class="textblock"><p ><a class="anchor" id="md__github_workspace_README"></a> <img src="https://github.com/LTLA/umappp/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/umappp/actions/workflows/doxygenate.yaml/badge.svg" alt="Documentation" style="pointer-events: none;" class="inline"/> <a href="https://codecov.io/gh/LTLA/umappp"><img src="https://codecov.io/gh/LTLA/umappp/branch/master/graph/badge.svg?token=IKFEAP5J55" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
+<h1>Overview</h1>
 <p ><b>umappp</b> is a header-only C++ implementation of the Uniform Manifold Approximation and Projection (UMAP) algorithm (McInnes, Healy and Melville, 2018). UMAP is a non-linear dimensionality reduction technique that is most commonly used for visualization of complex datasets. This is achieved by placing each observation on a low-dimensional (usually 2D) embedding in a manner that preserves the neighborhood of each observation from the high-dimensional original space. The aim is to ensure that the local structure of the data is faithfully recapitulated in lower dimensions Further theoretical details can be found in the <a href="https://umap-learn.readthedocs.io/en/latest/how_umap_works.html">original UMAP documentation</a>; the implementation here is derived from the C++ code in the <a href="https://github.com/jlmelville/uwot"><b>uwot</b> R package</a>.</p>
 <h1>Quick start</h1>
 <p >Given a pointer to a column-major input array with <code>ndim</code> rows and <code>nobs</code> columns, we can compute the UMAP embedding easily:</p>
@@ -122,7 +123,7 @@ $(function() {
 <li>The <a href="https://github.com/LTLA/knncolle"><b>knncolle</b></a> library for nearest neighbor search. If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the <code>UMAPPP_CUSTOM_NEIGHBORS</code> macro.</li>
 </ul>
 <h1>References</h1>
-<p >McInnes L, Healy J, Melville J (2018). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. <em>arXiv</em>, <a href="https://arxiv.org/abs/1802.03426">https://arxiv.org/abs/1802.03426</a> </p>
+<p >McInnes L, Healy J, Melville J (2020). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. <em>arXiv</em>, <a href="https://arxiv.org/abs/1802.03426">https://arxiv.org/abs/1802.03426</a> </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
