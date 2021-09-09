@@ -13,7 +13,7 @@ target_include_directories(umappp INTERFACE include/)
 
 add_subdirectory(extern)
 
-target_link_libraries(umappp INTERFACE knncolle)
+target_link_libraries(umappp INTERFACE knncolle aarand)
 
 target_link_libraries(umappp INTERFACE Spectra)
 

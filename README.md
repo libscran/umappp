@@ -88,6 +88,7 @@ Note that this requires the additional dependencies listed in `extern`:
 - The [**Spectra**](https://github.com/yixuan/spectra) library for eigenvalue computations.
 - The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
 If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `UMAPPP_CUSTOM_NEIGHBORS` macro.
+- The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
 
 ## References
 

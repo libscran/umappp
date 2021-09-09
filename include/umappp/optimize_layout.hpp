@@ -1,14 +1,13 @@
 #ifndef UMAPPP_OPTIMIZE_LAYOUT_HPP
 #define UMAPPP_OPTIMIZE_LAYOUT_HPP
 
-#include <random>
-#include <cstdint>
 #include <vector>
 #include <limits>
 #include <algorithm>
 #include <cmath>
 
 #include "NeighborList.hpp"
+#include "aarand/aarand.hpp"
 
 namespace umappp {
 
@@ -100,13 +99,6 @@ inline void optimize_layout(
     constexpr double min_gradient = -4;
     constexpr double max_gradient = 4;
 
-    // Defining Rng-related constants.
-    static_assert(std::remove_reference<decltype(rng)>::type::min() == 0);
-    auto limit = rng.max();
-    if (limit % num_obs != num_obs - 1) {
-        limit -= limit % num_obs + 1; 
-    }
-    
     for (; n < limit_epochs; ++n) {
         const double alpha = initial_alpha * (1.0 - static_cast<double>(n) / num_epochs);
 
@@ -146,12 +138,7 @@ inline void optimize_layout(
                 const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
-                    // Correctly sample in the uniform range.
-                    auto draw = rng();
-                    while (draw > limit) {
-                        draw = rng();
-                    }
-                    size_t sampled = (draw % num_obs); 
+                    size_t sampled = aarand::discrete_uniform(rng, num_obs); 
                     if (sampled == i) {
                         continue;
                     }

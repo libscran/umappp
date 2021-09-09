@@ -12,6 +12,7 @@
 
 #include "find_components.hpp"
 #include "NeighborList.hpp"
+#include "aarand/aarand.hpp"
 
 namespace umappp {
 
@@ -83,11 +84,10 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
         // Falling back to random initialization.
         Eigen::MatrixXd output(order, ndim);
         std::mt19937_64 rng(1234567890);
-        std::uniform_real_distribution<> dist(0, 1);
 
         auto outptr = output.data();
         for (size_t i = 0; i < order * ndim; ++i) {
-            outptr[i] = dist(rng);
+            outptr[i] = aarand::standard_uniform(rng) * 20 - 10; // values from (-10, 10).
         }
         return output;
     }
