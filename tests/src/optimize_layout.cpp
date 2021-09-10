@@ -40,6 +40,8 @@ protected:
     std::vector<std::vector<std::pair<int, double> > > stored;
 };
 
+#ifndef _OPENMP
+
 TEST_P(OptimizeTest, Epochs) {
     assemble(GetParam());
     stored[0][0].second = 1e-8; // check for correct removal.
@@ -90,6 +92,31 @@ TEST_P(OptimizeTest, RestartedRun) {
 
     EXPECT_EQ(embedding, embedding2);
 }
+
+#else 
+
+TEST_P(OptimizeTest, Parallelized) {
+    assemble(GetParam());
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+
+    std::vector<double> embedding1(data);
+    {
+        std::mt19937_64 rng(10);
+        auto epoch_copy = epoch;
+        umappp::optimize_layout(5, embedding1.data(), epoch_copy, 2, 1, 1, 1, rng, 0);
+    }
+
+    std::vector<double> embedding2(data);
+    {
+        std::mt19937_64 rng(10);
+        auto epoch_copy = epoch;
+        umappp::optimize_layout_parallel(5, embedding2.data(), epoch_copy, 2, 1, 1, 1, rng, 0);
+    }
+
+    EXPECT_EQ(embedding1, embedding2); 
+}
+
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     Optimize,

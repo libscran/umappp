@@ -183,19 +183,19 @@ inline void optimize_layout(
 #ifdef _OPENMP
 struct Lock {
     Lock() {
-        omp_init_lock(lock);
+        omp_init_nest_lock(&lock_);
     }
     ~Lock() {
-        omp_destroy_lock(&lock);
+        omp_destroy_nest_lock(&lock_);
     }
     void lock() {
-        omp_set_lock(&lock);
+        omp_set_nest_lock(&lock_);
     }
     void unlock() {
-        omp_unset_lock(&lock);
+        omp_unset_nest_lock(&lock_);
     }
 private:
-    omp_lock_t lock;
+    omp_nest_lock_t lock_;
 };
 
 template<class Setup, class Rng>
@@ -232,7 +232,7 @@ inline void optimize_layout_parallel(
     constexpr double max_gradient = 4;
 
     Lock glock;
-    std::vector<Lock> olock(num_obs);
+    std::vector<Lock> olocks(num_obs * omp_get_max_threads());
 
     for (; n < limit_epochs; ++n) {
         const double alpha = initial_alpha * (1.0 - static_cast<double>(n) / num_epochs);
@@ -242,11 +242,22 @@ inline void optimize_layout_parallel(
         {
             std::vector<std::pair<size_t, size_t> > tails;
             std::vector<size_t> random_draws;
-            std::vector<int> encountered(num_obs);
+            std::vector<double> head(ndim);
+            double * left = head.data();
+            int nthreads = omp_get_num_threads();
+            int curthread = omp_get_thread_num();
 
             while (1) {
+                tails.clear();
+                random_draws.clear();
+
                 size_t i;
-                {
+                { 
+                    /* Serial block: each thread picks up the latest job. As
+                     * only one thread can add locks at any given time, this is
+                     * safe in terms of both race conditions and deadlocks. It 
+                     * also ensures that random numbers are drawn in sequence.
+                     */
                     glock.lock(); 
                     if (i_ == setup.head.size()) {
                         glock.unlock();
@@ -255,24 +266,27 @@ inline void optimize_layout_parallel(
 
                     i = i_;
                     ++i_;
+                    {
+                        size_t x = i * nthreads;
+                        for (int l = 0; l < nthreads; ++l, ++x) {
+                            olocks[x].lock();
+                        }
+                    }
 
                     size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-
-                    olocks[i].lock();
-                    tails.clear();
-                    random_draws.clear();
-
                     for (size_t j = start; j < end; ++j) {
                         if (epoch_of_next_sample[j] > n) {
                             continue;
                         }
 
                         auto other = setup.tail[j];
-                        if (!encountered[other]) {
-                            olocks[other].lock();
+                        {
+                            size_t x = other * nthreads;
+                            for (int l = 0; l < nthreads; ++l, ++x) {
+                                olocks[x].lock();
+                            }
                         }
-                        ++encountered[other];
-               
+ 
                         const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
                         for (size_t p = 0; p < num_neg_samples; ++p) {
                             size_t sampled = aarand::discrete_uniform(rng, num_obs); 
@@ -281,25 +295,23 @@ inline void optimize_layout_parallel(
                             }
 
                             random_draws.push_back(sampled);
-                            if (!encountered[sampled]) {
-                                olocks[sampled].lock();
-                            }
-                            ++encountered[sampled];
+                            olocks[sampled * nthreads + curthread].lock();
                         }
 
                         tails.emplace_back(other, random_draws.size());
-
-                        // Sticking all epoch operations here for consistency.
                         epoch_of_next_sample[j] += epochs_per_sample[j];
                         epoch_of_next_negative_sample[j] = n;
                     }
+
                     glock.unlock(); 
                 }
 
-                double* left = embedding + i * ndim;
+                // Making a local copy, avoid problems with false sharing.
+                double* original_left = embedding + i * ndim;
+                std::copy(original_left, original_left + ndim, left);
                 size_t previous_random = 0;
 
-                for (auto current : tails) {              
+                for (auto current : tails) {
                     double dist2 = 0;
                     double* right = embedding + current.first * ndim;
                     {
@@ -323,9 +335,11 @@ inline void optimize_layout_parallel(
                         }
                     }
 
-                    --encountered[current.first];
-                    if (!encountered[current.first]) {
-                        olocks[current.first].unlock();
+                    {
+                        size_t x = current.first * nthreads;
+                        for (int l = 0; l < nthreads; ++l, ++x) {
+                            olocks[x].unlock();
+                        }
                     }
 
                     while (previous_random < current.second) {
@@ -350,16 +364,19 @@ inline void optimize_layout_parallel(
                             }
                         }
 
-                        --encountered[sampled];
-                        if (encountered[sampled] == 0) {
-                            olocks[sampled].unlock();
-                        }
+                        olocks[sampled * nthreads + curthread].unlock();
 
                         ++previous_random;
                     }
                 }
 
-                olocks[i].unlock();
+                std::copy(left, left + ndim, original_left);
+                {
+                    size_t x = i * nthreads;
+                    for (int l = 0; l < nthreads; ++l, ++x) {
+                        olocks[x].unlock();
+                    }
+                }
             }
         }
     }
