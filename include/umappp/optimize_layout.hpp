@@ -181,25 +181,8 @@ inline void optimize_layout(
 }
 
 #ifdef _OPENMP
-struct Lock {
-    Lock() {
-        omp_init_nest_lock(&lock_);
-    }
-    ~Lock() {
-        omp_destroy_nest_lock(&lock_);
-    }
-    void lock() {
-        omp_set_nest_lock(&lock_);
-    }
-    void unlock() {
-        omp_unset_nest_lock(&lock_);
-    }
-private:
-    omp_nest_lock_t lock_;
-};
-
-template<class Setup, class Rng>
-inline void optimize_layout_parallel(
+template<class Setup, class SeedFunction, class EngineFunction>
+inline void optimize_layout_batched(
     int ndim,
     double* embedding, 
     Setup& setup,
@@ -207,7 +190,8 @@ inline void optimize_layout_parallel(
     double b, 
     double gamma,
     double initial_alpha,
-    Rng& rng,
+    SeedFunction seeder,
+    EngineFunction creator,
     int epoch_limit
 ) {
     auto& n = setup.current_epoch;
@@ -231,89 +215,75 @@ inline void optimize_layout_parallel(
     constexpr double min_gradient = -4;
     constexpr double max_gradient = 4;
 
-    Lock glock;
-    std::vector<Lock> olocks(num_obs * omp_get_max_threads());
+    std::vector<decltype(seeder())> seeds(num_obs);
+    std::vector<double> replace_buffer(num_obs * ndim);
+    double* replacement = replace_buffer.data();
+    bool using_replacement = false;
 
     for (; n < limit_epochs; ++n) {
         const double alpha = initial_alpha * (1.0 - static_cast<double>(n) / num_epochs);
-        size_t i_ = 0;
 
-        #pragma omp parallel
-        {
-            std::vector<std::pair<size_t, size_t> > tails;
-            std::vector<size_t> random_draws;
-            std::vector<double> head(ndim);
-            double * left = head.data();
-            int nthreads = omp_get_num_threads();
-            int curthread = omp_get_thread_num();
+        // Fill the seeds.
+        for (auto& s : seeds) {
+            s = seeder();
+        }
 
-            while (1) {
-                tails.clear();
-                random_draws.clear();
+        // Input and outputs alternate between epochs, to avoid the need for a
+        // copy operation on the entire embedding at the end of each epoch.
+        const double* reference = (using_replacement ? replacement : embedding); 
+        double* output = (using_replacement ? embedding : replacement);
+        using_replacement = !using_replacement;
 
-                size_t i;
-                { 
-                    /* Serial block: each thread picks up the latest job. As
-                     * only one thread can add locks at any given time, this is
-                     * safe in terms of both race conditions and deadlocks. It 
-                     * also ensures that random numbers are drawn in sequence.
-                     */
-                    glock.lock(); 
-                    if (i_ == setup.head.size()) {
-                        glock.unlock();
-                        break;
-                    }
+        #pragma omp parallel for
+        for (size_t i = 0; i < setup.head.size(); ++i) {
+            auto localrng = creator(seeds[i]);
+            size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
 
-                    i = i_;
-                    ++i_;
-                    {
-                        size_t x = i * nthreads;
-                        for (int l = 0; l < nthreads; ++l, ++x) {
-                            olocks[x].lock();
-                        }
-                    }
+            // Making a local copy to avoid false sharing.
+            const double* left = reference + i * ndim;
+            std::vector<double> buffer(left, left + ndim);
 
-                    size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-                    for (size_t j = start; j < end; ++j) {
-                        if (epoch_of_next_sample[j] > n) {
-                            continue;
-                        }
-
-                        auto other = setup.tail[j];
-                        {
-                            size_t x = other * nthreads;
-                            for (int l = 0; l < nthreads; ++l, ++x) {
-                                olocks[x].lock();
-                            }
-                        }
- 
-                        const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
-                        for (size_t p = 0; p < num_neg_samples; ++p) {
-                            size_t sampled = aarand::discrete_uniform(rng, num_obs); 
-                            if (sampled == i) {
-                                continue;
-                            }
-
-                            random_draws.push_back(sampled);
-                            olocks[sampled * nthreads + curthread].lock();
-                        }
-
-                        tails.emplace_back(other, random_draws.size());
-                        epoch_of_next_sample[j] += epochs_per_sample[j];
-                        epoch_of_next_negative_sample[j] = n;
-                    }
-
-                    glock.unlock(); 
+            for (size_t j = start; j < end; ++j) {
+                if (epoch_of_next_sample[j] > n) {
+                    continue;
                 }
 
-                // Making a local copy, avoid problems with false sharing.
-                double* original_left = embedding + i * ndim;
-                std::copy(original_left, original_left + ndim, left);
-                size_t previous_random = 0;
+                double dist2 = 0;
+                const double* right = reference + setup.tail[j] * ndim;
+                {
+                    const double* lcopy = left;
+                    const double* rcopy = right;
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
+                        dist2 += (*lcopy - *rcopy) * (*lcopy - *rcopy);
+                    }
+                    dist2 = std::max(dist_eps, dist2);
+                }
 
-                for (auto current : tails) {
+                const double pd2b = std::pow(dist2, b);
+                const double grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+                {
+                    double* lcopy = buffer.data();
+                    const double* rcopy = right;
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
+                        double gradient = alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
+
+                        // Doubling as we'll assume symmetry from the same
+                        // force applied by the right node. This allows us to
+                        // avoid worrying about accounting for modifications to
+                        // the right node.
+                        *lcopy += 2 * gradient; 
+                    }
+                }
+
+                const size_t num_neg_samples = (n - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
+                for (size_t p = 0; p < num_neg_samples; ++p) {
+                    size_t sampled = aarand::discrete_uniform(localrng, num_obs); 
+                    if (sampled == i) {
+                        continue;
+                    }
+
                     double dist2 = 0;
-                    double* right = embedding + current.first * ndim;
+                    const double* right = reference + sampled * ndim;
                     {
                         const double* lcopy = left;
                         const double* rcopy = right;
@@ -323,67 +293,30 @@ inline void optimize_layout_parallel(
                         dist2 = std::max(dist_eps, dist2);
                     }
 
-                    const double pd2b = std::pow(dist2, b);
-                    const double grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+                    const double grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
                     {
-                        double* lcopy = left;
-                        double* rcopy = right;
+                        double* lcopy = buffer.data();
+                        const double* rcopy = right;
                         for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
-                            double gradient = alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
-                            *lcopy += gradient;
-                            *rcopy -= gradient;
+                            *lcopy += alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
                         }
-                    }
-
-                    {
-                        size_t x = current.first * nthreads;
-                        for (int l = 0; l < nthreads; ++l, ++x) {
-                            olocks[x].unlock();
-                        }
-                    }
-
-                    while (previous_random < current.second) {
-                        size_t sampled = random_draws[previous_random];
-                        double dist2 = 0;
-                        double* right = embedding + sampled * ndim;
-                        {
-                            const double* lcopy = left;
-                            const double* rcopy = right;
-                            for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
-                                dist2 += (*lcopy - *rcopy) * (*lcopy - *rcopy);
-                            }
-                            dist2 = std::max(dist_eps, dist2);
-                        }
-
-                        const double grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
-                        {
-                            double* lcopy = left;
-                            const double* rcopy = right;
-                            for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
-                                *lcopy += alpha * std::min(std::max(grad_coef * (*lcopy - *rcopy), min_gradient), max_gradient);
-                            }
-                        }
-
-                        olocks[sampled * nthreads + curthread].unlock();
-
-                        ++previous_random;
                     }
                 }
 
-                std::copy(left, left + ndim, original_left);
-                {
-                    size_t x = i * nthreads;
-                    for (int l = 0; l < nthreads; ++l, ++x) {
-                        olocks[x].unlock();
-                    }
-                }
+                epoch_of_next_sample[j] += epochs_per_sample[j];
+                epoch_of_next_negative_sample[j] = n;
             }
+
+            std::copy(buffer.begin(), buffer.end(), output + i * ndim);
         }
+    }
+
+    if (using_replacement) {
+        std::copy(replace_buffer.begin(), replace_buffer.end(), embedding);
     }
 
     return;
 }
-
 #endif
 
 }
