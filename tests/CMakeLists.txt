@@ -32,16 +32,6 @@ add_executable(
     src/optimize_layout.cpp
 )
 
-target_link_libraries(
-    partest
-    PRIVATE
-    gtest_main
-    umappp
-)
-
-find_package(OpenMP REQUIRED)
-target_link_libraries(partest PRIVATE OpenMP::OpenMP_CXX)
-
 set(CODE_COVERAGE "Enable coverage testing" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(libtest PRIVATE -O0 -g --coverage)
@@ -51,4 +41,4 @@ endif()
 include(GoogleTest)
 gtest_discover_tests(libtest)
 
-add_test(NAME umappp_tests COMMAND libtest partest)
+add_test(NAME umappp_tests COMMAND libtest)
