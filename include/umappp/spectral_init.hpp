@@ -76,7 +76,8 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
 //    eigs.compute(Spectra::SortRule::LargestMagn);
 
     if (eigs.info() == Spectra::CompInfo::Successful) {
-        return eigs.eigenvectors().leftCols(ndim);
+//        return eigs.eigenvectors().leftCols(ndim);
+        return eigs.eigenvectors().rightCols(ndim);
 
     } else {
         size_t order = which.size();
