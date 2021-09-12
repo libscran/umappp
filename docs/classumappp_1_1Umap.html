@@ -120,6 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7c205edb9dd29119497db28ad8c79d28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa871977f1c5abae121127773d2de2a0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#aa871977f1c5abae121127773d2de2a0d">set_seed</a> (uint64_t s=<a class="el" href="structumappp_1_1Umap_1_1Defaults.html#aa0ae2912d36f8161248faa87e8e5cdf2">Defaults::seed</a>)</td></tr>
 <tr class="separator:aa871977f1c5abae121127773d2de2a0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa78067fa60f20c4013c465b8f72d4c47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#aa78067fa60f20c4013c465b8f72d4c47">set_batch</a> (bool b=<a class="el" href="structumappp_1_1Umap_1_1Defaults.html#a8eb451bacc4dd65c97ab20e46bc45fa1">Defaults::batch</a>)</td></tr>
+<tr class="separator:aa78067fa60f20c4013c465b8f72d4c47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a612ca0310d865a625f50e75399b9f8a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structumappp_1_1Umap_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#a612ca0310d865a625f50e75399b9f8a2">initialize</a> (<a class="el" href="NeighborList_8hpp.html#a8842754051eeb4c3175270ac4957e1d4">NeighborList</a> x, int ndim, double *embedding) const</td></tr>
 <tr class="separator:a612ca0310d865a625f50e75399b9f8a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74664a7a63e6b3d37a3198e95525e323"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#a74664a7a63e6b3d37a3198e95525e323">run</a> (<a class="el" href="structumappp_1_1Umap_1_1Status.html">Status</a> &amp;s, int ndim, double *embedding, int epoch_limit=0) const</td></tr>
@@ -687,6 +689,40 @@ template&lt;typename Input  = double&gt; </div>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object. </dd></dl>
+
+</div>
+</div>
+<a id="aa78067fa60f20c4013c465b8f72d4c47" name="aa78067fa60f20c4013c465b8f72d4c47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa78067fa60f20c4013c465b8f72d4c47">&#9670;&nbsp;</a></span>set_batch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp; umappp::Umap::set_batch </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em> = <code><a class="el" href="structumappp_1_1Umap_1_1Defaults.html#a8eb451bacc4dd65c97ab20e46bc45fa1">Defaults::batch</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td>Whether to optimize in batch mode. Batch mode is required for effective parallelization via OpenMP but may reduce the stability of the gradient descent.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Batch mode involves computing forces for all observations and applying them simultaneously. This is in contrast to the default where the location of observation is updated before the forces are computed for the next observation. As each observation's forces are computed independently, batch mode is more amenable to parallelization; however, this comes at the cost of stability as the force calculations for later observations are not aware of updates to the positions of earlier observations.</p>
 <dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object. </dd></dl>
 
 </div>
