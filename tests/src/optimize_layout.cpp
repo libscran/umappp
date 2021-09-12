@@ -91,6 +91,16 @@ TEST_P(OptimizeTest, RestartedRun) {
     EXPECT_EQ(embedding, embedding2);
 }
 
+TEST_P(OptimizeTest, Batched) {
+    assemble(GetParam());
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+
+    std::vector<double> embedding(data);
+    umappp::optimize_layout_batched(5, embedding.data(), epoch, 2, 1, 1, 1, std::mt19937_64(10), [](uint64_t s) -> auto { return std::mt19937_64(s); }, 0);
+
+    EXPECT_NE(embedding, data); // some kind of change happened!
+}
+
 INSTANTIATE_TEST_SUITE_P(
     Optimize,
     OptimizeTest,

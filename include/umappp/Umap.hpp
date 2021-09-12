@@ -112,6 +112,11 @@ public:
          * See `set_seed()`.
          */
         static constexpr uint64_t seed = 1234567890;
+
+        /**
+         * See `set_batch()`.
+         */
+        static constexpr bool batch = false;
     };
 
 private:
@@ -142,6 +147,8 @@ private:
     int num_neighbors = Defaults::num_neighbors;
 
     uint64_t seed = Defaults::seed;
+
+    bool batch = Defaults::batch;
 
 public:
     /**
@@ -305,6 +312,22 @@ public:
         return *this;
     }
 
+    /**
+     * @param b Whether to optimize in batch mode. 
+     * Batch mode is required for effective parallelization via OpenMP but may reduce the stability of the gradient descent. 
+     *
+     * Batch mode involves computing forces for all observations and applying them simultaneously.
+     * This is in contrast to the default where the location of observation is updated before the forces are computed for the next observation.
+     * As each observation's forces are computed independently, batch mode is more amenable to parallelization;
+     * however, this comes at the cost of stability as the force calculations for later observations are not aware of updates to the positions of earlier observations.
+     *
+     * @return A reference to this `Umap` object.
+     */
+    Umap& set_batch(bool b = Defaults::batch) {
+        batch = b;
+        return *this;
+    }
+
 public:
     /**
      * @brief Status of the UMAP optimization iterations.
@@ -378,17 +401,33 @@ public:
      * @return `s` and `embedding` are updated for the given number of epochs. 
      */
     void run(Status& s, int ndim, double* embedding, int epoch_limit = 0) const {
-        optimize_layout(
-            ndim,
-            embedding,
-            s.epochs,
-            s.a,
-            s.b,
-            repulsion_strength,
-            learning_rate,
-            s.engine,
-            epoch_limit
-        );
+        if (!batch) {
+            optimize_layout(
+                ndim,
+                embedding,
+                s.epochs,
+                s.a,
+                s.b,
+                repulsion_strength,
+                learning_rate,
+                s.engine,
+                epoch_limit
+            );
+        } else {
+            optimize_layout_batched(
+                ndim,
+                embedding,
+                s.epochs,
+                s.a,
+                s.b,
+                repulsion_strength,
+                learning_rate,
+                [&]() -> auto { return s.engine(); },
+                [](decltype(s.engine()) s) -> auto { return std::mt19937_64(s); },
+                epoch_limit
+            );
+
+        }
         return;
     }
 
