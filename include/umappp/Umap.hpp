@@ -351,6 +351,14 @@ public:
         int epoch() const {
             return epochs.current_epoch;
         }
+
+        /**
+         * @return Total number of epochs.
+         * This is equal to the value set by `set_num_epochs()` when the `Status` object is created.
+         */
+        int num_epochs() const {
+            return epochs.total_epochs;
+        }
     };
 
     /** 
