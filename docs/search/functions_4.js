@@ -4,7 +4,7 @@ var searchData=
   ['set_5fb_1',['set_b',['../classumappp_1_1Umap.html#a1a0ab752b64991caef1d3bc066dce130',1,'umappp::Umap']]],
   ['set_5fbandwidth_2',['set_bandwidth',['../classumappp_1_1Umap.html#adfcaae58dddb0c58ab6cd2ce9c072f99',1,'umappp::Umap']]],
   ['set_5fbatch_3',['set_batch',['../classumappp_1_1Umap.html#aa78067fa60f20c4013c465b8f72d4c47',1,'umappp::Umap']]],
-  ['set_5finitialize_4',['set_initialize',['../classumappp_1_1Umap.html#a5d86c1f0ddb93b34e3bd962c10a227d7',1,'umappp::Umap']]],
+  ['set_5finitialize_4',['set_initialize',['../classumappp_1_1Umap.html#a0cfb9d00e2120c61dcf0f6473d5e4cc2',1,'umappp::Umap']]],
   ['set_5flearning_5frate_5',['set_learning_rate',['../classumappp_1_1Umap.html#a6e00177b0a9fb3504f4ea26e150c798d',1,'umappp::Umap']]],
   ['set_5flocal_5fconnectivity_6',['set_local_connectivity',['../classumappp_1_1Umap.html#a726a5b2e316c7bd68e3bdf400ca99698',1,'umappp::Umap']]],
   ['set_5fmin_5fdist_7',['set_min_dist',['../classumappp_1_1Umap.html#a3e973c38e21f45f8205def7126673be4',1,'umappp::Umap']]],
