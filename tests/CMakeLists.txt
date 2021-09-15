@@ -12,7 +12,6 @@ enable_testing()
 
 add_executable(
     libtest 
-    src/find_components.cpp
     src/spectral_init.cpp
     src/combine_neighbor_sets.cpp
     src/neighbor_similarities.cpp

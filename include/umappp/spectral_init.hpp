@@ -2,15 +2,15 @@
 #define UMAPPP_SPECTRAL_INIT_HPP
 
 #include "Spectra/SymEigsSolver.h"
-//#include "Spectra/SymEigsShiftSolver.h"
 #include "Spectra/MatOp/SparseSymMatProd.h"
+//#include "Spectra/SymEigsShiftSolver.h"
+//#include "Spectra/MatOp/SparseSymShiftSolve.h"
 #include "Eigen/Sparse"
 
 #include <vector>
 #include <random>
 #include <algorithm>
 
-#include "find_components.hpp"
 #include "NeighborList.hpp"
 #include "aarand/aarand.hpp"
 
@@ -19,39 +19,33 @@ namespace umappp {
 /* Peeled from the function of the same name in the uwot package,
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
  */
-inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edges, const ComponentIndices& comp_info, int component, int ndim) {
-    const auto& which = comp_info.reversed[component];
-    const auto& indices = comp_info.new_indices;
+inline bool normalized_laplacian(const NeighborList& edges, int ndim, double* Y) {
+    std::vector<double> sums(edges.size());
+    std::vector<int> sizes(edges.size());
 
-    std::vector<double> sums(which.size());
-    for (size_t c = 0; c < which.size(); ++c) {
-        const auto& current = edges[which[c]];
+    for (size_t c = 0; c < edges.size(); ++c) {
+        const auto& current = edges[c];
+        int& count = sizes[c];
         double& sum = sums[c];
+
         for (const auto& f : current) {
             sum += f.second;
+            count += (f.first <= c);
         }
         sum = std::sqrt(sum);
     }
 
     // Creating a normalized sparse matrix.
-    Eigen::SparseMatrix<double> mat(which.size(), which.size());
-    {
-        std::vector<int> sizes(which.size());
-        for (size_t c = 0; c < which.size(); ++c) {
-            const auto& current = edges[which[c]];
-            sizes[c] = current.size();
-        }
-        mat.reserve(sizes);
-    }
+    Eigen::SparseMatrix<double> mat(edges.size(), edges.size());
+    mat.reserve(sizes);
 
-    for (size_t c = 0; c < which.size(); ++c) {
-        const auto& current = edges[which[c]]; 
+    for (size_t c = 0; c < edges.size(); ++c) {
+        const auto& current = edges[c]; 
         for (const auto& f : current) {
-            auto new_index = indices[f.first];
-            if (c < new_index) { // upper-triangular only.
+            if (c < f.first) { // upper-triangular only.
                 break;
             }
-            mat.insert(new_index, c) = -f.second / sums[new_index] / sums[c];
+            mat.insert(f.first, c) = -f.second / sums[f.first] / sums[c];
         }
         mat.insert(c, c) = 1;
     }
@@ -70,49 +64,72 @@ inline Eigen::MatrixXd normalized_laplacian_by_component(const NeighborList& edg
     eigs.compute(Spectra::SortRule::SmallestMagn);
 
 //    Spectra::SparseSymShiftSolve<double, Eigen::Upper> op(mat);
-//    Spectra::SymEigsShiftSolver<Spectra::SparseSymShiftSolve<double, Eigen::Upper> > eigs(op, nev, ncv, 0.0); 
+//    Spectra::SymEigsShiftSolver<Spectra::SparseSymShiftSolve<double, Eigen::Upper> > eigs(op, nev, ncv, -0.001); // see https://github.com/yixuan/spectra/issues/126
 //
 //    eigs.init();
 //    eigs.compute(Spectra::SortRule::LargestMagn);
 
-    if (eigs.info() == Spectra::CompInfo::Successful) {
-//        return eigs.eigenvectors().leftCols(ndim);
-        return eigs.eigenvectors().rightCols(ndim);
-
-    } else {
-        size_t order = which.size();
-
-        // Falling back to random initialization.
-        Eigen::MatrixXd output(order, ndim);
-        std::mt19937_64 rng(1234567890);
-
-        auto outptr = output.data();
-        for (size_t i = 0; i < order * ndim; ++i) {
-            outptr[i] = aarand::standard_uniform(rng) * 20 - 10; // values from (-10, 10).
-        }
-        return output;
+    if (eigs.info() != Spectra::CompInfo::Successful) {
+        return false;
     }
+
+    auto ev = eigs.eigenvectors().rightCols(ndim); 
+
+    // Getting the maximum value; this is assumed to be non-zero,
+    // otherwise this entire thing is futile.
+    const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
+    const double expansion = (max_val > 0 ? 10 / max_val : 1);
+
+    for (size_t c = 0; c < edges.size(); ++c) {
+        size_t offset = c * ndim;
+        for (int d = 0; d < ndim; ++d) {
+            Y[offset + d] = ev(c, d) * expansion; // TODO: put back the jitter step.
+        }
+    }
+    return true;
 }
 
-inline void spectral_init(const NeighborList& edges, int ndim, double * vals) {
-    auto mapping = find_components(edges);
+inline bool has_multiple_components(const NeighborList& edges) {
+    if (!edges.size()) {
+        return false;
+    }
 
-    for (size_t c = 0; c < mapping.ncomponents(); ++c) {
-        auto eigs = normalized_laplacian_by_component(edges, mapping, c, ndim);
-        const auto& reversed = mapping.reversed[c];
+    size_t in_component = 1;
+    std::vector<int> remaining(1, 0);
+    std::vector<int> mapping(edges.size(), -1);
+    mapping[0] = 0;
 
-        // Getting the maximum value; this is assumed to be non-zero,
-        // otherwise this entire thing is futile.
-        const double max_val = std::max(std::abs(eigs.minCoeff()), std::abs(eigs.maxCoeff()));
-        const double expansion = (max_val > 0 ? 10 / max_val : 1);
+    do {
+        int curfriend = remaining.back();
+        remaining.pop_back();
 
-        for (size_t r = 0; r < reversed.size(); ++r) {
-            size_t offset = reversed[r] * ndim;
-            for (int d = 0; d < ndim; ++d) {
-                vals[offset + d] = eigs(r, d) * expansion; // TODO: put back the jitter step.
+        for (const auto& ff : edges[curfriend]) {
+            if (mapping[ff.first] == -1) {
+                remaining.push_back(ff.first);
+                mapping[ff.first] = 0;
+                ++in_component;
             }
         }
+    } while (remaining.size());
+
+    return in_component != edges.size();
+}
+
+inline bool spectral_init(const NeighborList& edges, int ndim, double * vals) {
+    if (!has_multiple_components(edges)) {
+        if (normalized_laplacian(edges, ndim, vals)) {
+            return true;
+        }
     }
+    return false;
+}
+
+inline void random_init(size_t nobs, int ndim, double * vals) {
+    std::mt19937_64 rng(nobs * ndim); // for a bit of deterministic variety.
+    for (size_t i = 0; i < nobs * ndim; ++i) {
+        vals[i] = aarand::standard_uniform(rng) * 20 - 10; // values from (-10, 10).
+    }
+    return;
 }
 
 }

@@ -34,7 +34,7 @@ TEST_P(SpectralInitTest, Basic) {
     std::vector<double> output(ndim * order);
 
     auto edges = mock(order);
-    umappp::spectral_init(edges, ndim, output.data());
+    EXPECT_TRUE(umappp::spectral_init(edges, ndim, output.data()));
 
     for (auto o : output) { // filled with _something_.
         EXPECT_TRUE(o != 0);
@@ -47,12 +47,7 @@ TEST_P(SpectralInitTest, MultiComponents) {
     int ndim = std::get<1>(p);
 
     auto edges1 = mock(order);
-    std::vector<double> out1(edges1.size() * ndim);
-    umappp::spectral_init(edges1, ndim, out1.data());
-
     auto edges2 = mock(order * 2);
-    std::vector<double> out2(edges2.size() * ndim);
-    umappp::spectral_init(edges2, ndim, out2.data());
 
     // Combining the components.
     auto edges = edges1;
@@ -63,68 +58,8 @@ TEST_P(SpectralInitTest, MultiComponents) {
         }
     }
 
-    std::vector<double> output(out1.size() + out2.size());
-    umappp::spectral_init(edges, ndim, output.data());
-
-    EXPECT_EQ(out1, std::vector<double>(output.begin(), output.begin() + out1.size()));
-    EXPECT_EQ(out2, std::vector<double>(output.begin() + out1.size(), output.end()));
-}
-
-TEST_P(SpectralInitTest, MultiComponentsInterspersed) {
-    auto p = GetParam();
-    int order = std::get<0>(p);
-    int ndim = std::get<1>(p);
-
-    auto edges1 = mock(order);
-    std::vector<double> out1(edges1.size() * ndim);
-    umappp::spectral_init(edges1, ndim, out1.data());
-
-    auto edges2 = mock(order);
-    std::vector<double> out2(edges2.size() * ndim);
-    umappp::spectral_init(edges2, ndim, out2.data());
-
-    auto edges3 = mock(order);
-    std::vector<double> out3(edges3.size() * ndim);
-    umappp::spectral_init(edges3, ndim, out3.data());
-
-    // Interspersing the components.
-    umappp::NeighborList edges;
-    for (int o = 0; o < order; ++o) {
-        edges.push_back(edges1[o]);
-        for (auto& e : edges.back()) {
-            e.first *= 3;
-        }
-
-        edges.push_back(edges2[o]);
-        for (auto& e : edges.back()) {
-            e.first *= 3;
-            e.first += 1;
-        }
-
-        edges.push_back(edges3[o]);
-        for (auto& e : edges.back()) {
-            e.first *= 3;
-            e.first += 2;
-        }
-    }
-
-    std::vector<double> output(out1.size() + out2.size() + out3.size());
-    umappp::spectral_init(edges, ndim, output.data());
-
-    for (int o = 0; o < order; ++o) {
-        EXPECT_EQ(
-            std::vector<double>(out1.begin() + o * ndim, out1.begin() + (o + 1) * ndim), 
-            std::vector<double>(output.begin() + o * 3 * ndim, output.begin() + (o * 3 + 1) * ndim)
-        );
-        EXPECT_EQ(
-            std::vector<double>(out2.begin() + o * ndim, out2.begin() + (o + 1) * ndim), 
-            std::vector<double>(output.begin() + (o * 3 + 1) * ndim, output.begin() + (o * 3 + 2) * ndim)
-        );
-        EXPECT_EQ(
-            std::vector<double>(out3.begin() + o * ndim, out3.begin() + (o + 1) * ndim), 
-            std::vector<double>(output.begin() + (o * 3 + 2) * ndim, output.begin() + (o * 3 + 3) * ndim)
-        );
-    }
+    std::vector<double> output(edges1.size() + edges2.size());
+    EXPECT_FALSE(umappp::spectral_init(edges, ndim, output.data()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -135,3 +70,69 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(2, 5) // number of dimensions
     )
 );
+
+void symmetrize(umappp::NeighborList& x) {
+    std::vector<size_t> available;
+    available.reserve(x.size());
+    for (const auto& y : x) {
+        available.push_back(y.size());
+    }
+
+    for (size_t i = 0; i < x.size(); ++i) {
+        auto& current = x[i];
+        for (size_t j = 0; j < available[i]; ++j) {
+            x[current[j].first].emplace_back(i, current[j].second);
+        }
+    }
+    return;
+}
+
+TEST(ComponentTest, Simple) {
+    int order = 5;
+
+    umappp::NeighborList edges(order);
+    edges[4].emplace_back(0, 0.5);
+    edges[4].emplace_back(1, 0.5);
+    edges[3].emplace_back(2, 0.5);
+
+    auto copy = edges;
+    symmetrize(copy);
+    EXPECT_TRUE(umappp::has_multiple_components(copy));
+
+    // Merging into one component.
+    edges[3].emplace_back(1, 0.5);
+
+    copy = edges;
+    symmetrize(copy);
+    EXPECT_FALSE(umappp::has_multiple_components(copy));
+
+    {
+        int order = 5;
+        umappp::NeighborList edges(order);
+        EXPECT_TRUE(umappp::has_multiple_components(edges));
+
+        // Sticking in an edge to merge nodes.
+        edges[3].emplace_back(1, 0.5);
+
+        auto copy = edges;
+        symmetrize(copy);
+        EXPECT_TRUE(umappp::has_multiple_components(copy));
+    }
+        
+    {
+        int order = 6;
+
+        // Deliberately checking the case where one node splits into two,
+        // or two nodes merge into one, depending on whether we are 
+        // traversing in order of increasing or decreasing index.
+        umappp::NeighborList edges(order);
+        edges[4].emplace_back(2, 0.5);
+        edges[4].emplace_back(3, 0.5);
+
+        edges[5].emplace_back(1, 0.5);
+        edges[5].emplace_back(0, 0.5);
+
+        symmetrize(edges);
+        EXPECT_TRUE(umappp::has_multiple_components(edges));
+    }
+}

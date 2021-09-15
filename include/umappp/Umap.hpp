@@ -24,6 +24,18 @@
 namespace umappp {
 
 /**
+ * How should the initial coordinates of the embedding be obtained?
+ *
+ * - `SPECTRAL`: attempts initialization based on spectral decomposition of the graph Laplacian.
+ * If that fails, we fall back to random draws from a normal distribution.
+ * - `SPECTRAL_ONLY`: attempts spectral initialization as before,
+ * but if that fails, we use the existing values in the supplied embedding array.
+ * - `RANDOM`: fills the embedding with random draws from a normal distribution.
+ * - `NONE`: uses the existing values in the supplied embedding array.
+ */
+enum InitMethod { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };
+
+/**
  * @brief Wrapper class to run UMAP.
  *
  * The Uniform Manifold Approximation and Projection (UMAP) algorithm is an efficient dimensionality reduction method based on nearest neighbors.
@@ -86,7 +98,7 @@ public:
         /**
          * See `set_initialize()`.
          */
-        static constexpr bool initialize = true;
+        static constexpr InitMethod initialize = SPECTRAL;
 
         /**
          * See `set_num_epochs()`.
@@ -136,7 +148,7 @@ private:
 
     double repulsion_strength = Defaults::repulsion_strength;
 
-    bool init = Defaults::initialize;
+    InitMethod init = Defaults::initialize;
 
     int num_epochs = Defaults::num_epochs;
 
@@ -246,12 +258,12 @@ public:
     }
 
     /** 
-     * @param i Whether to initialize the embedding based on a spectral decomposition of the fuzzy set graph.
-     * If false, the existing coordinates provided to `run()` via `embedding` are directly used.
+     * @param i How to initialize the embedding, see `InitMethod` for more details.
+     * Some choices may use the existing coordinates provided to `run()` via the `embedding` argument.
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_initialize(bool i = Defaults::initialize) {
+    Umap& set_initialize(InitMethod i = Defaults::initialize) {
         init = i;
         return *this;
     }
@@ -364,20 +376,25 @@ public:
     /** 
      * @param x Indices and distances to the nearest neighbors for each observation.
      * @param ndim Number of dimensions of the embedding.
-     * @param[out] embedding Two-dimensional array to store the embedding, 
+     * @param[in, out] embedding Two-dimensional array to store the embedding, 
      * where rows are dimensions (`ndim`) and columns are observations (`x.size()`).
      *
      * @return A `Status` object containing the initial state of the UMAP algorithm, to be used in `run()`.
-     * If `set_initialize()` is true, `embedding` is filled with initial coordinates derived from the fuzzy set graph;
-     * otherwise it is ignored.
+     * If `set_initialize()` is `NONE` or if spectral initialization fails with `SPECTRAL_ONLY`, `embedding` should contain the initial coordinates and will not be altered;
+     * otherwise, it is filled with initial coordinates.
      */
     Status initialize(NeighborList x, int ndim, double* embedding) const {
         neighbor_similarities(x, local_connectivity, bandwidth);
         combine_neighbor_sets(x, mix_ratio);
 
-        // Running spectral initialization.
-        if (init) {
-            spectral_init(x, ndim, embedding);
+        // Choosing the manner of initialization.
+        if (init == SPECTRAL || init == SPECTRAL_ONLY) {
+            bool attempt = spectral_init(x, ndim, embedding);
+            if (!attempt && init == SPECTRAL) {
+                random_init(x.size(), ndim, embedding);
+            }
+        } else if (init == RANDOM) {
+            random_init(x.size(), ndim, embedding);
         }
 
         // Finding a good a/b pair.
@@ -444,7 +461,7 @@ public:
      * @param ndim Number of dimensions of the embedding.
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations.
      * This is filled with the final embedding on output.
-     * If `set_initialize()` is false, this is assumed to contain the initial coordinates on input.
+     * If `set_initialize()` is `NONE` or if spectral initialization fails with `SPECTRAL_ONLY`, `embedding` is assumed to contain the initial coordinates on input.
      * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()` - see `run()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
@@ -470,8 +487,8 @@ public:
      * where rows are dimensions (`ndim`) and columns are observations (`searcher->nobs()`).
      *
      * @return A `Status` object containing various pre-computed structures required for the epochs in `run()`.
-     * If `set_initialize()` is true, `embedding` is filled with initial coordinates derived from the fuzzy set graph;
-     * otherwise it is ignored.
+     * If `set_initialize()` is `NONE` or if spectral initialization fails with `SPECTRAL_ONLY`, `embedding` should contain the initial coordinates and will not be altered;
+     * otherwise, it is filled with initial coordinates.
      *
      * This differs from the other `run()` methods in that it will internally compute the nearest neighbors for each observation.
      * It will use vantage point trees for the search - see the other `initialize()` methods to specify a custom search algorithm.
@@ -492,7 +509,7 @@ public:
      * @param ndim_out Number of dimensions of the embedding.
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations (`searcher->nobs()`).
      * This is filled with the final embedding on output.
-     * If `set_initialize()` is false, this is assumed to contain the initial coordinates on input.
+     * If `set_initialize()` is `NONE` or if spectral initialization fails with `SPECTRAL_ONLY`, `embedding` is assumed to contain the initial coordinates on input.
      * @param epoch_limit Number of epochs to run to, from the current number of epochs in `s.epoch()` - see `run()`.
      * If zero, defaults to the maximum number of epochs in `set_num_epochs()`.
      *
