@@ -80,7 +80,7 @@ TEST_P(OptimizeTest, RestartedRun) {
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
     umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 100);
-    umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 400);
+    umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 500);
 
     // Same results from a full single run.
     std::vector<double> embedding2(data);
