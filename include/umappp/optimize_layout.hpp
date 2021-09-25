@@ -184,9 +184,10 @@ inline void optimize_layout(
     auto& n = setup.current_epoch;
     auto num_epochs = setup.total_epochs;
     auto limit_epochs = num_epochs;
-    if (limit_epochs > 0) {
-        limit_epochs = std::min(limit_epochs, num_epochs);
+    if (epoch_limit> 0) {
+        limit_epochs = std::min(epoch_limit, num_epochs);
     }
+
     for (; n < limit_epochs; ++n) {
         const double epoch = n;
         const double alpha = initial_alpha * (1.0 - epoch / num_epochs);
@@ -214,8 +215,8 @@ inline void optimize_layout_batched(
     auto& n = setup.current_epoch;
     auto num_epochs = setup.total_epochs;
     auto limit_epochs = num_epochs;
-    if (limit_epochs > 0) {
-        limit_epochs = std::min(limit_epochs, num_epochs);
+    if (epoch_limit > 0) {
+        limit_epochs = std::min(epoch_limit, num_epochs);
     }
 
     const size_t num_obs = setup.head.size(); 
