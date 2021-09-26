@@ -32,7 +32,9 @@ inline bool normalized_laplacian(const NeighborList& edges, int ndim, double* Y)
             sum += f.second;
             count += (f.first <= c);
         }
+
         sum = std::sqrt(sum);
+        ++count; // for self, assuming that f.first != c.
     }
 
     // Creating a normalized sparse matrix.
