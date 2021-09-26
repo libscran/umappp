@@ -23,7 +23,7 @@ rm -f Spectra
 ln -s build/_deps/spectra-src/include/Spectra .
 
 rm -f Eigen
-ln -s build/_deps/eigen-src/Eigen .
+ln -s build/_deps/eigen3-src/Eigen .
 
 rm -f aarand
 ln -s build/_deps/aarand-src/include/aarand .
