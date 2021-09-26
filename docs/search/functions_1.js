@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['initialize_0',['initialize',['../classumappp_1_1Umap.html#a612ca0310d865a625f50e75399b9f8a2',1,'umappp::Umap::initialize(NeighborList x, int ndim, double *embedding) const'],['../classumappp_1_1Umap.html#ab70f346d3af52292a07e1b670c41e192',1,'umappp::Umap::initialize(int ndim_in, size_t nobs, const Input *input, int ndim_out, double *embedding)'],['../classumappp_1_1Umap.html#a6594321fa233a3da200d61c662e3221e',1,'umappp::Umap::initialize(const Algorithm *searcher, int ndim, double *embedding)']]]
+  ['initialize_0',['initialize',['../classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82',1,'umappp::Umap::initialize(NeighborList&lt; Float &gt; x, int ndim, Float *embedding) const'],['../classumappp_1_1Umap.html#afbec2bbbfb96c03531912d41038d0076',1,'umappp::Umap::initialize(int ndim_in, size_t nobs, const Input *input, int ndim_out, Float *embedding)'],['../classumappp_1_1Umap.html#ae157eda918be0e83f3702fcbd48efc9d',1,'umappp::Umap::initialize(const Algorithm *searcher, int ndim, Float *embedding)']]]
 ];

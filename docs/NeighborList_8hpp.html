@@ -95,47 +95,65 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:aaa036d59856b34b4a9fa2dbaf14ed064"><td class="memItemLeft" align="right" valign="top">typedef std::pair&lt; int, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NeighborList_8hpp.html#aaa036d59856b34b4a9fa2dbaf14ed064">umappp::Neighbor</a></td></tr>
-<tr class="memdesc:aaa036d59856b34b4a9fa2dbaf14ed064"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neighbor specification based on index and distance.  <a href="NeighborList_8hpp.html#aaa036d59856b34b4a9fa2dbaf14ed064">More...</a><br /></td></tr>
-<tr class="separator:aaa036d59856b34b4a9fa2dbaf14ed064"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8842754051eeb4c3175270ac4957e1d4"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; std::vector&lt; Neighbor &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="NeighborList_8hpp.html#a8842754051eeb4c3175270ac4957e1d4">umappp::NeighborList</a></td></tr>
-<tr class="memdesc:a8842754051eeb4c3175270ac4957e1d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <a href="NeighborList_8hpp.html#a8842754051eeb4c3175270ac4957e1d4">More...</a><br /></td></tr>
-<tr class="separator:a8842754051eeb4c3175270ac4957e1d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a276ec7786ac002c8cd3faa096c2de846"><td class="memTemplParams" colspan="2">template&lt;typename Float  = double&gt; </td></tr>
+<tr class="memitem:a276ec7786ac002c8cd3faa096c2de846"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">umappp::Neighbor</a> = std::pair&lt; int, Float &gt;</td></tr>
+<tr class="memdesc:a276ec7786ac002c8cd3faa096c2de846"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neighbor specification based on index and distance.  <a href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">More...</a><br /></td></tr>
+<tr class="separator:a276ec7786ac002c8cd3faa096c2de846"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab5cd1cc7e9720f055ba2496f97d9172"><td class="memTemplParams" colspan="2">template&lt;typename Float  = double&gt; </td></tr>
+<tr class="memitem:aab5cd1cc7e9720f055ba2496f97d9172"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">umappp::NeighborList</a> = std::vector&lt; std::vector&lt; Neighbor&lt; Float &gt; &gt; &gt;</td></tr>
+<tr class="memdesc:aab5cd1cc7e9720f055ba2496f97d9172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <a href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">More...</a><br /></td></tr>
+<tr class="separator:aab5cd1cc7e9720f055ba2496f97d9172"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Defines the <code>NeighborList</code> typedef. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="aaa036d59856b34b4a9fa2dbaf14ed064" name="aaa036d59856b34b4a9fa2dbaf14ed064"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa036d59856b34b4a9fa2dbaf14ed064">&#9670;&nbsp;</a></span>Neighbor</h2>
+<a id="a276ec7786ac002c8cd3faa096c2de846" name="a276ec7786ac002c8cd3faa096c2de846"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a276ec7786ac002c8cd3faa096c2de846">&#9670;&nbsp;</a></span>Neighbor</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Float  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::pair&lt;int, double&gt; <a class="el" href="NeighborList_8hpp.html#aaa036d59856b34b4a9fa2dbaf14ed064">umappp::Neighbor</a></td>
+          <td class="memname">using <a class="el" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">umappp::Neighbor</a> = typedef std::pair&lt;int, Float&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Neighbor specification based on index and distance. </p>
-<p >The index refers to the position of the neighboring observation in the dataset. The statistic is used to store the distance to the neighbor. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Float</td><td>Floating-point type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The index refers to the position of the neighboring observation in the dataset. The statistic can store some statistic related to the neighbor, e.g., distance or probabilities. </p>
 
 </div>
 </div>
-<a id="a8842754051eeb4c3175270ac4957e1d4" name="a8842754051eeb4c3175270ac4957e1d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8842754051eeb4c3175270ac4957e1d4">&#9670;&nbsp;</a></span>NeighborList</h2>
+<a id="aab5cd1cc7e9720f055ba2496f97d9172" name="aab5cd1cc7e9720f055ba2496f97d9172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab5cd1cc7e9720f055ba2496f97d9172">&#9670;&nbsp;</a></span>NeighborList</h2>
 
 <div class="memitem">
 <div class="memproto">
+<div class="memtemplate">
+template&lt;typename Float  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::vector&lt;std::vector&lt;Neighbor&gt; &gt; <a class="el" href="NeighborList_8hpp.html#a8842754051eeb4c3175270ac4957e1d4">umappp::NeighborList</a></td>
+          <td class="memname">using <a class="el" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">umappp::NeighborList</a> = typedef std::vector&lt;std::vector&lt;Neighbor&lt;Float&gt; &gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Lists of neighbors for each observation. </p>
-<p >Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Float</td><td>Floating-point type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation. </p>
 
 </div>
 </div>
