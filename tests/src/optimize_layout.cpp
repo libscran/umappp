@@ -30,7 +30,7 @@ protected:
         }
 
         umappp::neighbor_similarities(stored);
-        umappp::combine_neighbor_sets(stored, 1);
+        umappp::combine_neighbor_sets(stored, 1.0);
         return;
     }
 
@@ -44,7 +44,7 @@ TEST_P(OptimizeTest, Epochs) {
     assemble(GetParam());
     stored[0][0].second = 1e-8; // check for correct removal.
 
-    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
     EXPECT_EQ(epoch.head.size(), nobs);
     EXPECT_EQ(epoch.tail.size(), epoch.epochs_per_sample.size());
     EXPECT_EQ(epoch.tail.size(), epoch.head.back());
@@ -64,39 +64,39 @@ TEST_P(OptimizeTest, Epochs) {
 
 TEST_P(OptimizeTest, BasicRun) {
     assemble(GetParam());
-    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
 
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
-    umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 0);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
 
     EXPECT_NE(embedding, data); // some kind of change happened!
 }
 
 TEST_P(OptimizeTest, RestartedRun) {
     assemble(GetParam());
-    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
 
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
-    umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 100);
-    umappp::optimize_layout(5, embedding.data(), epoch, 2, 1, 1, 1, rng, 500);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 100);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 500);
 
     // Same results from a full single run.
     std::vector<double> embedding2(data);
     rng.seed(10);
-    epoch = umappp::similarities_to_epochs(stored, 500, 5);
-    umappp::optimize_layout(5, embedding2.data(), epoch, 2, 1, 1, 1, rng, 0);
+    epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
+    umappp::optimize_layout<>(5, embedding2.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
 
     EXPECT_EQ(embedding, embedding2);
 }
 
 TEST_P(OptimizeTest, Batched) {
     assemble(GetParam());
-    auto epoch = umappp::similarities_to_epochs(stored, 500, 5);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
 
     std::vector<double> embedding(data);
-    umappp::optimize_layout_batched(5, embedding.data(), epoch, 2, 1, 1, 1, std::mt19937_64(10), [](uint64_t s) -> auto { return std::mt19937_64(s); }, 0);
+    umappp::optimize_layout_batched<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, std::mt19937_64(10), [](uint64_t s) -> auto { return std::mt19937_64(s); }, 0);
 
     EXPECT_NE(embedding, data); // some kind of change happened!
 }

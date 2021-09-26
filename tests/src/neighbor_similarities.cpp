@@ -40,7 +40,7 @@ TEST_P(SimilarityTest, Basic) {
     assemble(GetParam());
     auto stored = generate_neighbors();
     
-    umappp::neighbor_similarities(stored);
+    umappp::neighbor_similarities<>(stored);
 
     for (const auto& s : stored) {
         double prev = 1;
@@ -72,7 +72,7 @@ TEST_P(SimilarityTest, ZeroDistance) {
     }
 
     // Distances of 0 map to weights of 1.
-    umappp::neighbor_similarities(stored);
+    umappp::neighbor_similarities<>(stored);
     for (int i = 0; i < 3; ++i) {
         EXPECT_EQ(stored[i][0].second, 1);
         EXPECT_EQ(stored[i][1].second, 1);
@@ -84,7 +84,7 @@ TEST_P(SimilarityTest, EdgeCases) {
     auto stored = generate_neighbors();
 
     // Forcing the fallback when local_connectivity is too high.
-    umappp::neighbor_similarities(stored, 100); 
+    umappp::neighbor_similarities<>(stored, 100.0); 
 
     for (const auto& s : stored) {
         for (const auto& v : s){ 
@@ -98,7 +98,7 @@ TEST_P(SimilarityTest, EdgeCases) {
     }
     stored = generate_neighbors();
 
-    umappp::neighbor_similarities(stored);
+    umappp::neighbor_similarities<>(stored);
     auto ref = stored[0];
     for (int i = 0; i < k; ++i) {
         for (auto j : stored[i]) {

@@ -33,13 +33,13 @@ protected:
     int nobs, k;
     int ndim = 5;
     std::vector<double> data;
-    umappp::NeighborList stored;
+    umappp::NeighborList<double> stored;
 };
 
 TEST_P(UmapTest, Basic) {
     assemble(GetParam());
 
-    umappp::Umap runner;
+    umappp::Umap<> runner;
     std::vector<double> output(nobs * ndim);
     auto status = runner.initialize(std::move(stored), ndim, output.data());
     runner.run(status, ndim, output.data());

@@ -110,15 +110,15 @@ TEST_P(SetCombiningTest, Combining) {
     auto stored = generate_neighbors(GetParam());
 
     auto Union = stored;
-    umappp::combine_neighbor_sets(Union, 1);
+    umappp::combine_neighbor_sets<>(Union, 1.0);
     slow_symmetrization(stored, Union, 1);
 
     auto intersect = stored;
-    umappp::combine_neighbor_sets(intersect, 0);
+    umappp::combine_neighbor_sets<>(intersect, 0.0);
     slow_symmetrization(stored, intersect, 0);
 
     auto middle = stored;
-    umappp::combine_neighbor_sets(middle, 0.5);
+    umappp::combine_neighbor_sets<>(middle, 0.5);
     slow_symmetrization(stored, middle, 0.5);
 
     // Comparing the number of edges.

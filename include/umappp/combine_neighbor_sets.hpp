@@ -11,7 +11,8 @@
 
 namespace umappp {
 
-inline void combine_neighbor_sets(NeighborList& x, double mix_ratio = 1) {
+template<typename Float>
+void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
     std::vector<size_t> last(x.size());
     std::vector<size_t> original(x.size());
 
@@ -40,8 +41,8 @@ inline void combine_neighbor_sets(NeighborList& x, double mix_ratio = 1) {
 
             if (curlast < limits && target[curlast].first == desired) {
                 if (desired < y.first) { // don't average it twice.
-                    double product = y.second * target[curlast].second;
-                    double prob_final;
+                    Float product = y.second * target[curlast].second;
+                    Float prob_final;
 
                     if (mix_ratio == 1) {
                         prob_final = y.second + target[curlast].second - product;

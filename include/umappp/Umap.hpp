@@ -44,11 +44,15 @@ enum InitMethod { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };
  * Further theoretical details can be found in the [original UMAP documentation](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html),
  * though this particular implementation is derived from the C++ code in the [**uwot** R package](https://github.com/jlmelville/uwot).
  *
+ * @tparam Float Floating-point type.
+ * Defaults to `double` to be conservative, but most applications can make do with `float` for some extra speed.
+ *
  * @see
  * McInnes L, Healy J and Melville J (2020).
  * UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction.
  * _arXiv_, https://arxiv.org/abs/1802.03426
  */
+template<typename Float = double>
 class Umap {
 public:
     /**
@@ -58,42 +62,42 @@ public:
         /**
          * See `set_local_connectivity()`.
          */
-        static constexpr double local_connectivity = 1.0;
+        static constexpr Float local_connectivity = 1.0;
 
         /**
          * See `set_bandwidth()`.
          */
-        static constexpr double bandwidth = 1;
+        static constexpr Float bandwidth = 1;
 
         /**
          * See `set_mix_ratio()`.
          */
-        static constexpr double mix_ratio = 1;
+        static constexpr Float mix_ratio = 1;
 
         /**
          * See `set_spread()`.
          */
-        static constexpr double spread = 1;
+        static constexpr Float spread = 1;
 
         /**
          * See `set_min_dist()`.
          */
-        static constexpr double min_dist = 0.01;
+        static constexpr Float min_dist = 0.01;
 
         /**
          * See `set_a()`.
          */
-        static constexpr double a = 0;
+        static constexpr Float a = 0;
 
         /**
          * See `set_b()`.
          */
-        static constexpr double b = 0;
+        static constexpr Float b = 0;
 
         /**
          * See `set_repulsion_strength()`.
          */
-        static constexpr double repulsion_strength = 1;
+        static constexpr Float repulsion_strength = 1;
 
         /**
          * See `set_initialize()`.
@@ -108,12 +112,12 @@ public:
         /**
          * See `set_learning_rate()`.
          */
-        static constexpr double learning_rate = 1; 
+        static constexpr Float learning_rate = 1; 
 
         /**
          * See `set_negative_sample_rate()`.
          */
-        static constexpr double negative_sample_rate = 5;
+        static constexpr Float negative_sample_rate = 5;
 
         /**
          * See `set_num_neighbors()`.
@@ -132,29 +136,29 @@ public:
     };
 
 private:
-    double local_connectivity = Defaults::local_connectivity;
+    Float local_connectivity = Defaults::local_connectivity;
 
-    double bandwidth = Defaults::bandwidth;
+    Float bandwidth = Defaults::bandwidth;
 
-    double mix_ratio = Defaults::mix_ratio;
+    Float mix_ratio = Defaults::mix_ratio;
 
-    double spread = Defaults::spread;
+    Float spread = Defaults::spread;
 
-    double min_dist = Defaults::min_dist;
+    Float min_dist = Defaults::min_dist;
 
-    double a = Defaults::a;
+    Float a = Defaults::a;
 
-    double b = Defaults::b;
+    Float b = Defaults::b;
 
-    double repulsion_strength = Defaults::repulsion_strength;
+    Float repulsion_strength = Defaults::repulsion_strength;
 
     InitMethod init = Defaults::initialize;
 
     int num_epochs = Defaults::num_epochs;
 
-    double learning_rate = Defaults::learning_rate;
+    Float learning_rate = Defaults::learning_rate;
 
-    double negative_sample_rate = Defaults::negative_sample_rate;
+    Float negative_sample_rate = Defaults::negative_sample_rate;
 
     int num_neighbors = Defaults::num_neighbors;
 
@@ -169,7 +173,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_local_connectivity(double l = Defaults::local_connectivity) {
+    Umap& set_local_connectivity(Float l = Defaults::local_connectivity) {
         local_connectivity = l;
         return *this;
     }
@@ -180,7 +184,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_bandwidth(double b = Defaults::bandwidth) {
+    Umap& set_bandwidth(Float b = Defaults::bandwidth) {
         bandwidth = b;
         return *this;
     }
@@ -193,7 +197,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_mix_ratio(double m = Defaults::mix_ratio) {
+    Umap& set_mix_ratio(Float m = Defaults::mix_ratio) {
         mix_ratio = m;
         return *this;
     }
@@ -203,7 +207,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_spread(double s = Defaults::spread) {
+    Umap& set_spread(Float s = Defaults::spread) {
         spread = s;
         return *this;
     }
@@ -215,7 +219,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_min_dist(double m = Defaults::min_dist) {
+    Umap& set_min_dist(Float m = Defaults::min_dist) {
         min_dist = m;
         return *this;
     }
@@ -228,7 +232,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_a(double a = Defaults::a) {
+    Umap& set_a(Float a = Defaults::a) {
         this->a = a;
         return *this;
     }
@@ -241,7 +245,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_b(double b = Defaults::b) {
+    Umap& set_b(Float b = Defaults::b) {
         this->b = b;
         return *this;
     }
@@ -252,7 +256,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_repulsion_strength(double r = Defaults::repulsion_strength) {
+    Umap& set_repulsion_strength(Float r = Defaults::repulsion_strength) {
         repulsion_strength = r;
         return *this;
     }
@@ -285,7 +289,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_learning_rate(double l = Defaults::learning_rate) {
+    Umap& set_learning_rate(Float l = Defaults::learning_rate) {
         learning_rate = l;
         return *this;
     }
@@ -297,7 +301,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_negative_sample_rate(double n = Defaults::negative_sample_rate) {
+    Umap& set_negative_sample_rate(Float n = Defaults::negative_sample_rate) {
         negative_sample_rate = n;
         return *this;
     }
@@ -309,7 +313,7 @@ public:
      *
      * @return A reference to this `Umap` object.
      */
-    Umap& set_num_neighbors(double n = Defaults::num_neighbors) {
+    Umap& set_num_neighbors(Float n = Defaults::num_neighbors) {
         num_neighbors = n;
         return *this;
     }
@@ -348,11 +352,11 @@ public:
         /**
          * @cond
          */
-        Status(EpochData e, uint64_t seed, double a_, double b_) : epochs(std::move(e)), engine(seed), a(a_), b(b_) {}
-        EpochData epochs;
+        Status(EpochData<Float> e, uint64_t seed, Float a_, Float b_) : epochs(std::move(e)), engine(seed), a(a_), b(b_) {}
+        EpochData<Float> epochs;
         std::mt19937_64 engine;
-        double a;
-        double b;
+        Float a;
+        Float b;
         /**
          * @endcond
          */
@@ -383,7 +387,7 @@ public:
      * If `set_initialize()` is `NONE` or if spectral initialization fails with `SPECTRAL_ONLY`, `embedding` should contain the initial coordinates and will not be altered;
      * otherwise, it is filled with initial coordinates.
      */
-    Status initialize(NeighborList x, int ndim, double* embedding) const {
+    Status initialize(NeighborList<Float> x, int ndim, Float* embedding) const {
         neighbor_similarities(x, local_connectivity, bandwidth);
         combine_neighbor_sets(x, mix_ratio);
 
@@ -398,8 +402,8 @@ public:
         }
 
         // Finding a good a/b pair.
-        double a_ = a;
-        double b_ = b;
+        Float a_ = a;
+        Float b_ = b;
         if (a_ <= 0 || b_ <= 0) {
             auto found = find_ab(spread, min_dist);
             a_ = found.first;
@@ -425,7 +429,7 @@ public:
      *
      * @return `s` and `embedding` are updated for the given number of epochs. 
      */
-    void run(Status& s, int ndim, double* embedding, int epoch_limit = 0) const {
+    void run(Status& s, int ndim, Float* embedding, int epoch_limit = 0) const {
         if (!batch) {
             optimize_layout(
                 ndim,
@@ -468,7 +472,7 @@ public:
      * @return The status of the algorithm is returned after running up to `epoch_limit`, for re-use in `run()`.
      * `embedding` is updated with the embedding at that point.
      */
-    Status run(NeighborList x, int ndim, double* embedding, int epoch_limit = 0) const {
+    Status run(NeighborList<Float> x, int ndim, Float* embedding, int epoch_limit = 0) const {
         auto status = initialize(std::move(x), ndim, embedding);
         run(status, ndim, embedding, epoch_limit);
         return status;
@@ -493,8 +497,8 @@ public:
      * This differs from the other `run()` methods in that it will internally compute the nearest neighbors for each observation.
      * It will use vantage point trees for the search - see the other `initialize()` methods to specify a custom search algorithm.
      */
-    template<typename Input = double>
-    Status initialize(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding) { 
+    template<typename Input = Float>
+    Status initialize(int ndim_in, size_t nobs, const Input* input, int ndim_out, Float* embedding) { 
         knncolle::VpTreeEuclidean<> searcher(ndim_in, nobs, input); 
         return initialize(&searcher, ndim_out, embedding);
     }
@@ -516,8 +520,8 @@ public:
      * @return The status of the algorithm is returned after running up to `epoch_limit`, for re-use in `run()`.
      * `embedding` is updated with the embedding at that point.
      */
-    template<typename Input = double>
-    Status run(int ndim_in, size_t nobs, const Input* input, int ndim_out, double* embedding, int epoch_limit = 0) {
+    template<typename Input = Float>
+    Status run(int ndim_in, size_t nobs, const Input* input, int ndim_out, Float* embedding, int epoch_limit = 0) {
         auto status = initialize(ndim_in, nobs, input, ndim_out, embedding);
         run(status, ndim_out, embedding, epoch_limit);
         return status;
@@ -537,13 +541,13 @@ public:
      * otherwise it is ignored.
      */
     template<class Algorithm>
-    Status initialize(const Algorithm* searcher, int ndim, double* embedding) { 
+    Status initialize(const Algorithm* searcher, int ndim, Float* embedding) { 
         const size_t N = searcher->nobs();
 
 #ifdef _OPENMP
-        NeighborList output(N);
+        NeighborList<Float> output(N);
 #else
-        NeighborList output;
+        NeighborList<Float> output;
         output.reserve(N);
 #endif
 
@@ -574,7 +578,7 @@ public:
      * `embedding` is updated with the embedding at that point.
      */
     template<class Algorithm> 
-    Status run(const Algorithm* searcher, int ndim, double* embedding, int epoch_limit = 0) {
+    Status run(const Algorithm* searcher, int ndim, Float* embedding, int epoch_limit = 0) {
         auto status = initialize(searcher, ndim, embedding);
         run(status, ndim, embedding, epoch_limit);
         return status;

@@ -12,17 +12,23 @@ namespace umappp {
 /**
  * @brief Neighbor specification based on index and distance.
  *
+ * @tparam Float Floating-point type.
+ *
  * The index refers to the position of the neighboring observation in the dataset.
- * The statistic is used to store the distance to the neighbor.
+ * The statistic can store some statistic related to the neighbor, e.g., distance or probabilities.
  */ 
-typedef std::pair<int, double> Neighbor;
+template<typename Float = double>
+using Neighbor =  std::pair<int, Float>;
 
 /**
  * @brief Lists of neighbors for each observation.
  *
+ * @tparam Float Floating-point type.
+ *
  * Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation.
- */ 
-typedef std::vector<std::vector<Neighbor> > NeighborList;
+ */
+template<typename Float = double>
+using NeighborList = std::vector<std::vector<Neighbor<Float> > >;
 
 }
 
