@@ -76,7 +76,7 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
         return false;
     }
 
-    auto ev = eigs.eigenvectors().rightCols(ndim); 
+    auto ev = eigs.eigenvectors().leftCols(ndim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
     // otherwise this entire thing is futile.
