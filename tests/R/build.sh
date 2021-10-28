@@ -5,25 +5,16 @@
 set -e
 set -u
 
-rm -f extern
-ln -s ../../extern 
+ROOT=../../build/_deps
 
-cat << EOF > CMakeLists.txt
-cmake_minimum_required(VERSION 3.14)
-
-project(umappp-tests)
-
-add_subdirectory(extern)
-EOF
-
-cmake -S . -B build
-cmake --build build
-
-rm -f Spectra 
-ln -s build/_deps/spectra-src/include/Spectra .
+rm -f irlba
+ln -s ${ROOT}/irlba-src/include/irlba .
 
 rm -f Eigen
-ln -s build/_deps/eigen3-src/Eigen .
+ln -s ${ROOT}/eigen3-src/Eigen .
 
 rm -f aarand
-ln -s build/_deps/aarand-src/include/aarand .
+ln -s ${ROOT}/aarand-src/include/aarand .
+
+rm -f umappp
+ln -s ../../include/umappp .

@@ -13,9 +13,7 @@ target_include_directories(umappp INTERFACE include/)
 
 add_subdirectory(extern)
 
-target_link_libraries(umappp INTERFACE knncolle aarand)
-
-target_link_libraries(umappp INTERFACE Spectra)
+target_link_libraries(umappp INTERFACE knncolle aarand irlba)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
