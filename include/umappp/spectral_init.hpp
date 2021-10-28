@@ -18,14 +18,14 @@ namespace umappp {
  */
 template<typename Float>
 bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) {
-    std::vector<Float> sums(edges.size());
+    std::vector<double> sums(edges.size());
     std::vector<int> sizes(edges.size());
 
     for (size_t c = 0; c < edges.size(); ++c) {
         const auto& current = edges[c];
         sizes[c] = current.size() + 1; // +1 for self, assuming that no entry of 'current' is equal to 'c'.
 
-        Float& sum = sums[c];
+        double& sum = sums[c];
         for (const auto& f : current) {
             sum += f.second;
         }
@@ -33,7 +33,7 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
     }
 
     // Creating a normalized sparse matrix.
-    Eigen::SparseMatrix<Float> mat(edges.size(), edges.size());
+    Eigen::SparseMatrix<double> mat(edges.size(), edges.size());
     mat.reserve(sizes);
 
     for (size_t c = 0; c < edges.size(); ++c) {
@@ -64,18 +64,18 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
     // this approach (while correct) is not what is described in those links.
     irlba::Irlba runner;
     auto deets = runner.set_number(1).run(mat);
-    Float max_eigval = deets.D[0];
+    double max_eigval = deets.D[0];
     
     mat *= -1;
-    mat.diagonal().array() += max_eigval;
+    mat.diagonal().array() += static_cast<double>(max_eigval);
 
     auto actual = runner.set_number(ndim + 1).run(mat);
     auto ev = actual.U.rightCols(ndim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
     // otherwise this entire thing is futile.
-    const Float max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
-    const Float expansion = (max_val > 0 ? 10 / max_val : 1);
+    const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
+    const double expansion = (max_val > 0 ? 10 / max_val : 1);
 
     for (size_t c = 0; c < edges.size(); ++c) {
         size_t offset = c * ndim;
