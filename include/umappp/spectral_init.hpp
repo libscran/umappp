@@ -1,10 +1,7 @@
 #ifndef UMAPPP_SPECTRAL_INIT_HPP
 #define UMAPPP_SPECTRAL_INIT_HPP
 
-#include "Spectra/SymEigsSolver.h"
-#include "Spectra/MatOp/SparseSymMatProd.h"
-//#include "Spectra/SymEigsShiftSolver.h"
-//#include "Spectra/MatOp/SparseSymShiftSolve.h"
+#include "irlba/irlba.hpp"
 #include "Eigen/Sparse"
 
 #include <vector>
@@ -21,67 +18,64 @@ namespace umappp {
  */
 template<typename Float>
 bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) {
-    std::vector<Float> sums(edges.size());
+    std::vector<double> sums(edges.size());
     std::vector<int> sizes(edges.size());
 
     for (size_t c = 0; c < edges.size(); ++c) {
         const auto& current = edges[c];
-        int& count = sizes[c];
-        Float& sum = sums[c];
+        sizes[c] = current.size() + 1; // +1 for self, assuming that no entry of 'current' is equal to 'c'.
 
+        double& sum = sums[c];
         for (const auto& f : current) {
             sum += f.second;
-            count += (f.first <= c);
         }
-
         sum = std::sqrt(sum);
-        ++count; // for self, assuming that f.first != c.
     }
 
     // Creating a normalized sparse matrix.
-    Eigen::SparseMatrix<Float> mat(edges.size(), edges.size());
+    Eigen::SparseMatrix<double> mat(edges.size(), edges.size());
     mat.reserve(sizes);
 
     for (size_t c = 0; c < edges.size(); ++c) {
         const auto& current = edges[c]; 
-        for (const auto& f : current) {
-            if (c < f.first) { // upper-triangular only.
-                break;
-            }
+        size_t i = 0;
+
+        for (; i < current.size() && current[i].first < c; ++i) {
+            const auto& f = current[i];
             mat.insert(f.first, c) = -f.second / sums[f.first] / sums[c];
         }
+
         mat.insert(c, c) = 1;
+
+        for (; i < current.size(); ++i) {
+            const auto& f = current[i];
+            mat.insert(f.first, c) = -f.second / sums[f.first] / sums[c];
+        }
     }
     mat.makeCompressed();
 
-    // Finding the smallest eigenvalues & their eigenvectors,
-    // using the shift-and-invert mode as recommended.
-    const int nobs = mat.rows();
-    int nev = std::min(ndim + 1, nobs); // +1 from uwot:::normalized_laplacian_init
-    int ncv = std::min(nobs, std::max(2 * nev, 20)); // from RSpectra:::eigs_real_sym. I don't make the rules.
+    // Finding the largest eigenvalue, shifting the matrix, and then finding
+    // the largest 'ndim + 1' eigenvalues from the shifted matrix. These
+    // correspond to the smallest 'ndim + 1' eigenvalues from the original
+    // matrix. This is obvious when we realize that the eigenvectors of
+    // A are the same as the eigenvectors of (xI - A), but the order of
+    // eigenvalues is reversed because of the negation. Initially motivated
+    // by comments at yixuan/spectra#126 but I misread the equations so 
+    // this approach (while correct) is not what is described in those links.
+    irlba::Irlba runner;
+    auto deets = runner.set_number(1).run(mat);
+    double max_eigval = deets.D[0];
+    
+    mat *= -1;
+    mat.diagonal().array() += static_cast<double>(max_eigval);
 
-    Spectra::SparseSymMatProd<Float, Eigen::Upper> op(mat);
-    Spectra::SymEigsSolver<typename std::remove_reference<decltype(op)>::type> eigs(op, nev, ncv); 
-
-    eigs.init();
-    eigs.compute(Spectra::SortRule::SmallestMagn);
-
-//    Spectra::SparseSymShiftSolve<Float, Eigen::Upper> op(mat);
-//    Spectra::SymEigsShiftSolver<Spectra::SparseSymShiftSolve<Float, Eigen::Upper> > eigs(op, nev, ncv, -0.001); // see https://github.com/yixuan/spectra/issues/126
-//
-//    eigs.init();
-//    eigs.compute(Spectra::SortRule::LargestMagn);
-
-    if (eigs.info() != Spectra::CompInfo::Successful) {
-        return false;
-    }
-
-    auto ev = eigs.eigenvectors().leftCols(ndim); 
+    auto actual = runner.set_number(ndim + 1).run(mat);
+    auto ev = actual.U.rightCols(ndim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
     // otherwise this entire thing is futile.
-    const Float max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
-    const Float expansion = (max_val > 0 ? 10 / max_val : 1);
+    const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
+    const double expansion = (max_val > 0 ? 10 / max_val : 1);
 
     for (size_t c = 0; c < edges.size(); ++c) {
         size_t offset = c * ndim;

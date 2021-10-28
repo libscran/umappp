@@ -1,8 +1,5 @@
 # Building the function.
 library(Rcpp)
-if (!file.exists("umappp")) {
-    file.symlink("../../include/umappp", "umappp")
-}
 sourceCpp("test.cpp")
 
 # Generating some data.
@@ -31,7 +28,9 @@ test_that("initialization is done correctly", {
 
     V <- d2sr$V
     init <- uwot:::spectral_init(d2sr$V)
-    expect_equal(init, obs[[1]][,2:1], tol=1e-3) # higher tolerance required because uwot jiggles the inputs a bit.
+    rescale <- sign(colSums(init)/colSums(obs[[1]]))
+    init <- sweep(init, 2, rescale, "*")
+    expect_equal(init, obs[[1]], tol=1e-3) # higher tolerance required because uwot jiggles the inputs a bit.
 
     n_epochs <- 500
     V@x[V@x < max(V@x)/n_epochs] <- 0
@@ -42,8 +41,8 @@ test_that("initialization is done correctly", {
 
 test_that("general run is not too inconsistent", {
     ref <- uwot::umap(X = mat, nn_method=list(idx=cbind(1:nrow(mat), res$nn.index), dist=cbind(0, res$nn.dist)), a=2, b=1)
-    obs <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, FALSE, 12345)
-    obs2 <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, TRUE, 12345)
+    obs <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, FALSE, 100)
+    obs2 <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, TRUE, 100)
 
     # Values are within range.
     expect_true(all(obs < 10 & obs > -10))

@@ -16,12 +16,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(aarand)
 
-SET(USE_SYSTEM_EIGEN OFF CACHE BOOL "Disable Spectra's use of system Eigen")
-
 FetchContent_Declare(
-  Spectra 
-  GIT_REPOSITORY https://github.com/LTLA/spectra
-  GIT_TAG master
+  irlba 
+  GIT_REPOSITORY https://github.com/LTLA/CppIrlba
+  GIT_TAG dbfd00a637fa683c67e98e26d446866a9a3564c7
 )
 
-FetchContent_MakeAvailable(Spectra)
+FetchContent_MakeAvailable(irlba)
