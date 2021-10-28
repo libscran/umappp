@@ -11,7 +11,7 @@ rm -f irlba
 ln -s ${ROOT}/irlba-src/include/irlba .
 
 rm -f Eigen
-ln -s ${ROOT}/eigen3-src/Eigen .
+ln -s ${ROOT}/eigen-src/Eigen .
 
 rm -f aarand
 ln -s ${ROOT}/aarand-src/include/aarand .

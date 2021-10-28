@@ -13,6 +13,10 @@ jobs:
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
 
+    - name: Configure the build
+      run: |
+        cmake -S . -B build -DBUILD_TESTING=OFF
+
     - name: Install packages
       shell: Rscript {0}
       run: |
@@ -27,5 +31,10 @@ jobs:
       shell: Rscript {0}
       run: |
         setwd("tests/R")
-        output <- testthat::test_file("run.R")
-        q(status=any(as.data.frame(output)$failed), save="no")
+        output <- testthat::test_file("run.R", stop_on_failure=TRUE)
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: demo-file 
+        path: tests/R/demo.png 
+
