@@ -2,6 +2,7 @@
 
 ![Unit tests](https://github.com/LTLA/umappp/actions/workflows/run-tests.yaml/badge.svg)
 ![Documentation](https://github.com/LTLA/umappp/actions/workflows/doxygenate.yaml/badge.svg)
+![uwot comparison](https://github.com/LTLA/umappp/actions/workflows/compare-uwot.yaml/badge.svg)
 [![Codecov](https://codecov.io/gh/LTLA/umappp/branch/master/graph/badge.svg?token=IKFEAP5J55)](https://codecov.io/gh/LTLA/umappp)
 
 ## Overview 
@@ -85,7 +86,8 @@ target_link_libraries(mylib INTERFACE umappp)
 Otherwise, you can just copy the directory in `include` into some location that is visible to your compiler.
 Note that this requires the additional dependencies listed in `extern`:
 
-- The [**Spectra**](https://github.com/yixuan/spectra) library for eigenvalue computations.
+- The [**Eigen**](https://gitlab.com/libeigen/eigen) library for matrix operations.
+- The [**irlba**](https://github.com/LTLA/CppIrlba) library for singular value decomposition (or in this case, an eigendecomposition).
 - The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
 If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `UMAPPP_CUSTOM_NEIGHBORS` macro.
 - The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
