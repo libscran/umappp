@@ -54,21 +54,29 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
     }
     mat.makeCompressed();
 
-    // Finding the largest eigenvalue, shifting the matrix, and then finding
-    // the largest 'ndim + 1' eigenvalues from the shifted matrix. These
-    // correspond to the smallest 'ndim + 1' eigenvalues from the original
-    // matrix. This is obvious when we realize that the eigenvectors of
-    // A are the same as the eigenvectors of (xI - A), but the order of
-    // eigenvalues is reversed because of the negation. Initially motivated
-    // by comments at yixuan/spectra#126 but I misread the equations so 
-    // this approach (while correct) is not what is described in those links.
-    irlba::Irlba runner;
-    auto deets = runner.set_number(1).run(mat);
-    double max_eigval = deets.D[0];
-    
+    /* We want to find the eigenvectors corresponding to the 'ndim' smallest
+     * positive eigenvalues, as these define a nice initial partition of the
+     * observations (i.e., weak-to-no edges = small eigenvalues). Unfortunately,
+     * the best algorithms are designed to find the largest eigenvalues/vectors. 
+     * 
+     * So, we observe that the normalized laplacian is positive semi-definite
+     * where the smallest eigenvalue is zero and the largest _possible_
+     * eigenvalue is 2. Thus, we shift the matrix (i.e., '2 * I - L') and then
+     * finding the largest 'ndim + 1' eigenvalues from the shifted matrix.
+     * These correspond to the smallest 'ndim + 1' eigenvalues from the
+     * original matrix. This is obvious when we realize that the eigenvectors
+     * of A are the same as the eigenvectors of (xI - A), but the order of
+     * eigenvalues is reversed because of the negation.
+     *
+     * Initially motivated by comments at yixuan/spectra#126 but I misread the
+     * equations so this approach (while correct) is not what is described in
+     * those links. Also thanks to jlmelville for the max eigenvalue hint,
+     * see LTLA/umappp#4 for the discussion.
+     */
     mat *= -1;
-    mat.diagonal().array() += static_cast<double>(max_eigval);
+    mat.diagonal().array() += static_cast<double>(2);
 
+    irlba::Irlba runner;
     auto actual = runner.set_number(ndim + 1).run(mat);
     auto ev = actual.U.rightCols(ndim); 
 
