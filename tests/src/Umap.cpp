@@ -42,7 +42,12 @@ TEST_P(UmapTest, Basic) {
     umappp::Umap<> runner;
     std::vector<double> output(nobs * ndim);
     auto status = runner.initialize(std::move(stored), ndim, output.data());
+    EXPECT_EQ(status.epoch(), 0);
+    EXPECT_EQ(status.num_epochs(), umappp::Umap<>::Defaults::num_epochs);
+    EXPECT_EQ(status.nobs(), nobs);
+
     runner.run(status, ndim, output.data());
+    EXPECT_EQ(status.epoch(), umappp::Umap<>::Defaults::num_epochs);
 }
 
 INSTANTIATE_TEST_SUITE_P(

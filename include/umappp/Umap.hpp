@@ -375,6 +375,13 @@ public:
         int num_epochs() const {
             return epochs.total_epochs;
         }
+
+        /**
+         * @return The number of observations in the dataset.
+         */
+       size_t nobs() const {
+           return epochs.head.size();
+       }
     };
 
     /** 
