@@ -167,8 +167,9 @@ void optimize_sample(
 
         epoch_of_next_sample[j] += epochs_per_sample[j];
 
-        // The update involves adding num_neg_samples * epoch_of_next_negative_sample[j],
-        // which eventually boils down to setting this to 'n'.
+        // The update to epoch_of_next_negative_sample involves adding
+        // num_neg_samples * epochs_per_negative_sample, which eventually boils
+        // down to setting epoch_of_next_negative_sample to 'n'.
         epoch_of_next_negative_sample[j] = epoch;
     }
 }
