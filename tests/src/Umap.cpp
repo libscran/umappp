@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#ifndef CUSTOM_PARALLEL_TEST
+// Define before umappp includes.
+#include "custom_parallel.h"
+#endif
+
 #include "umappp/Umap.hpp"
 #include "knncolle/knncolle.hpp"
 
@@ -7,7 +12,7 @@
 #include <random>
 #include <cmath>
 
-class UmapTest : public ::testing::TestWithParam<std::tuple<int, int> > {
+class UmapTest : public ::testing::TestWithParam<std::tuple<int, int, int> > {
 protected:
     template<class Param>
     void assemble(Param p) {
@@ -37,17 +42,33 @@ protected:
 };
 
 TEST_P(UmapTest, Basic) {
-    assemble(GetParam());
+    auto param = GetParam();
+    assemble(param);
 
     umappp::Umap<> runner;
+    bool use_batch = std::get<2>(param);
+    runner.set_batch(use_batch);
+
     std::vector<double> output(nobs * ndim);
     auto status = runner.initialize(std::move(stored), ndim, output.data());
     EXPECT_EQ(status.epoch(), 0);
     EXPECT_EQ(status.num_epochs(), umappp::Umap<>::Defaults::num_epochs);
     EXPECT_EQ(status.nobs(), nobs);
 
-    runner.run(status, ndim, output.data());
+    status.run(ndim, output.data());
     EXPECT_EQ(status.epoch(), umappp::Umap<>::Defaults::num_epochs);
+
+    // Same results if we ran it from the top.
+    std::vector<double> copy(nobs * ndim);
+    runner.set_num_neighbors(k);
+    runner.run(ndim, nobs, data.data(), ndim, copy.data());
+    EXPECT_EQ(copy, output);
+
+    // Same results with multiple threads.
+    runner.set_num_threads(3);
+    std::fill(copy.begin(), copy.end(), 0);
+    runner.run(ndim, nobs, data.data(), ndim, copy.data());
+    EXPECT_EQ(copy, output);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -55,6 +76,7 @@ INSTANTIATE_TEST_SUITE_P(
     UmapTest,
     ::testing::Combine(
         ::testing::Values(50, 100, 200), // number of observations
-        ::testing::Values(5, 10, 15) // number of neighbors
+        ::testing::Values(5, 10, 15), // number of neighbors
+        ::testing::Values(false, true) // use batching mode
     )
 );
