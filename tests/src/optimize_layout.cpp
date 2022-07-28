@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#ifdef TEST_CUSTOM_PARALLEL
+// Define before umappp includes.
+#include "custom_parallel.h"
+#endif
+
 #include "umappp/neighbor_similarities.hpp"
 #include "umappp/combine_neighbor_sets.hpp"
 #include "umappp/optimize_layout.hpp"
@@ -94,11 +99,18 @@ TEST_P(OptimizeTest, RestartedRun) {
 TEST_P(OptimizeTest, Batched) {
     assemble(GetParam());
     auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
+    auto original = epoch;
 
     std::vector<double> embedding(data);
     umappp::optimize_layout_batched<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, std::mt19937_64(10), [](uint64_t s) -> auto { return std::mt19937_64(s); }, 0, 1);
 
-    EXPECT_NE(embedding, data); // some kind of change happened!
+    // some kind of change happened!
+    EXPECT_NE(embedding, data); 
+
+    // Same result with multiple threads.
+    std::vector<double> embedding2(data);
+    umappp::optimize_layout_batched<>(5, embedding2.data(), original, 2.0, 1.0, 1.0, 1.0, std::mt19937_64(10), [](uint64_t s) -> auto { return std::mt19937_64(s); }, 0, 3);
+    EXPECT_EQ(embedding, embedding2);
 }
 
 INSTANTIATE_TEST_SUITE_P(

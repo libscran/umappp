@@ -30,6 +30,8 @@ target_link_libraries(
 add_executable(
     cuspartest 
     src/Umap.cpp
+    src/spectral_init.cpp
+    src/optimize_layout.cpp
 )
 
 target_link_libraries(
@@ -38,7 +40,7 @@ target_link_libraries(
     umappp
 )
 
-target_compile_definitions(cuspartest PRIVATE CUSTOM_PARALLEL_TEST=1)
+target_compile_definitions(cuspartest PRIVATE TEST_CUSTOM_PARALLEL=1)
 
 set(CODE_COVERAGE "Enable coverage testing" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#ifdef TEST_CUSTOM_PARALLEL
+// Define before umappp includes.
+#include "custom_parallel.h"
+#endif
+
 #include "umappp/spectral_init.hpp"
 
 #include <random>

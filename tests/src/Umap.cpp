@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#ifndef CUSTOM_PARALLEL_TEST
+#ifdef TEST_CUSTOM_PARALLEL
 // Define before umappp includes.
 #include "custom_parallel.h"
 #endif
