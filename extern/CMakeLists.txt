@@ -19,7 +19,7 @@ FetchContent_MakeAvailable(aarand)
 FetchContent_Declare(
   irlba 
   GIT_REPOSITORY https://github.com/LTLA/CppIrlba
-  GIT_TAG ba06d3fcb32b280772b8c8b9947ed068da2a5c77
+  GIT_TAG f869614019048f84008c18df364b41ebbf2303dd
 )
 
 FetchContent_MakeAvailable(irlba)

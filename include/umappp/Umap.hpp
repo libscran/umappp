@@ -452,7 +452,7 @@ public:
 
         // Choosing the manner of initialization.
         if (init == SPECTRAL || init == SPECTRAL_ONLY) {
-            bool attempt = spectral_init(x, ndim, embedding);
+            bool attempt = spectral_init(x, ndim, embedding, rparams.nthreads);
             if (!attempt && init == SPECTRAL) {
                 random_init(x.size(), ndim, embedding);
             }

@@ -1,8 +1,29 @@
 #ifndef UMAPPP_SPECTRAL_INIT_HPP
 #define UMAPPP_SPECTRAL_INIT_HPP
 
+#ifndef IRLBA_CUSTOM_PARALLEL
+#ifdef UMAPPP_CUSTOM_PARALLEL
+namespace umappp {
+
+template<class Function>
+void irlba_parallelize_(int nthreads, Function fun) {
+    UMAPPP_CUSTOM_PARALLEL(nthreads, [&](size_t f, size_t l) -> void {
+        // This loop should be trivial if f + 1== l when nthreads == njobs.
+        // Nonetheless, we still have a loop just in case the arbitrary
+        // scheduling does wacky things. 
+        for (size_t i = f; i < l; ++i) {
+            fun(f);
+        }
+    }, nthreads);
+}
+
+}
+#define IRLBA_CUSTOM_PARALLEL umappp::irlba_parallelize_
+#endif
+#endif
+
 #include "irlba/irlba.hpp"
-#include "Eigen/Sparse"
+#include "irlba/parallel.hpp"
 
 #include <vector>
 #include <random>
@@ -17,13 +38,20 @@ namespace umappp {
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
  */
 template<typename Float>
-bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) {
-    std::vector<double> sums(edges.size());
-    std::vector<int> sizes(edges.size());
+bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, int nthreads) {
+    size_t nobs = edges.size();
+    std::vector<double> sums(nobs);
+    std::vector<size_t> pointers;
+    pointers.reserve(nobs + 1);
+    pointers.push_back(0);
+    size_t reservable = 0;
 
-    for (size_t c = 0; c < edges.size(); ++c) {
+    for (size_t c = 0; c < nobs; ++c) {
         const auto& current = edges[c];
-        sizes[c] = current.size() + 1; // +1 for self, assuming that no entry of 'current' is equal to 'c'.
+
+        // +1 for self, assuming that no entry of 'current' is equal to 'c'.
+        reservable += current.size() + 1; 
+        pointers.push_back(reservable);
 
         double& sum = sums[c];
         for (const auto& f : current) {
@@ -32,29 +60,36 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
         sum = std::sqrt(sum);
     }
 
-    // Creating a normalized sparse matrix.
-    Eigen::SparseMatrix<double> mat(edges.size(), edges.size());
-    mat.reserve(sizes);
+    // Creating a normalized sparse matrix. Everything before TRANSFORM is the
+    // actual normalized laplacian, everything after TRANSFORM is what we did
+    // to the laplacian to make it possible to get the smallest eigenvectors. 
+    std::vector<double> values;
+    values.reserve(reservable);
+    std::vector<int> indices;
+    indices.reserve(reservable);
 
-    for (size_t c = 0; c < edges.size(); ++c) {
+    for (size_t c = 0; c < nobs; ++c) {
         const auto& current = edges[c]; 
-        size_t i = 0;
+        auto cIt = current.begin(), last = current.end();
 
-        for (; i < current.size() && current[i].first < c; ++i) {
-            const auto& f = current[i];
-            mat.insert(f.first, c) = -f.second / sums[f.first] / sums[c];
+        for (; cIt != last && cIt->first < c; ++cIt) {
+            indices.push_back(cIt->first);
+            values.push_back(- cIt->second / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
         }
 
-        mat.insert(c, c) = 1;
+        // Adding unity at the diagonal.
+        indices.push_back(c); 
+        values.push_back(1 /* TRANSFORM */ * (-1) + 2);
 
-        for (; i < current.size(); ++i) {
-            const auto& f = current[i];
-            mat.insert(f.first, c) = -f.second / sums[f.first] / sums[c];
+        for (; cIt != current.end(); ++cIt) {
+            indices.push_back(cIt->first);
+            values.push_back(- cIt->second / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
         }
     }
-    mat.makeCompressed();
 
-    /* We want to find the eigenvectors corresponding to the 'ndim' smallest
+    /* Okay, here's the explanation for the TRANSFORM transformations.
+     *
+     * We want to find the eigenvectors corresponding to the 'ndim' smallest
      * positive eigenvalues, as these define a nice initial partition of the
      * observations (i.e., weak-to-no edges = small eigenvalues). Unfortunately,
      * the best algorithms are designed to find the largest eigenvalues/vectors. 
@@ -73,8 +108,9 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
      * those links. Also thanks to jlmelville for the max eigenvalue hint,
      * see LTLA/umappp#4 for the discussion.
      */
-    mat *= -1;
-    mat.diagonal().array() += static_cast<double>(2);
+
+    irlba::ParallelSparseMatrix<> mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), nthreads);
+    irlba::EigenThreadScope tscope(nthreads);
 
     irlba::Irlba runner;
     auto actual = runner.set_number(ndim + 1).run(mat);
@@ -85,7 +121,7 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y) 
     const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
     const double expansion = (max_val > 0 ? 10 / max_val : 1);
 
-    for (size_t c = 0; c < edges.size(); ++c) {
+    for (size_t c = 0; c < nobs; ++c) {
         size_t offset = c * ndim;
         for (int d = 0; d < ndim; ++d) {
             Y[offset + d] = ev(c, d) * expansion; // TODO: put back the jitter step.
@@ -122,9 +158,9 @@ bool has_multiple_components(const NeighborList<Float>& edges) {
 }
 
 template<typename Float>
-bool spectral_init(const NeighborList<Float>& edges, int ndim, Float* vals) {
+bool spectral_init(const NeighborList<Float>& edges, int ndim, Float* vals, int nthreads) {
     if (!has_multiple_components(edges)) {
-        if (normalized_laplacian(edges, ndim, vals)) {
+        if (normalized_laplacian(edges, ndim, vals, nthreads)) {
             return true;
         }
     }

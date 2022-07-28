@@ -34,11 +34,16 @@ TEST_P(SpectralInitTest, Basic) {
     std::vector<double> output(ndim * order);
 
     auto edges = mock(order);
-    EXPECT_TRUE(umappp::spectral_init<>(edges, ndim, output.data()));
+    EXPECT_TRUE(umappp::spectral_init<>(edges, ndim, output.data(), 1));
 
     for (auto o : output) { // filled with _something_.
         EXPECT_TRUE(o != 0);
     }
+
+    // Same result with multiple threads.
+    std::vector<double> copy(ndim * order);
+    umappp::spectral_init<>(edges, ndim, copy.data(), 3);
+    EXPECT_EQ(output, copy);
 }
 
 TEST_P(SpectralInitTest, MultiComponents) {
@@ -59,7 +64,7 @@ TEST_P(SpectralInitTest, MultiComponents) {
     }
 
     std::vector<double> output(edges1.size() + edges2.size());
-    EXPECT_FALSE(umappp::spectral_init<>(edges, ndim, output.data()));
+    EXPECT_FALSE(umappp::spectral_init<>(edges, ndim, output.data(), 1));
 }
 
 INSTANTIATE_TEST_SUITE_P(
