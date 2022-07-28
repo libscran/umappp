@@ -333,7 +333,7 @@ template&lt;typename Float  = double&gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. Note the expectations in the <code>NeighborList</code> documentation. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">ndim</td><td>Number of dimensions of the embedding. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Two-dimensional array to store the embedding, where rows are dimensions (<code>ndim</code>) and columns are observations (<code>x.size()</code>).</td></tr>
   </table>
@@ -542,7 +542,7 @@ template&lt;typename Float  = double&gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. Note the expectations in the <code>NeighborList</code> documentation. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">ndim</td><td>Number of dimensions of the embedding. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Two-dimensional array where rows are dimensions (<code>ndim</code>) and columns are observations. This is filled with the final embedding on output. If <code><a class="el" href="classumappp_1_1Umap.html#a2607ac7fc9cbe7a73900a8cb94e9664f">set_initialize()</a></code> is <code>NONE</code> or if spectral initialization fails with <code>SPECTRAL_ONLY</code>, <code>embedding</code> is assumed to contain the initial coordinates on input. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>.</td></tr>
@@ -1007,8 +1007,16 @@ template&lt;typename Float  = double&gt; </div>
   </table>
   </dd>
 </dl>
-<p>By default, this only has an effect during nearest neighbor detection, if an existing list of neighbors is not supplied in <code><a class="el" href="classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82">initialize()</a></code> or <code><a class="el" href="classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e">run()</a></code>. If <code><a class="el" href="classumappp_1_1Umap.html#addfbe48292df74eb3e3d6424ba5a19cd">set_batch()</a></code> is <code>true</code>, multiple threads will also be used during layout optimization.</p>
-<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object.</dd></dl>
+<p>This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in <code><a class="el" href="classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82">initialize()</a></code> or <code><a class="el" href="classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e">run()</a></code>) and spectral initialization. If <code><a class="el" href="classumappp_1_1Umap.html#addfbe48292df74eb3e3d6424ba5a19cd">set_batch()</a></code> is <code>true</code>, multiple threads will also be used during layout optimization.</p>
+<p >The <code>UMAPPP_CUSTOM_PARALLEL</code> macro can be set to a function that specifies a custom parallelization scheme. This function should be a template that accept three arguments:</p>
+<ul>
+<li><code>njobs</code>, an integer specifying the number of jobs.</li>
+<li><code>fun</code>, a lambda that accepts two arguments, <code>start</code> and <code>end</code>.</li>
+<li><code>nthreads</code>, an integer specifying the number of threads to use.</li>
+</ul>
+<p >The function should split <code>[0, njobs)</code> into any number of contiguous, non-overlapping intervals, and call <code>fun</code> on each interval, possibly in different threads. The details of the splitting and evaluation are left to the discretion of the developer defining the macro. The function should only return once all evaluations of <code>fun</code> are complete.</p>
+<p >If <code>UMAPPP_CUSTOM_PARALLEL</code> is set, the <code>IRLBA_CUSTOM_PARALLEL</code> macro is also set if it is not already defined. This ensures that any custom parallelization scheme is propagated to all of <b>umappp</b>'s dependencies. If <b>irlba</b> is used outside of <b>umappp</b>, some care is required to ensure that the macros are consistently defined throughout the client library/application; otherwise, developers may observe ODR compilation errors. </p>
 
 </div>
 </div>

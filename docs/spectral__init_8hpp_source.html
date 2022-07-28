@@ -170,11 +170,11 @@ $(function() {
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="comment">     * So, we observe that the normalized laplacian is positive semi-definite</span></div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="comment">     * where the smallest eigenvalue is zero and the largest _possible_</span></div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment">     * eigenvalue is 2. Thus, we shift the matrix (i.e., &#39;2 * I - L&#39;) and then</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment">     * finding the largest &#39;ndim + 1&#39; eigenvalues from the shifted matrix.</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment">     * These correspond to the smallest &#39;ndim + 1&#39; eigenvalues from the</span></div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">     * original matrix. This is obvious when we realize that the eigenvectors</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="comment">     * of A are the same as the eigenvectors of (xI - A), but the order of</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="comment">     * eigenvalues is reversed because of the negation.</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment">     * find the largest &#39;ndim + 1&#39; eigenvalues from the shifted matrix.  These</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment">     * correspond to the smallest &#39;ndim + 1&#39; eigenvalues from the original</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment">     * matrix. This is obvious when we realize that the eigenvectors of A are</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="comment">     * the same as the eigenvectors of (xI - A), but the order of eigenvalues</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="comment">     * is reversed because of the negation.</span></div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="comment">     *</span></div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="comment">     * Initially motivated by comments at yixuan/spectra#126 but I misread the</span></div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="comment">     * equations so this approach (while correct) is not what is described in</span></div>

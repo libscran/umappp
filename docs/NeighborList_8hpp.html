@@ -153,7 +153,7 @@ template&lt;typename Float  = double&gt; </div>
   </table>
   </dd>
 </dl>
-<p>Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation. </p>
+<p>Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation. Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector. Also, the inner vector for observation <code>i</code> should not contain any <code>Neighbor</code> with index <code>i</code>. </p>
 
 </div>
 </div>
