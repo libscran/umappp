@@ -344,10 +344,26 @@ public:
     /**
      * @param n Number of threads to use.
      *
-     * By default, this only has an effect during nearest neighbor detection, if an existing list of neighbors is not supplied in `initialize()` or `run()`.
+     * @return A reference to this `Umap` object.
+     *
+     * This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in `initialize()` or `run()`) and spectral initialization.
      * If `set_batch()` is `true`, multiple threads will also be used during layout optimization.
      *
-     * @return A reference to this `Umap` object.
+     * The `UMAPPP_CUSTOM_PARALLEL` macro can be set to a function that specifies a custom parallelization scheme.
+     * This function should be a template that accept three arguments:
+     *
+     * - `njobs`, an integer specifying the number of jobs.
+     * - `fun`, a lambda that accepts two arguments, `start` and `end`.
+     * - `nthreads`, an integer specifying the number of threads to use.
+     *
+     * The function should split `[0, njobs)` into any number of contiguous, non-overlapping intervals, and call `fun` on each interval, possibly in different threads.
+     * The details of the splitting and evaluation are left to the discretion of the developer defining the macro. 
+     * The function should only return once all evaluations of `fun` are complete.
+     *
+     * If `UMAPPP_CUSTOM_PARALLEL` is set, the `IRLBA_CUSTOM_PARALLEL` macro is also set if it is not already defined.
+     * This ensures that any custom parallelization scheme is propagated to all of **umappp**'s dependencies.
+     * If **irlba** is used outside of **umappp**, some care is required to ensure that the macros are consistently defined throughout the client library/application;
+     * otherwise, developers may observe ODR compilation errors. 
      */
     Umap& set_num_threads(int n = Defaults::num_threads) {
         rparams.nthreads = n;
@@ -438,6 +454,7 @@ public:
 
     /** 
      * @param x Indices and distances to the nearest neighbors for each observation.
+     * Note the expectations in the `NeighborList` documentation.
      * @param ndim Number of dimensions of the embedding.
      * @param[in, out] embedding Two-dimensional array to store the embedding, 
      * where rows are dimensions (`ndim`) and columns are observations (`x.size()`).
@@ -562,6 +579,7 @@ public:
 
     /** 
      * @param x Indices and distances to the nearest neighbors for each observation.
+     * Note the expectations in the `NeighborList` documentation.
      * @param ndim Number of dimensions of the embedding.
      * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations.
      * This is filled with the final embedding on output.

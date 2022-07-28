@@ -27,10 +27,9 @@ void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
         const int desired = first;
 
         // Looping through the neighbors and searching for self in each
-        // neighbor's neighbors. Assuming that everything in 'searched' is
-        // sorted, this should only require a single pass through the entire
-        // set of neighbors as we do not need to search previously searched
-        // hits.
+        // neighbor's neighbors. As each inner vector in 'x' is sorted,
+        // this should only require a single pass through the entire set of
+        // neighbors as we do not need to search previously searched hits.
         for (auto& y : current) {
             auto& target = x[y.first];
             auto& curlast = last[y.first];
@@ -82,8 +81,8 @@ void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
         }
     }
 
-    // Sorting everything by index so downstream functions are happier.
-    // (more cache-friendly, and Eigen needs increasing inserts).
+    // Sorting everything by index to be more cache-friendly. Also,
+    // irlba::ParallelSparseMatrix needs increasing inserts.
     for (auto& current : x) {
         std::sort(current.begin(), current.end());
     }

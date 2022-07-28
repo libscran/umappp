@@ -97,11 +97,11 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, 
      * So, we observe that the normalized laplacian is positive semi-definite
      * where the smallest eigenvalue is zero and the largest _possible_
      * eigenvalue is 2. Thus, we shift the matrix (i.e., '2 * I - L') and then
-     * finding the largest 'ndim + 1' eigenvalues from the shifted matrix.
-     * These correspond to the smallest 'ndim + 1' eigenvalues from the
-     * original matrix. This is obvious when we realize that the eigenvectors
-     * of A are the same as the eigenvectors of (xI - A), but the order of
-     * eigenvalues is reversed because of the negation.
+     * find the largest 'ndim + 1' eigenvalues from the shifted matrix.  These
+     * correspond to the smallest 'ndim + 1' eigenvalues from the original
+     * matrix. This is obvious when we realize that the eigenvectors of A are
+     * the same as the eigenvectors of (xI - A), but the order of eigenvalues
+     * is reversed because of the negation.
      *
      * Initially motivated by comments at yixuan/spectra#126 but I misread the
      * equations so this approach (while correct) is not what is described in
