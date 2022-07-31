@@ -41,7 +41,7 @@ umappp::Umap x;
 auto status = x.initialize(ndim, nobs, data.data(), 2, embedding.data());
 
 for (int iter = 10; iter < 200; iter += 10) {
-    x.run(status, 2, embedding.data(), iter);
+    status.run(2, embedding.data(), iter);
     // do something with the current embedding, e.g., create an animation
 }
 ```
@@ -86,10 +86,10 @@ target_link_libraries(mylib INTERFACE umappp)
 Otherwise, you can just copy the directory in `include` into some location that is visible to your compiler.
 Note that this requires the additional dependencies listed in `extern`:
 
-- The [**Eigen**](https://gitlab.com/libeigen/eigen) library for matrix operations.
 - The [**irlba**](https://github.com/LTLA/CppIrlba) library for singular value decomposition (or in this case, an eigendecomposition).
+  This also requires the [**Eigen**](https://gitlab.com/libeigen/eigen) library for matrix operations.
 - The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
-If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `UMAPPP_CUSTOM_NEIGHBORS` macro.
+  If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `UMAPPP_CUSTOM_NEIGHBORS` macro.
 - The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
 
 ## References
