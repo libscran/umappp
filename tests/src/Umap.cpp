@@ -52,11 +52,11 @@ TEST_P(UmapTest, Basic) {
     std::vector<double> output(nobs * ndim);
     auto status = runner.initialize(std::move(stored), ndim, output.data());
     EXPECT_EQ(status.epoch(), 0);
-    EXPECT_EQ(status.num_epochs(), umappp::Umap<>::Defaults::num_epochs);
+    EXPECT_EQ(status.num_epochs(), 500);
     EXPECT_EQ(status.nobs(), nobs);
 
     status.run(ndim, output.data());
-    EXPECT_EQ(status.epoch(), umappp::Umap<>::Defaults::num_epochs);
+    EXPECT_EQ(status.epoch(), 500);
 
     // Same results if we ran it from the top.
     std::vector<double> copy(nobs * ndim);
@@ -80,3 +80,11 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(false, true) // use batching mode
     )
 );
+
+TEST(UmapTest, EpochDecay) {
+    EXPECT_EQ(umappp::choose_num_epochs(-1, 1000), 500);
+    EXPECT_TRUE(umappp::choose_num_epochs(-1, 20000) < 500);
+    EXPECT_EQ(umappp::choose_num_epochs(-1, 10000000), 201);
+    EXPECT_EQ(umappp::choose_num_epochs(1000, 1000), 1000);
+    EXPECT_EQ(umappp::choose_num_epochs(1000, 20000), 1000);
+}

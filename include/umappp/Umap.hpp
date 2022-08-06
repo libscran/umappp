@@ -36,6 +36,33 @@ namespace umappp {
 enum InitMethod { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };
 
 /**
+ * @cond
+ */
+int choose_num_epochs(int num_epochs, size_t size) {
+    if (num_epochs < 0) {
+        // Choosing the number of epochs. We use a simple formula to decrease
+        // the number of epochs with increasing size, with the aim being that
+        // the 'extra work' beyond the minimal 200 epochs should be the same
+        // regardless of the numbe of observations. Given one calculation per
+        // observation per epoch, this amounts to 300 * 10000 calculations at
+        // the lower bound, so we simply choose a number of epochs that
+        // equalizes the number of calculations for any number of observations.
+        if (num_epochs < 0) {
+            constexpr int limit = 10000, minimal = 200, maximal = 300;
+            if (size <= limit) {
+                num_epochs = minimal + maximal;
+            } else {
+                num_epochs = minimal + static_cast<int>(std::ceil(maximal * limit / static_cast<double>(size)));
+            }
+        }
+    }
+    return num_epochs;
+}
+/**
+ * @endcond
+ */
+
+/**
  * @brief Wrapper class to run UMAP.
  *
  * The Uniform Manifold Approximation and Projection (UMAP) algorithm is an efficient dimensionality reduction method based on nearest neighbors.
@@ -107,7 +134,7 @@ public:
         /**
          * See `set_num_epochs()`.
          */
-        static constexpr int num_epochs = 500;
+        static constexpr int num_epochs = -1;
 
         /**
          * See `set_learning_rate()`.
@@ -245,8 +272,15 @@ public:
     }
 
     /**
-     * @param n Number of epochs for the gradient descent, i.e., optimization iterations.
-     * Larger values improve convergence at the cost of computational work.
+     * @param n Number of epochs for the gradient descent, i.e., optimization iterations. 
+     *
+     * Larger values improve accuracy at the cost of computational work.
+     * If the requested number of epochs is negative, a value is automatically chosen based on the size of the dataset:
+     *
+     * - For datasets with no more than 10000 observations, the number of epochs is set to 500.
+     * - For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200.
+     *
+     * This choice aims to reduce computational work for very large datasets. 
      *
      * @return A reference to this `Umap` object.
      */
@@ -485,8 +519,10 @@ public:
             pcopy.b = found.second;
         }
 
+        int num_epochs_to_do = choose_num_epochs(num_epochs, x.size());
+
         return Status(
-            similarities_to_epochs(x, num_epochs, negative_sample_rate),
+            similarities_to_epochs(x, num_epochs_to_do, negative_sample_rate),
             seed,
             std::move(pcopy)
         );
