@@ -933,10 +933,16 @@ template&lt;typename Float  = double&gt; </div>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">n</td><td>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve convergence at the cost of computational work.</td></tr>
+    <tr><td class="paramname">n</td><td>Number of epochs for the gradient descent, i.e., optimization iterations.</td></tr>
   </table>
   </dd>
 </dl>
+<p>Larger values improve accuracy at the cost of computational work. If the requested number of epochs is negative, a value is automatically chosen based on the size of the dataset:</p>
+<ul>
+<li>For datasets with no more than 10000 observations, the number of epochs is set to 500.</li>
+<li>For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200.</li>
+</ul>
+<p >This choice aims to reduce computational work for very large datasets.</p>
 <dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object. </dd></dl>
 
 </div>
