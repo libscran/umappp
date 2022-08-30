@@ -24,7 +24,8 @@ test_that("initialization is done correctly", {
         bandwidth = 1, 
         n_threads=1, 
         grain_size=1,
-        set_op_mix_ratio=1)
+        set_op_mix_ratio=1,
+        ret_sigma=FALSE)
 
     V <- d2sr$V
     init <- uwot:::spectral_init(d2sr$V)
