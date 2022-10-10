@@ -164,7 +164,7 @@ public:
         /**
          * See `set_num_threads()`.
          */
-        static constexpr bool num_threads = 1;
+        static constexpr int num_threads = 1;
     };
 
 private:
