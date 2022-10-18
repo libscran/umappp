@@ -81,19 +81,22 @@ $(function() {
 <a href="NeighborList_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UMAPPP_NEIGHBOR_LIST_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UMAPPP_NEIGHBOR_LIST_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>umappp {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">   21</a></span><span class="keyword">using </span><a class="code hl_typedef" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">Neighbor</a> =  std::pair&lt;int, Float&gt;;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">   33</a></span><span class="keyword">using </span><a class="code hl_typedef" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">NeighborList</a> = std::vector&lt;std::vector&lt;Neighbor&lt;Float&gt; &gt; &gt;;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aNeighborList_8hpp_html_a276ec7786ac002c8cd3faa096c2de846"><div class="ttname"><a href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">umappp::Neighbor</a></div><div class="ttdeci">std::pair&lt; int, Float &gt; Neighbor</div><div class="ttdoc">Neighbor specification based on index and distance.</div><div class="ttdef"><b>Definition:</b> NeighborList.hpp:21</div></div>
-<div class="ttc" id="aNeighborList_8hpp_html_aab5cd1cc7e9720f055ba2496f97d9172"><div class="ttname"><a href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">umappp::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Neighbor&lt; Float &gt; &gt; &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition:</b> NeighborList.hpp:33</div></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>umappp {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">   24</a></span><span class="keyword">using </span><a class="code hl_typedef" href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">Neighbor</a> =  std::pair&lt;int, Float&gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">   36</a></span><span class="keyword">using </span><a class="code hl_typedef" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">NeighborList</a> = std::vector&lt;std::vector&lt;Neighbor&lt;Float&gt; &gt; &gt;;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aNeighborList_8hpp_html_a276ec7786ac002c8cd3faa096c2de846"><div class="ttname"><a href="NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846">umappp::Neighbor</a></div><div class="ttdeci">std::pair&lt; int, Float &gt; Neighbor</div><div class="ttdoc">Neighbor specification based on index and distance.</div><div class="ttdef"><b>Definition:</b> NeighborList.hpp:24</div></div>
+<div class="ttc" id="aNeighborList_8hpp_html_aab5cd1cc7e9720f055ba2496f97d9172"><div class="ttname"><a href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">umappp::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; Neighbor&lt; Float &gt; &gt; &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition:</b> NeighborList.hpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
