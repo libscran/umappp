@@ -1,6 +1,9 @@
 #ifndef UMAPPP_NEIGHBOR_LIST_HPP
 #define UMAPPP_NEIGHBOR_LIST_HPP
 
+#include <utility>
+#include <vector>
+
 /**
  * @file NeighborList.hpp
  *
