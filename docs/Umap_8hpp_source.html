@@ -99,7 +99,7 @@ $(function() {
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="Umap_8hpp.html#ae4b89fd36b2966f7e6298c50573a89d0">   36</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="Umap_8hpp.html#ae4b89fd36b2966f7e6298c50573a89d0">InitMethod</a> { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keywordtype">int</span> choose_num_epochs(<span class="keywordtype">int</span> num_epochs, <span class="keywordtype">size_t</span> size) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">inline</span> <span class="keywordtype">int</span> choose_num_epochs(<span class="keywordtype">int</span> num_epochs, <span class="keywordtype">size_t</span> size) {</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (num_epochs &lt; 0) {</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="comment">// Choosing the number of epochs. We use a simple formula to decrease</span></div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="comment">// the number of epochs with increasing size, with the aim being that</span></div>
