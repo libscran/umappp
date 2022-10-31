@@ -38,7 +38,7 @@ enum InitMethod { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };
 /**
  * @cond
  */
-int choose_num_epochs(int num_epochs, size_t size) {
+inline int choose_num_epochs(int num_epochs, size_t size) {
     if (num_epochs < 0) {
         // Choosing the number of epochs. We use a simple formula to decrease
         // the number of epochs with increasing size, with the aim being that
