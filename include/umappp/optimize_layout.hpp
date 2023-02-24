@@ -139,8 +139,10 @@ void optimize_sample(
             }
         }
 
-        // Here, we divide by epochs_per_negative_sample, defined as epochs_per_sample[j] / negative_sample_rate.
-        const size_t num_neg_samples = (epoch - epoch_of_next_negative_sample[j]) * negative_sample_rate / epochs_per_sample[j];
+        // Remember that 'epochs_per_negative_sample' is defined as 'epochs_per_sample[j] / negative_sample_rate'.
+        // We just use it inline below rather than defining a new variable and suffering floating-point round-off.
+        const size_t num_neg_samples = (epoch - epoch_of_next_negative_sample[j]) * 
+            negative_sample_rate / epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
 
         for (size_t p = 0; p < num_neg_samples; ++p) {
             size_t sampled = aarand::discrete_uniform(rng, num_obs); 
@@ -167,9 +169,9 @@ void optimize_sample(
 
         epoch_of_next_sample[j] += epochs_per_sample[j];
 
-        // The update to epoch_of_next_negative_sample involves adding
-        // num_neg_samples * epochs_per_negative_sample, which eventually boils
-        // down to setting epoch_of_next_negative_sample to 'n'.
+        // The update to 'epoch_of_next_negative_sample' involves adding
+        // 'num_neg_samples * epochs_per_negative_sample', which eventually boils
+        // down to setting epoch_of_next_negative_sample to 'epoch'.
         epoch_of_next_negative_sample[j] = epoch;
     }
 }
