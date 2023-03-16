@@ -412,14 +412,32 @@ public:
         /**
          * @cond
          */
-        Status(EpochData<Float> e, uint64_t seed, RuntimeParameters p) : epochs(std::move(e)), engine(seed), rparams(std::move(p)) {}
+        Status(EpochData<Float> e, uint64_t seed, RuntimeParameters p, int n, Float* embed) : 
+            epochs(std::move(e)), engine(seed), rparams(std::move(p)), ndim_(n), embedding_(embed) {}
 
         EpochData<Float> epochs;
         std::mt19937_64 engine;
         RuntimeParameters rparams;
+        int ndim_;
+        Float* embedding_;
         /**
          * @endcond
          */
+
+        /**
+         * @return Number of dimensions of the embedding.
+         */
+        int ndim() const {
+            return ndim_;
+        }
+
+        /**
+         * @return Pointer to a two-dimensional column-major array where rows are dimensions (`ndim`) and columns are observations.
+         * This is updated by `initialize()` to store the final embedding.
+         */
+        const Float* embedding() const {
+            return embedding_;
+        }
 
         /**
          * @return Current epoch.
@@ -444,21 +462,19 @@ public:
         }
 
         /** 
-         * @param ndim Number of dimensions of the embedding.
-         * @param[in, out] embedding Two-dimensional array where rows are dimensions (`ndim`) and columns are observations.
-         * This contains the initial coordinates and is updated to store the final embedding.
+         * The status of the algorithm and the coordinates in `embedding()` are updated to the specified number of epochs. 
+         *
          * @param epoch_limit Number of epochs to run to.
          * The actual number of epochs performed is equal to the difference between `epoch_limit` and the current number of epochs in `epoch()`.
-         * `epoch_limit` should be not less than `epoch()` and no greater than the maximum number of epochs specified in `Umap::set_num_epochs()`.
+         * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `Umap::set_num_epochs()`.
          * If zero, defaults to the maximum number of epochs. 
          *
-         * @return The status of the algorithm and the coordinates in `embedding` are updated to the specified number of epochs. 
          */
-        void run(int ndim, Float* embedding, int epoch_limit = 0) {
+        void run(int epoch_limit = 0) {
             if (!rparams.batch) {
                 optimize_layout(
-                    ndim,
-                    embedding,
+                    ndim_,
+                    embedding_,
                     epochs,
                     rparams.a,
                     rparams.b,
@@ -469,8 +485,8 @@ public:
                 );
             } else {
                 optimize_layout_batched(
-                    ndim,
-                    embedding,
+                    ndim_,
+                    embedding_,
                     epochs,
                     rparams.a,
                     rparams.b,
@@ -524,7 +540,9 @@ public:
         return Status(
             similarities_to_epochs(x, num_epochs_to_do, negative_sample_rate),
             seed,
-            std::move(pcopy)
+            std::move(pcopy),
+            ndim,
+            embedding
         );
     }
 
@@ -609,7 +627,7 @@ public:
     template<class Algorithm> 
     Status run(const Algorithm* searcher, int ndim, Float* embedding, int epoch_limit = 0) {
         auto status = initialize(searcher, ndim, embedding);
-        status.run(ndim, embedding, epoch_limit);
+        status.run(epoch_limit);
         return status;
     }
 
@@ -627,7 +645,7 @@ public:
      */
     Status run(NeighborList<Float> x, int ndim, Float* embedding, int epoch_limit = 0) const {
         auto status = initialize(std::move(x), ndim, embedding);
-        status.run(ndim, embedding, epoch_limit);
+        status.run(epoch_limit);
         return status;
     }
 
@@ -651,7 +669,7 @@ public:
     template<typename Input = Float>
     Status run(int ndim_in, size_t nobs, const Input* input, int ndim_out, Float* embedding, int epoch_limit = 0) {
         auto status = initialize(ndim_in, nobs, input, ndim_out, embedding);
-        status.run(ndim_out, embedding, epoch_limit);
+        status.run(epoch_limit);
         return status;
     }
 #endif

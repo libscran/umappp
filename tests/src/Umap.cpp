@@ -55,7 +55,7 @@ TEST_P(UmapTest, Basic) {
     EXPECT_EQ(status.num_epochs(), 500);
     EXPECT_EQ(status.nobs(), nobs);
 
-    status.run(ndim, output.data());
+    status.run();
     EXPECT_EQ(status.epoch(), 500);
 
     // Same results if we ran it from the top.
