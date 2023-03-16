@@ -160,7 +160,7 @@ void optimize_layout(
                     setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
-                    size_t sampled = p % num_obs;
+                    size_t sampled = aarand::discrete_uniform(rng, num_obs);
                     if (sampled == i) {
                         continue;
                     }

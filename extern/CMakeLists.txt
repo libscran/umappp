@@ -11,7 +11,7 @@ FetchContent_MakeAvailable(knncolle)
 FetchContent_Declare(
   aarand
   GIT_REPOSITORY https://github.com/LTLA/aarand
-  GIT_TAG 2a8509c499f668bf424306f1aa986da429902c71
+  GIT_TAG e8397e9e648379f6086b20a83910c39ed8e4dd45
 )
 
 FetchContent_MakeAvailable(aarand)
