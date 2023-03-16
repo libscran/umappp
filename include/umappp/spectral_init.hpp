@@ -101,7 +101,10 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, 
      * correspond to the smallest 'ndim + 1' eigenvalues from the original
      * matrix. This is obvious when we realize that the eigenvectors of A are
      * the same as the eigenvectors of (xI - A), but the order of eigenvalues
-     * is reversed because of the negation.
+     * is reversed because of the negation. Then, out of the 'ndim + 1' largest
+     * eigenvalues, we remove the largest one, because that corresponds to the
+     * smallest eigenvalue of zero in the original matrix - leaving us with
+     * eigenvectors for the 'ndim' smallest positive eigenvalues.
      *
      * Initially motivated by comments at yixuan/spectra#126 but I misread the
      * equations so this approach (while correct) is not what is described in
