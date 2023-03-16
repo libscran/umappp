@@ -140,17 +140,17 @@ void optimize_layout(
                     continue;
                 }
 
-                Float* right = embedding + setup.tail[j] * ndim;
-                Float dist2 = quick_squared_distance(left, right, ndim);
-                const Float pd2b = std::pow(dist2, b);
-                const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
                 {
+                    Float* right = embedding + setup.tail[j] * ndim;
+                    Float dist2 = quick_squared_distance(left, right, ndim);
+                    const Float pd2b = std::pow(dist2, b);
+                    const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+
                     Float* lcopy = left;
-                    Float* rcopy = right;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
-                        Float gradient = alpha * clamp(grad_coef * (*lcopy - *rcopy));
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                        Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
                         *lcopy += gradient;
-                        *rcopy -= gradient;
+                        *right -= gradient;
                     }
                 }
 
@@ -165,14 +165,13 @@ void optimize_layout(
                         continue;
                     }
 
-                    Float* right = embedding + sampled * ndim;
+                    const Float* right = embedding + sampled * ndim;
                     Float dist2 = quick_squared_distance(left, right, ndim);
                     const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
 
                     Float* lcopy = left;
-                    const Float* rcopy = right;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++rcopy) {
-                        *lcopy += alpha * clamp(grad_coef * (*lcopy - *rcopy));
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                        *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
                     }
                 }
 
