@@ -410,11 +410,11 @@ template&lt;class Algorithm &gt; </div>
     <tr><td class="paramdir"></td><td class="paramname">searcher</td><td>Pointer to a <code>knncolle::Base</code> subclass with a <code>find_nearest_neighbors()</code> method. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">ndim</td><td>Number of dimensions of the embedding. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Two-dimensional array where rows are dimensions (<code>ndim</code>) and columns are observations (<code>searcher-&gt;nobs()</code>). This is filled with the final embedding on output. If <code><a class="el" href="classumappp_1_1Umap.html#a2607ac7fc9cbe7a73900a8cb94e9664f">set_initialize()</a></code> is false, this is assumed to contain the initial coordinates on input. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
 
 </div>
 </div>
@@ -492,11 +492,11 @@ template&lt;typename Input  = Float&gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">input</td><td>Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to <code>ndim_in</code> and <code>nobs</code>, respectively. The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">ndim_out</td><td>Number of dimensions of the embedding. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Two-dimensional array where rows are dimensions (<code>ndim</code>) and columns are observations (<code>searcher-&gt;nobs()</code>). This is filled with the final embedding on output. If <code><a class="el" href="classumappp_1_1Umap.html#a2607ac7fc9cbe7a73900a8cb94e9664f">set_initialize()</a></code> is <code>NONE</code> or if spectral initialization fails with <code>SPECTRAL_ONLY</code>, <code>embedding</code> is assumed to contain the initial coordinates on input. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
 
 </div>
 </div>
@@ -552,11 +552,11 @@ template&lt;typename Float  = double&gt; </div>
     <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. Note the expectations in the <code>NeighborList</code> documentation. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">ndim</td><td>Number of dimensions of the embedding. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Two-dimensional array where rows are dimensions (<code>ndim</code>) and columns are observations. This is filled with the final embedding on output. If <code><a class="el" href="classumappp_1_1Umap.html#a2607ac7fc9cbe7a73900a8cb94e9664f">set_initialize()</a></code> is <code>NONE</code> or if spectral initialization fails with <code>SPECTRAL_ONLY</code>, <code>embedding</code> is assumed to contain the initial coordinates on input. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run - see <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a07f90975c478af0021ef0ac269f8431a">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The status of the algorithm is returned after running up to <code>epoch_limit</code>; this can be used for further iterations by invoking <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code>. <code>embedding</code> is updated with the embedding at the specified epoch limit. </dd></dl>
 
 </div>
 </div>
