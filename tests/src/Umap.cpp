@@ -12,7 +12,7 @@
 #include <random>
 #include <cmath>
 
-class UmapTest : public ::testing::TestWithParam<std::tuple<int, int, int> > {
+class UmapTest : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
     template<class Param>
     void assemble(Param p) {
@@ -46,8 +46,6 @@ TEST_P(UmapTest, Basic) {
     assemble(param);
 
     umappp::Umap<> runner;
-    bool use_batch = std::get<2>(param);
-    runner.set_batch(use_batch);
 
     std::vector<double> output(nobs * ndim);
     auto status = runner.initialize(std::move(stored), ndim, output.data());
@@ -76,8 +74,7 @@ INSTANTIATE_TEST_SUITE_P(
     UmapTest,
     ::testing::Combine(
         ::testing::Values(50, 100, 200), // number of observations
-        ::testing::Values(5, 10, 15), // number of neighbors
-        ::testing::Values(false, true) // use batching mode
+        ::testing::Values(5, 10, 15) // number of neighbors
     )
 );
 

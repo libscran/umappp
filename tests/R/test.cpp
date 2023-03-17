@@ -34,7 +34,7 @@ Rcpp::List initialize_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix dist
 }
 
 // [[Rcpp::export(rng=false)]]
-Rcpp::NumericMatrix run_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, int ndim, double a, double b, bool batch, int seed) {
+Rcpp::NumericMatrix run_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, int ndim, double a, double b, int seed) {
     int nr = indices.nrow(), nc = indices.ncol();
     umappp::NeighborList<> x(nc);
     for (int i = 0; i < nc; ++i) {
@@ -47,7 +47,7 @@ Rcpp::NumericMatrix run_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix di
 
     Rcpp::NumericMatrix output(ndim, nc);
     umappp::Umap<> runner;
-    runner.set_a(a).set_b(b).set_batch(batch).set_seed(seed);
+    runner.set_a(a).set_b(b).set_seed(seed);
     auto status = runner.run(std::move(x), ndim, (double*)output.begin());
 
     return Rcpp::transpose(output);

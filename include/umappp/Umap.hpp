@@ -157,11 +157,6 @@ public:
         static constexpr uint64_t seed = 1234567890;
 
         /**
-         * See `set_batch()`.
-         */
-        static constexpr bool batch = false;
-
-        /**
          * See `set_num_threads()`.
          */
         static constexpr int num_threads = 1;
@@ -184,7 +179,6 @@ private:
         Float b = Defaults::b;
         Float repulsion_strength = Defaults::repulsion_strength;
         Float learning_rate = Defaults::learning_rate;
-        bool batch = Defaults::batch;
         int nthreads = Defaults::num_threads;
     };
 
@@ -360,28 +354,11 @@ public:
     }
 
     /**
-     * @param b Whether to optimize in batch mode. 
-     * Batch mode is required for effective parallelization via OpenMP but may reduce the stability of the gradient descent. 
-     *
-     * Batch mode involves computing forces for all observations and applying them simultaneously.
-     * This is in contrast to the default where the location of observation is updated before the forces are computed for the next observation.
-     * As each observation's forces are computed independently, batch mode is more amenable to parallelization;
-     * however, this comes at the cost of stability as the force calculations for later observations are not aware of updates to the positions of earlier observations.
-     *
-     * @return A reference to this `Umap` object.
-     */
-    Umap& set_batch(bool b = Defaults::batch) {
-        rparams.batch = b;
-        return *this;
-    }
-
-    /**
      * @param n Number of threads to use.
      *
      * @return A reference to this `Umap` object.
      *
      * This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in `initialize()` or `run()`) and spectral initialization.
-     * If `set_batch()` is `true`, multiple threads will also be used during layout optimization.
      *
      * The `UMAPPP_CUSTOM_PARALLEL` macro can be set to a function that specifies a custom parallelization scheme.
      * This function should be a template that accept three arguments:
@@ -471,33 +448,17 @@ public:
          *
          */
         void run(int epoch_limit = 0) {
-            if (!rparams.batch) {
-                optimize_layout(
-                    ndim_,
-                    embedding_,
-                    epochs,
-                    rparams.a,
-                    rparams.b,
-                    rparams.repulsion_strength,
-                    rparams.learning_rate,
-                    engine,
-                    epoch_limit
-                );
-            } else {
-                optimize_layout_batched(
-                    ndim_,
-                    embedding_,
-                    epochs,
-                    rparams.a,
-                    rparams.b,
-                    rparams.repulsion_strength,
-                    rparams.learning_rate,
-                    [&]() -> auto { return engine(); },
-                    [](decltype(engine()) s) -> auto { return std::mt19937_64(s); },
-                    epoch_limit,
-                    rparams.nthreads
-                );
-            }
+            optimize_layout(
+                ndim_,
+                embedding_,
+                epochs,
+                rparams.a,
+                rparams.b,
+                rparams.repulsion_strength,
+                rparams.learning_rate,
+                engine,
+                epoch_limit
+            );
             return;
         }
     };
