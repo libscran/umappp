@@ -190,104 +190,93 @@ void optimize_layout(
 }
 
 template<class Float, class Setup>
-struct PersistentThread {
+struct BusyWaiterThread {
 public:
     std::vector<size_t> selections;
     std::vector<unsigned char> skips;
-    size_t from, to;
+    size_t observation;
 
     int ndim;
     Float* embedding;
-    Setup* setup;
+    const Setup* setup;
     Float a;
     Float b;
     Float gamma;
     Float alpha;
 
 private:
-    bool ready = false;
-    std::mutex mut;
-    std::condition_variable cv;
-
-    bool active = false;
-    bool finished = false;
     std::thread pool;
+    std::atomic<bool> ready = false;
+    bool finished = false;
+    bool active = false;
 
 public:
     void run() {
-        std::lock_guard<std::mutex> lock(mut);
-        ready = true;
-        cv.notify_one();
+        ready.store(true);
     }
 
     void wait() {
-        std::unique_lock<std::mutex> lock(mut);
-        cv.wait(lock, [this] { return !ready; });
-    }
-
-    std::lock_guard<std::mutex> lock() {
-        return std::lock_guard(mut);
+        while (ready.load()) {
+            ;
+        }
     }
 
 public:
     void loop() {
         while (true) {
-            std::unique_lock<std::mutex> lock(mut);
-            cv.wait(lock, [this] { return finished || ready; });
+            while (!ready.load()) {
+                ;
+            }
             if (finished) {
-                lock.unlock();
                 break;
             }
 
             auto seIt = selections.begin();
             auto skIt = skips.begin();
-            for (size_t i = from; i < to; ++i) {
-                size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
-                Float* left = embedding + i * ndim;
+            const size_t i = observation;
+            const size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
+            Float* left = embedding + i * ndim;
 
-                for (size_t j = start; j < end; ++j) {
-                    if (*(skIt++)) {
-                        continue;
-                    }
-
-                    {
-                        Float* right = embedding + setup->tail[j] * ndim;
-                        Float dist2 = quick_squared_distance(left, right, ndim);
-                        const Float pd2b = std::pow(dist2, b);
-                        const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
-
-                        Float* lcopy = left;
-                        for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                            Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
-                            *lcopy += gradient;
-                            *right -= gradient;
-                        }
-                    }
-
-                    while (seIt != selections.end() && *seIt != -1) {
-                        const Float* right = embedding + (*seIt) * ndim;
-                        Float dist2 = quick_squared_distance(left, right, ndim);
-                        const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
-                        Float* lcopy = left;
-                        for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                            *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
-                        }
-                        ++seIt;
-                    }
-                    ++seIt; // get past the -1.
+            for (size_t j = start; j < end; ++j) {
+                if (*(skIt++)) {
+                    continue;
                 }
+
+                {
+                    Float* right = embedding + setup->tail[j] * ndim;
+                    Float dist2 = quick_squared_distance(left, right, ndim);
+                    const Float pd2b = std::pow(dist2, b);
+                    const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+
+                    Float* lcopy = left;
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                        Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
+                        *lcopy += gradient;
+                        *right -= gradient;
+                    }
+                }
+
+                while (seIt != selections.end() && *seIt != -1) {
+                    const Float* right = embedding + (*seIt) * ndim;
+                    Float dist2 = quick_squared_distance(left, right, ndim);
+                    const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
+                    Float* lcopy = left;
+                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                        *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
+                    }
+                    ++seIt;
+                }
+                ++seIt; // get past the -1.
             }
 
-            ready = false;
-            lock.unlock();
-            cv.notify_one();
+            ready.store(false);
         }
     }
 
 public:
-    PersistentThread() {}
+    BusyWaiterThread() {}
 
-    PersistentThread(int ndim_, Float* embedding_, Setup& setup_, Float a_, Float b_, Float gamma_) : 
+    BusyWaiterThread(int ndim_, Float* embedding_, Setup& setup_, Float a_, Float b_, Float gamma_) : 
         ndim(ndim_),
         embedding(embedding_),
         setup(&setup_),
@@ -298,29 +287,25 @@ public:
 
     void start() {
         active = true;
-        pool = std::thread(&PersistentThread::loop, this);
+        pool = std::thread(&BusyWaiterThread::loop, this);
     }
 
 public:
-    ~PersistentThread() {
+    ~BusyWaiterThread() {
         if (active) {
-            {
-                std::lock_guard<std::mutex> lock(mut);
-                finished = true;
-            }
-            cv.notify_one();
+            finished = true;
+            ready.store(true);
             pool.join();
         }
     }
 
-    PersistentThread(PersistentThread&&) = default;
-    PersistentThread& operator=(PersistentThread&&) = default;
+    BusyWaiterThread(BusyWaiterThread&&) = default;
+    BusyWaiterThread& operator=(BusyWaiterThread&&) = default;
 
-    PersistentThread(const PersistentThread& src) :
+    BusyWaiterThread(const BusyWaiterThread& src) :
         selections(src.selections),
         skips(src.skips),
-        from(src.from),
-        to(src.to),
+        observation(src.observation),
 
         ndim(src.ndim),
         embedding(src.embedding),
@@ -331,11 +316,10 @@ public:
         alpha(src.alpha)
     {}
 
-    PersistentThread& operator=(const PersistentThread& src) {
+    BusyWaiterThread& operator=(const BusyWaiterThread& src) {
         selections = src.selections;
         skips = src.skips;
-        from = src.from;
-        to = src.to;
+        observation = src.observation;
 
         ndim = src.ndim;
         embedding = src.embedding;
@@ -368,12 +352,11 @@ void optimize_layout_concurrent(
     }
 
     const size_t num_obs = setup.head.size(); 
-    constexpr size_t block_size = 20;
     std::vector<int> last_touched(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
     std::vector<int> jobs;
 
-    std::vector<PersistentThread<Float, Setup> > pool;
+    std::vector<BusyWaiterThread<Float, Setup> > pool;
     pool.reserve(nthreads);
     for (int t = 0; t < nthreads; ++t) {
         pool.emplace_back(ndim, embedding, setup, a, b, gamma);
@@ -384,26 +367,25 @@ void optimize_layout_concurrent(
         const Float epoch = n;
         const Float alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
-        size_t block_start = 0;
         int base_iteration = 0;
         std::fill(last_touched.begin(), last_touched.end(), -1);
 
-        while (block_start < num_obs) {
+        size_t i = 0;
+        while (i < num_obs) {
             bool is_clear = true;
-            int thread_iteration = base_iteration;
 
-            for (int t = 0; t < nthreads; ++t) {
-                int thread_index = thread_iteration % nthreads;
+            for (int t = jobs.size(); t < nthreads; ++t) {
+                const int thread_index = i % nthreads;
                 auto& thread = pool[thread_index];
+                const int self_iteration = i;
 
-                // Setting parameters for the current block.
+                // Setting parameters for the current observation.
                 {
-                    std::lock_guard<std::mutex> lock = thread.lock();
-
-                    size_t block_end = std::min(block_start + block_size, num_obs);
                     thread.alpha = alpha;
-                    thread.from = block_start;
-                    thread.to = block_end;
+                    thread.observation = i;
+
+                    constexpr unsigned char READONLY = 0;
+                    constexpr unsigned char WRITE = 1;
 
                     // Tapping the RNG here in the serial section.
                     auto& selections = thread.selections;
@@ -411,75 +393,69 @@ void optimize_layout_concurrent(
                     auto& skips = thread.skips;
                     skips.clear();
 
-                    for (size_t i = block_start; i < block_end; ++i) {
-                        size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-                        {
-                            auto& touched = last_touched[i];
-                            auto& ttype = touch_type[i];
-                            if (touched >= base_iteration) {
-                                if (touched != thread_iteration) {
-                                    is_clear = false;
-                                } else {
-                                    ttype = 1;
-                                }
-                            } else {
-                                touched = thread_iteration;
-                                ttype = 1;
-                            }
+                    {
+                        auto& touched = last_touched[i];
+                        auto& ttype = touch_type[i];
+                        if (touched >= base_iteration) {
+                            is_clear = false;
+                        }
+                        touched = self_iteration;
+                        ttype = WRITE;
+                    }
+
+                    const size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
+                    for (size_t j = start; j < end; ++j) {
+                        bool skip = setup.epoch_of_next_sample[j] > epoch;
+                        skips.push_back(skip);
+                        if (skip) {
+                            continue;
                         }
 
-                        for (size_t j = start; j < end; ++j) {
-                            bool skip = setup.epoch_of_next_sample[j] > epoch;
-                            skips.push_back(skip);
-                            if (skip) {
+                        {
+                            auto neighbor = setup.tail[j];
+                            auto& touched = last_touched[neighbor];
+                            auto& ttype = touch_type[neighbor];
+                            if (touched >= base_iteration) {
+                                if (touched != self_iteration) {
+                                    is_clear = false;
+                                }
+                            }
+                            touched = self_iteration;
+                            ttype = WRITE;
+                        }
+
+                        const size_t num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
+                            setup.negative_sample_rate / setup.epochs_per_sample[j]; 
+
+                        for (size_t p = 0; p < num_neg_samples; ++p) {
+                            size_t sampled = aarand::discrete_uniform(rng, num_obs);
+                            if (sampled == i) {
                                 continue;
                             }
+                            selections.push_back(sampled);
 
-                            {
-                                auto neighbor = setup.tail[j];
-                                auto& touched = last_touched[neighbor];
-                                auto& ttype = touch_type[neighbor];
-                                if (touched >= base_iteration) {
-                                    if (touched != thread_iteration) {
+                            auto& touched = last_touched[sampled];
+                            auto& ttype = touch_type[sampled];
+                            if (touched >= base_iteration) { 
+                                if (touched != self_iteration) {
+                                    if (ttype == WRITE) {
                                         is_clear = false;
-                                    } else {
-                                        ttype = 1;
+
+                                        // Setting it back to READONLY for the next iteration.
+                                        // is_clear is already true so there won't be any further
+                                        // additions to the job pool for this iteration anyway.
+                                        ttype = READONLY;
                                     }
-                                } else {
-                                    touched = thread_iteration;
-                                    ttype = 1;
                                 }
+                            } else {
+                                ttype = READONLY;
                             }
-
-                            const size_t num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
-                                setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
-
-                            for (size_t p = 0; p < num_neg_samples; ++p) {
-                                size_t sampled = aarand::discrete_uniform(rng, num_obs);
-                                if (sampled == i) {
-                                    continue;
-                                }
-                                selections.push_back(sampled);
-
-                                // For the negative samples, we're strictly read-only, so the handling of 'ttype' is a bit different.
-                                auto& touched = last_touched[sampled];
-                                auto& ttype = touch_type[sampled];
-                                if (touched >= base_iteration) { 
-                                    if (touched != thread_iteration) {
-                                        if (ttype == 1) {
-                                            is_clear = false;
-                                        }
-                                    }
-                                } else {
-                                    touched = thread_iteration;
-                                    ttype = 0;
-                                }
-                            }
-                            selections.push_back(-1);
-
-                            setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
-                            setup.epoch_of_next_negative_sample[j] = epoch;
+                            touched = self_iteration;
                         }
+                        selections.push_back(-1);
+
+                        setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
+                        setup.epoch_of_next_negative_sample[j] = epoch;
                     }
                 }
 
@@ -490,8 +466,7 @@ void optimize_layout_concurrent(
                 // Submitting the job.
                 thread.run();
                 jobs.push_back(thread_index);
-                ++thread_iteration;
-                block_start += block_size;
+                ++i;
             }
 
             // Waiting for all the jobs that were submitted.
@@ -500,14 +475,13 @@ void optimize_layout_concurrent(
             }
             jobs.clear();
 
+            base_iteration = i;
             if (!is_clear) {
-                int thread_index = thread_iteration % nthreads;
+                int thread_index = i % nthreads;
                 pool[thread_index].run();
                 jobs.push_back(thread_index);
-                ++thread_iteration;
-                block_start += block_size;
+                ++i;
             }
-            base_iteration = thread_iteration;
         }
 
         for (auto job : jobs) {
