@@ -161,7 +161,7 @@ void optimize_layout(
                     setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
 
                 for (size_t p = 0; p < num_neg_samples; ++p) {
-                    size_t sampled = p % num_obs;
+                    size_t sampled = aarand::discrete_uniform(rng, num_obs);
                     if (sampled == i) {
                         continue;
                     }
@@ -204,23 +204,41 @@ public:
     Float gamma;
     Float alpha;
 
-    bool active = false;
+private:
+    bool ready = false;
     std::mutex mut;
     std::condition_variable cv;
+
+    bool active = false;
     bool finished = false;
-    bool done = false;
     std::thread pool;
+
+public:
+    void run() {
+        std::lock_guard<std::mutex> lock(mut);
+        ready = true;
+        cv.notify_one();
+    }
+
+    void wait() {
+        std::unique_lock<std::mutex> lock(mut);
+        cv.wait(lock, [this] { return !ready; });
+    }
+
+    std::lock_guard<std::mutex> lock() {
+        return std::lock_guard(mut);
+    }
 
 public:
     void loop() {
         while (true) {
             std::unique_lock<std::mutex> lock(mut);
-            cv.wait(lock, [this] { return finished; });
+            cv.wait(lock, [this] { return finished || ready; });
             if (finished) {
+                lock.unlock();
                 break;
             }
 
-            done = false;
             auto seIt = selections.begin();
             auto skIt = skips.begin();
             for (size_t i = from; i < to; ++i) {
@@ -260,7 +278,9 @@ public:
                 }
             }
 
-            done = true;
+            ready = false;
+            lock.unlock();
+            cv.notify_one();
         }
     }
 
@@ -285,7 +305,7 @@ public:
     ~PersistentThread() {
         if (active) {
             {
-                std::unique_lock<std::mutex> lock(mut);
+                std::lock_guard<std::mutex> lock(mut);
                 finished = true;
             }
             cv.notify_one();
@@ -348,7 +368,7 @@ void optimize_layout_concurrent(
     }
 
     const size_t num_obs = setup.head.size(); 
-    constexpr size_t block_size = 5;
+    constexpr size_t block_size = 20;
     std::vector<int> last_touched(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
     std::vector<int> jobs;
@@ -365,42 +385,45 @@ void optimize_layout_concurrent(
         const Float alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
         size_t block_start = 0;
-        int iteration = 0;
+        int base_iteration = 0;
         std::fill(last_touched.begin(), last_touched.end(), -1);
 
         while (block_start < num_obs) {
             bool is_clear = true;
-            int thread_count = jobs.size();
+            int thread_iteration = base_iteration;
 
-            while (thread_count < nthreads) {
+            for (int t = 0; t < nthreads; ++t) {
+                int thread_index = thread_iteration % nthreads;
+                auto& thread = pool[thread_index];
+
                 // Setting parameters for the current block.
                 {
-                    std::lock_guard<std::mutex> lock(pool[thread_count].mut);
-        
-                    auto& selections = pool[thread_count].selections;
-                    selections.clear();
-                    auto& skips = pool[thread_count].skips;
-                    skips.clear();
-                    int self_iteration = iteration + thread_count;
+                    std::lock_guard<std::mutex> lock = thread.lock();
 
                     size_t block_end = std::min(block_start + block_size, num_obs);
-                    pool[thread_count].alpha = alpha;
-                    pool[thread_count].from = block_start;
-                    pool[thread_count].to = block_end;
+                    thread.alpha = alpha;
+                    thread.from = block_start;
+                    thread.to = block_end;
+
+                    // Tapping the RNG here in the serial section.
+                    auto& selections = thread.selections;
+                    selections.clear();
+                    auto& skips = thread.skips;
+                    skips.clear();
 
                     for (size_t i = block_start; i < block_end; ++i) {
                         size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
                         {
                             auto& touched = last_touched[i];
                             auto& ttype = touch_type[i];
-    //                        std::cout << "\tSELF\t" << i << "\t" << touched << "\t" << iteration << "\t" << self_iteration << std::endl;
-                            if (touched >= iteration) {
-                                if (touched != self_iteration) {
-    //                                std::cout << "FAILED!" << std::endl;
+                            if (touched >= base_iteration) {
+                                if (touched != thread_iteration) {
                                     is_clear = false;
+                                } else {
+                                    ttype = 1;
                                 }
                             } else {
-                                touched = self_iteration;
+                                touched = thread_iteration;
                                 ttype = 1;
                             }
                         }
@@ -416,14 +439,14 @@ void optimize_layout_concurrent(
                                 auto neighbor = setup.tail[j];
                                 auto& touched = last_touched[neighbor];
                                 auto& ttype = touch_type[neighbor];
-    //                            std::cout << "\tFRIEND\t" << neighbor << "\t" << touched << "\t" << iteration << "\t" << self_iteration << std::endl;
-                                if (touched >= iteration) {
-                                    if (touched != self_iteration) {
-    //                                    std::cout << "FAILED!" << std::endl;
+                                if (touched >= base_iteration) {
+                                    if (touched != thread_iteration) {
                                         is_clear = false;
+                                    } else {
+                                        ttype = 1;
                                     }
                                 } else {
-                                    touched = self_iteration;
+                                    touched = thread_iteration;
                                     ttype = 1;
                                 }
                             }
@@ -438,18 +461,17 @@ void optimize_layout_concurrent(
                                 }
                                 selections.push_back(sampled);
 
+                                // For the negative samples, we're strictly read-only, so the handling of 'ttype' is a bit different.
                                 auto& touched = last_touched[sampled];
                                 auto& ttype = touch_type[sampled];
-    //                            std::cout << "\tSAMPLED\t" << sampled << "\t" << touched << "\t" << iteration << "\t" << self_iteration << std::endl;
-                                if (touched > iteration) {
-                                    if (touched != self_iteration) {
+                                if (touched >= base_iteration) { 
+                                    if (touched != thread_iteration) {
                                         if (ttype == 1) {
-    //                                        std::cout << "FAILED!" << std::endl;
                                             is_clear = false;
                                         }
                                     }
                                 } else {
-                                    touched = self_iteration;
+                                    touched = thread_iteration;
                                     ttype = 0;
                                 }
                             }
@@ -466,31 +488,30 @@ void optimize_layout_concurrent(
                 } 
 
                 // Submitting the job.
-                pool[thread_count].cv.notify_one();
-                ++thread_count;
+                thread.run();
+                jobs.push_back(thread_index);
+                ++thread_iteration;
                 block_start += block_size;
             }
 
             // Waiting for all the jobs that were submitted.
             for (auto job : jobs) {
-                std::unique_lock lock(pool[job].mut);
-                pool[job].cv.wait(lock, [&] { return pool[job].done; });
+                pool[job].wait();
             }
             jobs.clear();
 
-//            std::cout << thread_count << "\t" << block_start << " - " << block_end << std::endl;
-            if (is_clear) {
-                iteration += nthreads;
-            } else {
-                pool[thread_count].cv.notify_one();
-                iteration += thread_count; 
+            if (!is_clear) {
+                int thread_index = thread_iteration % nthreads;
+                pool[thread_index].run();
+                jobs.push_back(thread_index);
+                ++thread_iteration;
                 block_start += block_size;
             }
+            base_iteration = thread_iteration;
         }
 
         for (auto job : jobs) {
-            std::unique_lock lock(pool[job].mut);
-            pool[job].cv.wait(lock, [&] { return pool[job].done; });
+            pool[job].wait();
         }
     }
 
