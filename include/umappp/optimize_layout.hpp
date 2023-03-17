@@ -195,6 +195,7 @@ public:
     std::vector<size_t> selections;
     std::vector<unsigned char> skips;
     size_t observation;
+    Float alpha;
 
     int ndim;
     Float* embedding;
@@ -202,7 +203,6 @@ public:
     Float a;
     Float b;
     Float gamma;
-    Float alpha;
 
 private:
     std::thread pool;
@@ -212,64 +212,74 @@ private:
 
 public:
     void run() {
-        ready.store(true);
+        ready.store(true, std::memory_order_release);
     }
 
     void wait() {
-        while (ready.load()) {
+        while (ready.load(std::memory_order_acquire)) {
             ;
         }
     }
 
+    void migrate_parameters(BusyWaiterThread& src) {
+        selections.swap(src.selections);
+        skips.swap(src.skips);
+        alpha = src.alpha;
+        observation = src.observation;
+    }
+
 public:
+    void run_direct() {
+        auto seIt = selections.begin();
+        auto skIt = skips.begin();
+        const size_t i = observation;
+        const size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
+        Float* left = embedding + i * ndim;
+
+        for (size_t j = start; j < end; ++j) {
+            if (*(skIt++)) {
+                continue;
+            }
+
+            {
+                Float* right = embedding + setup->tail[j] * ndim;
+                Float dist2 = quick_squared_distance(left, right, ndim);
+                const Float pd2b = std::pow(dist2, b);
+                const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+
+                Float* lcopy = left;
+                for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                    Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
+                    *lcopy += gradient;
+                    *right -= gradient;
+                }
+            }
+
+            while (seIt != selections.end() && *seIt != -1) {
+                const Float* right = embedding + (*seIt) * ndim;
+                Float dist2 = quick_squared_distance(left, right, ndim);
+                const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
+                Float* lcopy = left;
+                for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
+                    *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
+                }
+                ++seIt;
+            }
+            ++seIt; // get past the -1.
+        }
+    }
+
+private:
     void loop() {
         while (true) {
-            while (!ready.load()) {
+            while (!ready.load(std::memory_order_acquire)) {
                 ;
             }
             if (finished) {
                 break;
             }
-
-            auto seIt = selections.begin();
-            auto skIt = skips.begin();
-            const size_t i = observation;
-            const size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
-            Float* left = embedding + i * ndim;
-
-            for (size_t j = start; j < end; ++j) {
-                if (*(skIt++)) {
-                    continue;
-                }
-
-                {
-                    Float* right = embedding + setup->tail[j] * ndim;
-                    Float dist2 = quick_squared_distance(left, right, ndim);
-                    const Float pd2b = std::pow(dist2, b);
-                    const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
-
-                    Float* lcopy = left;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                        Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
-                        *lcopy += gradient;
-                        *right -= gradient;
-                    }
-                }
-
-                while (seIt != selections.end() && *seIt != -1) {
-                    const Float* right = embedding + (*seIt) * ndim;
-                    Float dist2 = quick_squared_distance(left, right, ndim);
-                    const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
-                    Float* lcopy = left;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                        *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
-                    }
-                    ++seIt;
-                }
-                ++seIt; // get past the -1.
-            }
-
-            ready.store(false);
+            run_direct();
+            ready.store(false, std::memory_order_release);
         }
     }
 
@@ -294,7 +304,7 @@ public:
     ~BusyWaiterThread() {
         if (active) {
             finished = true;
-            ready.store(true);
+            ready.store(true, std::memory_order_release);
             pool.join();
         }
     }
@@ -354,14 +364,19 @@ void optimize_layout_concurrent(
     const size_t num_obs = setup.head.size(); 
     std::vector<int> last_touched(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
-    std::vector<int> jobs;
 
+    // We run some things directly in this main thread to avoid excessive busy-waiting.
+    BusyWaiterThread<Float, Setup> staging(ndim, embedding, setup, a, b, gamma);
+
+    int nthreadsm1 = nthreads - 1;
     std::vector<BusyWaiterThread<Float, Setup> > pool;
-    pool.reserve(nthreads);
-    for (int t = 0; t < nthreads; ++t) {
+    pool.reserve(nthreadsm1);
+    for (int t = 0; t < nthreadsm1; ++t) {
         pool.emplace_back(ndim, embedding, setup, a, b, gamma);
         pool.back().start();
     }
+
+    std::vector<int> jobs_in_progress;
 
     for (; n < limit_epochs; ++n) {
         const Float epoch = n;
@@ -374,24 +389,21 @@ void optimize_layout_concurrent(
         while (i < num_obs) {
             bool is_clear = true;
 
-            for (int t = jobs.size(); t < nthreads; ++t) {
-                const int thread_index = i % nthreads;
-                auto& thread = pool[thread_index];
-                const int self_iteration = i;
-
+            for (int t = jobs_in_progress.size(); t < nthreads; ++t) {
                 // Setting parameters for the current observation.
                 {
-                    thread.alpha = alpha;
-                    thread.observation = i;
-
-                    constexpr unsigned char READONLY = 0;
-                    constexpr unsigned char WRITE = 1;
+                    staging.alpha = alpha;
+                    staging.observation = i;
 
                     // Tapping the RNG here in the serial section.
-                    auto& selections = thread.selections;
+                    auto& selections = staging.selections;
                     selections.clear();
-                    auto& skips = thread.skips;
+                    auto& skips = staging.skips;
                     skips.clear();
+
+                    const int self_iteration = i;
+                    constexpr unsigned char READONLY = 0;
+                    constexpr unsigned char WRITE = 1;
 
                     {
                         auto& touched = last_touched[i];
@@ -438,20 +450,21 @@ void optimize_layout_concurrent(
                             auto& ttype = touch_type[sampled];
                             if (touched >= base_iteration) { 
                                 if (touched != self_iteration) {
-                                    if (ttype == WRITE) {
+//                                    if (ttype == WRITE) {
                                         is_clear = false;
 
                                         // Setting it back to READONLY for the next iteration.
                                         // is_clear is already true so there won't be any further
                                         // additions to the job pool for this iteration anyway.
-                                        ttype = READONLY;
-                                    }
+//                                        ttype = READONLY;
+//                                    }
                                 }
                             } else {
                                 ttype = READONLY;
                             }
                             touched = self_iteration;
                         }
+
                         selections.push_back(-1);
 
                         setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
@@ -463,28 +476,37 @@ void optimize_layout_concurrent(
                     break;
                 } 
 
-                // Submitting the job.
-                thread.run();
-                jobs.push_back(thread_index);
+                // Submitting if it's not the final job, otherwise just running it directly.
+                // This avoids a busy-wait on the main thread that uses up an extra CPU.
+                if (t < nthreadsm1) {
+                    const int thread_index = i % nthreadsm1;
+                    pool[thread_index].migrate_parameters(staging);
+                    pool[thread_index].run();
+                    jobs_in_progress.push_back(thread_index);
+                } else {
+                    staging.run_direct();
+                }
+
                 ++i;
             }
 
             // Waiting for all the jobs that were submitted.
-            for (auto job : jobs) {
+            for (auto job : jobs_in_progress) {
                 pool[job].wait();
             }
-            jobs.clear();
+            jobs_in_progress.clear();
 
             base_iteration = i;
             if (!is_clear) {
-                int thread_index = i % nthreads;
+                const int thread_index = i % nthreadsm1;
+                pool[thread_index].migrate_parameters(staging);
                 pool[thread_index].run();
-                jobs.push_back(thread_index);
+                jobs_in_progress.push_back(thread_index);
                 ++i;
             }
         }
 
-        for (auto job : jobs) {
+        for (auto job : jobs_in_progress) {
             pool[job].wait();
         }
     }
