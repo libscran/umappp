@@ -197,12 +197,15 @@ public:
     size_t observation;
     Float alpha;
 
+private:
     int ndim;
     Float* embedding;
     const Setup* setup;
     Float a;
     Float b;
     Float gamma;
+
+    std::vector<Float> self_modified;
 
 private:
     std::thread pool;
@@ -228,13 +231,25 @@ public:
         observation = src.observation;
     }
 
+    void transfer_coordinates() {
+        std::copy(self_modified.begin(), self_modified.end(), embedding + observation * ndim);
+    }
+
 public:
     void run_direct() {
         auto seIt = selections.begin();
         auto skIt = skips.begin();
         const size_t i = observation;
         const size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
-        Float* left = embedding + i * ndim;
+
+        // Copying it over into a thread-local buffer to avoid false sharing.
+        // We don't bother doing this for the neighbors, though, as it's 
+        // tedious to make sure that the modified values are available during negative sampling.
+        // (This isn't a problem for the self, as the self cannot be its own negative sample.)
+        {
+            const Float* left = embedding + i * ndim;
+            std::copy(left, left + ndim, self_modified.data());
+        }
 
         for (size_t j = start; j < end; ++j) {
             if (*(skIt++)) {
@@ -242,26 +257,29 @@ public:
             }
 
             {
+                Float* left = self_modified.data();
                 Float* right = embedding + setup->tail[j] * ndim;
+
                 Float dist2 = quick_squared_distance(left, right, ndim);
                 const Float pd2b = std::pow(dist2, b);
                 const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
 
-                Float* lcopy = left;
-                for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                    Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
-                    *lcopy += gradient;
+                for (int d = 0; d < ndim; ++d, ++left, ++right) {
+                    Float gradient = alpha * clamp(grad_coef * (*left - *right));
+                    *left += gradient;
                     *right -= gradient;
                 }
             }
 
             while (seIt != selections.end() && *seIt != -1) {
+                Float* left = self_modified.data();
                 const Float* right = embedding + (*seIt) * ndim;
+
                 Float dist2 = quick_squared_distance(left, right, ndim);
                 const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
-                Float* lcopy = left;
-                for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                    *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
+
+                for (int d = 0; d < ndim; ++d, ++left, ++right) {
+                    *left += alpha * clamp(grad_coef * (*left - *right));
                 }
                 ++seIt;
             }
@@ -292,7 +310,8 @@ public:
         setup(&setup_),
         a(a_), 
         b(b_),
-        gamma(gamma_)
+        gamma(gamma_),
+        self_modified(ndim)
     {}
 
     void start() {
@@ -323,7 +342,9 @@ public:
         a(src.a), 
         b(src.b),
         gamma(src.gamma),
-        alpha(src.alpha)
+        alpha(src.alpha),
+
+        self_modified(src.self_modified)
     {}
 
     BusyWaiterThread& operator=(const BusyWaiterThread& src) {
@@ -338,6 +359,8 @@ public:
         b = src.b;
         gamma = src.gamma;
         alpha = src.alpha;
+
+        self_modified = src.self_modified;
     }
 };
 
@@ -485,6 +508,7 @@ void optimize_layout_concurrent(
                     jobs_in_progress.push_back(thread_index);
                 } else {
                     staging.run_direct();
+                    staging.transfer_coordinates();
                 }
 
                 ++i;
@@ -493,6 +517,7 @@ void optimize_layout_concurrent(
             // Waiting for all the jobs that were submitted.
             for (auto job : jobs_in_progress) {
                 pool[job].wait();
+                pool[job].transfer_coordinates();
             }
             jobs_in_progress.clear();
 
@@ -508,6 +533,7 @@ void optimize_layout_concurrent(
 
         for (auto job : jobs_in_progress) {
             pool[job].wait();
+            pool[job].transfer_coordinates();
         }
     }
 
