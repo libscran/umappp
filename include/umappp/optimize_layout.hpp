@@ -355,6 +355,8 @@ public:
 };
 #endif
 
+//#define PRINT false
+
 template<typename Float, class Setup, class Rng>
 void optimize_layout_parallel(
     int ndim,
@@ -403,91 +405,108 @@ void optimize_layout_parallel(
         size_t i = 0;
         while (i < num_obs) {
             bool is_clear = true;
+//            if (PRINT) { std::cout << "size is " << jobs_in_progress.size() << std::endl; }
 
             for (int t = jobs_in_progress.size(); t < nthreads && i < num_obs; ++t) {
-                // Setting parameters for the current observation.
+                staging.alpha = alpha;
+                staging.observation = i;
+
+                // Tapping the RNG here in the serial section.
+                auto& selections = staging.selections;
+                selections.clear();
+                auto& skips = staging.skips;
+                skips.clear();
+
+                const int self_iteration = i;
+                constexpr unsigned char READONLY = 0;
+                constexpr unsigned char WRITE = 1;
+
                 {
-                    staging.alpha = alpha;
-                    staging.observation = i;
+                    auto& touched = last_touched[i];
+                    auto& ttype = touch_type[i];
+//                    if (PRINT) { std::cout << "SELF: " << i << ": " << touched << " (" << ttype << ")" << std::endl; }
+                    if (touched >= base_iteration) {
+                        is_clear = false;
+//                        if (PRINT) { std::cout << "=== FAILED! ===" << std::endl; }
+                    }
+                    touched = self_iteration;
+                    ttype = WRITE;
+                }
 
-                    // Tapping the RNG here in the serial section.
-                    auto& selections = staging.selections;
-                    selections.clear();
-                    auto& skips = staging.skips;
-                    skips.clear();
-
-                    const int self_iteration = i;
-                    constexpr unsigned char READONLY = 0;
-                    constexpr unsigned char WRITE = 1;
+                const size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
+                for (size_t j = start; j < end; ++j) {
+                    bool skip = setup.epoch_of_next_sample[j] > epoch;
+                    skips.push_back(skip);
+                    if (skip) {
+                        continue;
+                    }
 
                     {
-                        auto& touched = last_touched[i];
-                        auto& ttype = touch_type[i];
+                        auto neighbor = setup.tail[j];
+                        auto& touched = last_touched[neighbor];
+                        auto& ttype = touch_type[neighbor];
+//                        if (PRINT) { std::cout << "\tNEIGHBOR: " << neighbor << ": " << touched << " (" << ttype << ")" << std::endl; }
                         if (touched >= base_iteration) {
-                            is_clear = false;
+                            if (touched != self_iteration) {
+                                is_clear = false;
+//                                if (PRINT) { std::cout << "=== FAILED! ===" << std::endl; }
+                            }
                         }
                         touched = self_iteration;
                         ttype = WRITE;
                     }
 
-                    const size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-                    for (size_t j = start; j < end; ++j) {
-                        bool skip = setup.epoch_of_next_sample[j] > epoch;
-                        skips.push_back(skip);
-                        if (skip) {
+                    const size_t num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
+                        setup.negative_sample_rate / setup.epochs_per_sample[j]; 
+
+                    for (size_t p = 0; p < num_neg_samples; ++p) {
+                        size_t sampled = aarand::discrete_uniform(rng, num_obs);
+                        if (sampled == i) {
                             continue;
                         }
+                        selections.push_back(sampled);
 
-                        {
-                            auto neighbor = setup.tail[j];
-                            auto& touched = last_touched[neighbor];
-                            auto& ttype = touch_type[neighbor];
-                            if (touched >= base_iteration) {
-                                if (touched != self_iteration) {
+                        auto& touched = last_touched[sampled];
+                        auto& ttype = touch_type[sampled];
+//                        if (PRINT) { std::cout << "\t\tSAMPLED: " << sampled << ": " << touched << " (" << ttype << ")" << std::endl; }
+                        if (touched >= base_iteration) { 
+                            if (touched != self_iteration) {
+                                if (ttype == WRITE) {
                                     is_clear = false;
+//                                    if (PRINT) { std::cout << "=== FAILED! ===" << std::endl; }
                                 }
                             }
-                            touched = self_iteration;
-                            ttype = WRITE;
-                        }
-
-                        const size_t num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
-                            setup.negative_sample_rate / setup.epochs_per_sample[j]; 
-
-                        for (size_t p = 0; p < num_neg_samples; ++p) {
-                            size_t sampled = aarand::discrete_uniform(rng, num_obs);
-                            if (sampled == i) {
-                                continue;
-                            }
-                            selections.push_back(sampled);
-
-                            auto& touched = last_touched[sampled];
-                            auto& ttype = touch_type[sampled];
-                            if (touched >= base_iteration) { 
-                                if (touched != self_iteration) {
-//                                    if (ttype == WRITE) {
-                                        is_clear = false;
-
-                                        // Setting it back to READONLY for the next iteration.
-                                        // is_clear is already true so there won't be any further
-                                        // additions to the job pool for this iteration anyway.
-//                                        ttype = READONLY;
-//                                    }
-                                }
-                            } else {
-                                ttype = READONLY;
-                            }
+                        } else {
+                            // Only updating if it wasn't touched by a previous thread in this
+                            // round of thread iterations.
+                            ttype = READONLY;
                             touched = self_iteration;
                         }
-
-                        selections.push_back(-1);
-
-                        setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
-                        setup.epoch_of_next_negative_sample[j] = epoch;
                     }
+
+                    selections.push_back(-1);
+
+                    setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
+                    setup.epoch_of_next_negative_sample[j] = epoch;
                 }
 
                 if (!is_clear) {
+                    // As we only updated the access for 'sampled' to READONLY
+                    // if they weren't touched by another thread, we need to go
+                    // through and manually update them now that the next round
+                    // of thread_iterations will use 'self_iteration' as the
+                    // 'base_iteration'. This ensures that the flags are properly
+                    // set for the next round, under the expectation that the
+                    // pending thread becomes the first thread.
+                    for (auto s : selections) {
+                        if (s != -1) {
+                            auto& touched = last_touched[s];
+                            if (touched != self_iteration) {
+                                touched = self_iteration;
+                                touch_type[s] = READONLY;
+                            }
+                        }
+                    }
                     break;
                 } 
 
@@ -512,6 +531,8 @@ void optimize_layout_parallel(
                 pool[job].transfer_coordinates();
             }
             jobs_in_progress.clear();
+
+//            if (PRINT) { std::cout << "###################### OK ##########################" << std::endl; }
 
             base_iteration = i;
             if (!is_clear) {
