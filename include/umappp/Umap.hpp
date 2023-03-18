@@ -396,7 +396,8 @@ public:
      *
      * By default, this is set to `false` as the increase in the number of threads is usually not cost-effective for layout optimization.
      * Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor.
-     * Nonetheless, users can enable this if cost is no issue - usually a higher number of threads (above 4) is required to see a reduction in time.
+     * We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance.
+     * Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a reduction in time.
      *
      * If the `UMAPPP_NO_PARALLEL_OPTIMIZATION` macro is defined, **umappp** will not be compiled with support for parallel optimization.
      * This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest.
