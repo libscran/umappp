@@ -63,7 +63,7 @@ TEST_P(UmapTest, Basic) {
     EXPECT_EQ(copy, output);
 
     // Same results with multiple threads.
-    runner.set_num_threads(3);
+    runner.set_num_threads(2);
     std::fill(copy.begin(), copy.end(), 0);
     runner.run(ndim, nobs, data.data(), ndim, copy.data());
     EXPECT_EQ(copy, output);
