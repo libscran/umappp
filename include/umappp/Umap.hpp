@@ -160,6 +160,11 @@ public:
          * See `set_num_threads()`.
          */
         static constexpr int num_threads = 1;
+
+        /**
+         * See `set_parallel_optimization()`.
+         */
+        static constexpr int parallel_optimization = false;
     };
 
 private:
@@ -180,6 +185,7 @@ private:
         Float repulsion_strength = Defaults::repulsion_strength;
         Float learning_rate = Defaults::learning_rate;
         int nthreads = Defaults::num_threads;
+        bool parallel_optimization = Defaults::parallel_optimization;
     };
 
     RuntimeParameters rparams;
@@ -359,6 +365,7 @@ public:
      * @return A reference to this `Umap` object.
      *
      * This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in `initialize()` or `run()`) and spectral initialization.
+     * If `set_parallel_optimization()` is true, it will also affect the layout optimization, i.e., the gradient descent iterations.
      *
      * The `UMAPPP_CUSTOM_PARALLEL` macro can be set to a function that specifies a custom parallelization scheme.
      * This function should be a template that accept three arguments:
@@ -378,6 +385,25 @@ public:
      */
     Umap& set_num_threads(int n = Defaults::num_threads) {
         rparams.nthreads = n;
+        return *this;
+    }
+
+    /**
+     * @param p Whether to enable parallel optimization.
+     * If set to `true`, this will use the number of threads specified in `set_num_threads()` for the layout optimization step.
+     *
+     * @return A reference to this `Umap` object.
+     *
+     * By default, this is set to `false` as the increase in the number of threads is usually not cost-effective for layout optimization.
+     * Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor.
+     * Nonetheless, users can enable this if cost is no issue - usually a higher number of threads (above 4) is required to see a reduction in time.
+     *
+     * If the `UMAPPP_NO_PARALLEL_OPTIMIZATION` macro is defined, **umappp** will not be compiled with support for parallel optimization.
+     * This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest.
+     * In such cases, enabling parallel optimization and calling `Status::run()` will raise an error.
+     */
+    Umap& set_parallel_optimization(bool p = Defaults::parallel_optimization) {
+        rparams.parallel_optimization = p;
         return *this;
     }
 
@@ -448,17 +474,32 @@ public:
          *
          */
         void run(int epoch_limit = 0) {
-            optimize_layout(
-                ndim_,
-                embedding_,
-                epochs,
-                rparams.a,
-                rparams.b,
-                rparams.repulsion_strength,
-                rparams.learning_rate,
-                engine,
-                epoch_limit
-            );
+            if (rparams.nthreads == 1 || !rparams.parallel_optimization) {
+                optimize_layout(
+                    ndim_,
+                    embedding_,
+                    epochs,
+                    rparams.a,
+                    rparams.b,
+                    rparams.repulsion_strength,
+                    rparams.learning_rate,
+                    engine,
+                    epoch_limit
+                );
+            } else {
+                optimize_layout_parallel(
+                    ndim_,
+                    embedding_,
+                    epochs,
+                    rparams.a,
+                    rparams.b,
+                    rparams.repulsion_strength,
+                    rparams.learning_rate,
+                    engine,
+                    epoch_limit,
+                    rparams.nthreads
+                );
+            }
             return;
         }
     };

@@ -5,7 +5,10 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 #include <thread>
+#include <atomic>
+#endif
 
 #include "NeighborList.hpp"
 #include "aarand/aarand.hpp"
@@ -86,27 +89,9 @@ Float clamp(Float input) {
     return std::min(std::max(input, min_gradient), max_gradient);
 }
 
-template<bool batch, typename Float, class Setup, class Rng> 
-void optimize_sample(
-    size_t i,
-    int ndim,
-    Float* embedding,
-    Float* buffer,
-    Setup& setup,
-    Float a,
-    Float b,
-    Float gamma,
-    Float alpha,
-    Rng& rng,
-    Float epoch
-) {
-    const auto& head = setup.head;
-    const auto& tail = setup.tail;
-    const auto& epochs_per_sample = setup.epochs_per_sample;
-    auto& epoch_of_next_sample = setup.epoch_of_next_sample;
-    auto& epoch_of_next_negative_sample = setup.epoch_of_next_negative_sample;
-   
-}
+/*****************************************************
+ ***************** Serial code ***********************
+ *****************************************************/
 
 template<typename Float, class Setup, class Rng>
 void optimize_layout(
@@ -189,6 +174,11 @@ void optimize_layout(
     return;
 }
 
+/*****************************************************
+ **************** Parallel code **********************
+ *****************************************************/
+
+#ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 template<class Float, class Setup>
 struct BusyWaiterThread {
 public:
@@ -363,9 +353,10 @@ public:
         self_modified = src.self_modified;
     }
 };
+#endif
 
 template<typename Float, class Setup, class Rng>
-void optimize_layout_concurrent(
+void optimize_layout_parallel(
     int ndim,
     Float* embedding, 
     Setup& setup,
@@ -377,6 +368,7 @@ void optimize_layout_concurrent(
     int epoch_limit,
     int nthreads
 ) {
+#ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
     auto& n = setup.current_epoch;
     auto num_epochs = setup.total_epochs;
     auto limit_epochs = num_epochs;
@@ -538,6 +530,9 @@ void optimize_layout_concurrent(
     }
 
     return;
+#else
+    throw std::runtime_error("umappp was not compiled with support for parallel optimization");
+#endif
 }
 
 }
