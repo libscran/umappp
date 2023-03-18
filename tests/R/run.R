@@ -42,17 +42,15 @@ test_that("initialization is done correctly", {
 
 test_that("general run is not too inconsistent", {
     ref <- uwot::umap(X = mat, nn_method=list(idx=cbind(1:nrow(mat), res$nn.index), dist=cbind(0, res$nn.dist)), a=2, b=1)
-    obs <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, FALSE, 123)
-    obs2 <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, TRUE, 123)
+    obs <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, 123)
 
     # Values are within range.
     expect_true(all(obs < 10 & obs > -10))
 #    expect_true(all(obs2 < 10 & obs2 > -10)) # Who knows why GHA doesn't like this, but oh well.
 
     png("demo.png", width=10, height=5, units="in", res=120)
-    par(mfrow=c(1,3))
+    par(mfrow=c(1,2))
     plot(ref[,1], ref[,2], col=id, main="uwot")
     plot(obs[,1], obs[,2], col=id, main="umappp")
-    plot(obs2[,1], obs2[,2], col=id, main="umappp (batched)")
     dev.off()
 })
