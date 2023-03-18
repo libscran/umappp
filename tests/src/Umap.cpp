@@ -1,5 +1,9 @@
 #include <gtest/gtest.h>
 
+#ifndef TEST_NUM_THREADS
+#define TEST_NUM_THREADS 3
+#endif
+
 #ifdef TEST_CUSTOM_PARALLEL
 // Define before umappp includes.
 #include "custom_parallel.h"
@@ -63,7 +67,7 @@ TEST_P(UmapTest, Basic) {
     EXPECT_EQ(copy, output);
 
     // Same results with multiple threads.
-    runner.set_num_threads(2);
+    runner.set_num_threads(TEST_NUM_THREADS);
     std::fill(copy.begin(), copy.end(), 0);
     runner.run(ndim, nobs, data.data(), ndim, copy.data());
     EXPECT_EQ(copy, output);

@@ -33,11 +33,11 @@ jobs:
 
     - name: Configure the build
       if: ${{ matrix.config.cov == false }}
-      run: cmake -S . -B build
+      run: cmake -S . -B build -DTEST_NUM_THREADS=2
 
     - name: Configure the build with coverage
       if: ${{ matrix.config.cov == true }}
-      run: cmake -S . -B build -DCODE_COVERAGE=ON
+      run: cmake -S . -B build -DCODE_COVERAGE=ON -DTEST_NUM_THREADS=2
 
     - name: Run the build
       run: cmake --build build

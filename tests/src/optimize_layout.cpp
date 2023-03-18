@@ -1,5 +1,9 @@
 #include <gtest/gtest.h>
 
+#ifndef TEST_NUM_THREADS
+#define TEST_NUM_THREADS 3
+#endif
+
 #ifdef TEST_CUSTOM_PARALLEL
 // Define before umappp includes.
 #include "custom_parallel.h"
@@ -107,11 +111,11 @@ TEST_P(OptimizeTest, ParallelRun) {
         umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
     }
 
-    // Trying with two threads.
+    // Trying with more threads.
     std::vector<double> embedding2(data);
     {
         std::mt19937_64 rng(100);
-        umappp::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, 0, 2);
+        umappp::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, 0, TEST_NUM_THREADS);
     }
 
     EXPECT_NE(data, embedding); // some kind of change happened!

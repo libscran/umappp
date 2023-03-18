@@ -1,5 +1,9 @@
 #include <gtest/gtest.h>
 
+#ifndef TEST_NUM_THREADS
+#define TEST_NUM_THREADS 3
+#endif
+
 #ifdef TEST_CUSTOM_PARALLEL
 // Define before umappp includes.
 #include "custom_parallel.h"
@@ -47,7 +51,7 @@ TEST_P(SpectralInitTest, Basic) {
 
     // Same result with multiple threads.
     std::vector<double> copy(ndim * order);
-    umappp::spectral_init<>(edges, ndim, copy.data(), 3);
+    umappp::spectral_init<>(edges, ndim, copy.data(), TEST_NUM_THREADS);
     EXPECT_EQ(output, copy);
 }
 

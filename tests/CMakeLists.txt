@@ -48,6 +48,13 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_link_options(libtest PRIVATE --coverage)
 endif()
 
+# Avoid putting too much stress on CI systems with limited CPUs.
+option(TEST_NUM_THREADS "Set the number of threads for testing" 0) 
+if(TEST_NUM_THREADS GREATER 0)
+    target_compile_definitions(libtest PRIVATE TEST_NUM_THREADS=${TEST_NUM_THREADS})
+    target_compile_definitions(cuspartest PRIVATE TEST_NUM_THREADS=${TEST_NUM_THREADS})
+endif()
+
 include(GoogleTest)
 gtest_discover_tests(libtest)
 gtest_discover_tests(cuspartest)
