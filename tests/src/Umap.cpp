@@ -67,6 +67,12 @@ TEST_P(UmapTest, Basic) {
     std::fill(copy.begin(), copy.end(), 0);
     runner.run(ndim, nobs, data.data(), ndim, copy.data());
     EXPECT_EQ(copy, output);
+
+    // Same results with multiple threads and parallel optimization enabled.
+    runner.set_parallel_optimization(true);
+    std::fill(copy.begin(), copy.end(), 0);
+    runner.run(ndim, nobs, data.data(), ndim, copy.data());
+    EXPECT_EQ(copy, output);
 }
 
 INSTANTIATE_TEST_SUITE_P(

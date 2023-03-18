@@ -96,6 +96,28 @@ TEST_P(OptimizeTest, RestartedRun) {
     EXPECT_EQ(embedding, embedding2);
 }
 
+TEST_P(OptimizeTest, ParallelRun) {
+    assemble(GetParam());
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
+    auto epoch2 = epoch;
+
+    std::vector<double> embedding(data);
+    {
+        std::mt19937_64 rng(100);
+        umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
+    }
+
+    // Trying with two threads.
+    std::vector<double> embedding2(data);
+    {
+        std::mt19937_64 rng(100);
+        umappp::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, 0, 2);
+    }
+
+    EXPECT_NE(data, embedding); // some kind of change happened!
+    EXPECT_EQ(embedding, embedding2); 
+}
+
 INSTANTIATE_TEST_SUITE_P(
     Optimize,
     OptimizeTest,
