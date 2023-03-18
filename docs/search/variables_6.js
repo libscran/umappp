@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['repulsion_5fstrength_0',['repulsion_strength',['../structumappp_1_1Umap_1_1Defaults.html#ac436d5e0666698df6bfe254de1ba8b49',1,'umappp::Umap::Defaults']]]
+  ['parallel_5foptimization_0',['parallel_optimization',['../structumappp_1_1Umap_1_1Defaults.html#aa038b2c168974c022c8f3fd17c911f3a',1,'umappp::Umap::Defaults']]]
 ];

@@ -129,6 +129,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a78f0d0bc729994a690dd352532746411"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4af881851110578668d8a2f6b9d169d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#a4af881851110578668d8a2f6b9d169d4">set_num_threads</a> (int n=<a class="el" href="structumappp_1_1Umap_1_1Defaults.html#aedb568087394a5e9eed086372ae299f8">Defaults::num_threads</a>)</td></tr>
 <tr class="separator:a4af881851110578668d8a2f6b9d169d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96dfd070106eb11e2ed66e487f9f0761"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#a96dfd070106eb11e2ed66e487f9f0761">set_parallel_optimization</a> (bool p=<a class="el" href="structumappp_1_1Umap_1_1Defaults.html#aa038b2c168974c022c8f3fd17c911f3a">Defaults::parallel_optimization</a>)</td></tr>
+<tr class="separator:a96dfd070106eb11e2ed66e487f9f0761"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a8dc3b5627b853e031319fbe2713c82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structumappp_1_1Umap_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82">initialize</a> (<a class="el" href="NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172">NeighborList</a>&lt; Float &gt; x, int ndim, Float *embedding) const</td></tr>
 <tr class="separator:a1a8dc3b5627b853e031319fbe2713c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae157eda918be0e83f3702fcbd48efc9d"><td class="memTemplParams" colspan="2">template&lt;class Algorithm &gt; </td></tr>
@@ -983,7 +985,7 @@ template&lt;typename Float  = double&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object.</dd></dl>
-<p>This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in <code><a class="el" href="classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82">initialize()</a></code> or <code><a class="el" href="classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e">run()</a></code>) and spectral initialization.</p>
+<p>This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in <code><a class="el" href="classumappp_1_1Umap.html#a1a8dc3b5627b853e031319fbe2713c82">initialize()</a></code> or <code><a class="el" href="classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e">run()</a></code>) and spectral initialization. If <code><a class="el" href="classumappp_1_1Umap.html#a96dfd070106eb11e2ed66e487f9f0761">set_parallel_optimization()</a></code> is true, it will also affect the layout optimization, i.e., the gradient descent iterations.</p>
 <p>The <code>UMAPPP_CUSTOM_PARALLEL</code> macro can be set to a function that specifies a custom parallelization scheme. This function should be a template that accept three arguments:</p>
 <ul>
 <li><code>njobs</code>, an integer specifying the number of jobs.</li>
@@ -992,6 +994,43 @@ template&lt;typename Float  = double&gt; </div>
 </ul>
 <p>The function should split <code>[0, njobs)</code> into any number of contiguous, non-overlapping intervals, and call <code>fun</code> on each interval, possibly in different threads. The details of the splitting and evaluation are left to the discretion of the developer defining the macro. The function should only return once all evaluations of <code>fun</code> are complete.</p>
 <p>If <code>UMAPPP_CUSTOM_PARALLEL</code> is set, the <code>IRLBA_CUSTOM_PARALLEL</code> macro is also set if it is not already defined. This ensures that any custom parallelization scheme is propagated to all of <b>umappp</b>'s dependencies. If <b>irlba</b> is used outside of <b>umappp</b>, some care is required to ensure that the macros are consistently defined throughout the client library/application; otherwise, developers may observe ODR compilation errors. </p>
+
+</div>
+</div>
+<a id="a96dfd070106eb11e2ed66e487f9f0761" name="a96dfd070106eb11e2ed66e487f9f0761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96dfd070106eb11e2ed66e487f9f0761">&#9670;&#160;</a></span>set_parallel_optimization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Float  = double&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classumappp_1_1Umap.html">Umap</a> &amp; <a class="el" href="classumappp_1_1Umap.html">umappp::Umap</a>&lt; Float &gt;::set_parallel_optimization </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>p</em> = <code><a class="el" href="structumappp_1_1Umap_1_1Defaults.html#aa038b2c168974c022c8f3fd17c911f3a">Defaults::parallel_optimization</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>Whether to enable parallel optimization. If set to <code>true</code>, this will use the number of threads specified in <code><a class="el" href="classumappp_1_1Umap.html#a4af881851110578668d8a2f6b9d169d4">set_num_threads()</a></code> for the layout optimization step.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classumappp_1_1Umap.html" title="Wrapper class to run UMAP.">Umap</a></code> object.</dd></dl>
+<p>By default, this is set to <code>false</code> as the increase in the number of threads is usually not cost-effective for layout optimization. Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor. We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance. Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a reduction in time.</p>
+<p>If the <code>UMAPPP_NO_PARALLEL_OPTIMIZATION</code> macro is defined, <b>umappp</b> will not be compiled with support for parallel optimization. This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest. In such cases, enabling parallel optimization and calling <code><a class="el" href="structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07">Status::run()</a></code> will raise an error. </p>
 
 </div>
 </div>
