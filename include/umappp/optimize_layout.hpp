@@ -412,7 +412,7 @@ void optimize_layout_concurrent(
         while (i < num_obs) {
             bool is_clear = true;
 
-            for (int t = jobs_in_progress.size(); t < nthreads; ++t) {
+            for (int t = jobs_in_progress.size(); t < nthreads && i < num_obs; ++t) {
                 // Setting parameters for the current observation.
                 {
                     staging.alpha = alpha;
