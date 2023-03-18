@@ -527,6 +527,7 @@ void optimize_layout_parallel(
             pool[job].wait();
             pool[job].transfer_coordinates();
         }
+        jobs_in_progress.clear();
     }
 
     return;
