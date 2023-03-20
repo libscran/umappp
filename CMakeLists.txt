@@ -1,23 +1,62 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14...3.25)
 
 project(umappp
     VERSION 1.0.0
     DESCRIPTION "A C++ implementation of the UMAP algorithm"
     LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
+# Library
 add_library(umappp INTERFACE)
+add_library(ltla::umappp ALIAS umappp)
 
-target_include_directories(umappp INTERFACE include/)
+target_include_directories(umappp INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/ltla>)
+target_compile_features(umappp INTERFACE cxx_std_17)
 
-add_subdirectory(extern)
+# Dependencies
+option(UMAPPP_FETCH_EXTERN "Automatically fetch umappp's external dependencies." ON)
+if(UMAPPP_FETCH_EXTERN)
+    add_subdirectory(extern)
+else()
+    find_package(ltla_aarand CONFIG REQUIRED)
+    find_package(ltla_irlba CONFIG REQUIRED)
+    find_package(ltla_knncolle CONFIG REQUIRED)
+endif()
 
-target_link_libraries(umappp INTERFACE knncolle aarand irlba)
+target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba ltla::knncolle)
 
+# Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(UMAPPP_TESTS "Build umappp's test suite." ON)
+else()
+    option(UMAPPP_TESTS "Build umappp's test suite." OFF)
+endif()
+if(UMAPPP_TESTS)
     include(CTest)
     if(BUILD_TESTING)
         add_subdirectory(tests)
     endif()
 endif()
+
+# Install
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ltla)
+
+install(TARGETS umappp
+    EXPORT umapppTargets)
+
+install(EXPORT umapppTargets
+    FILE ltla_umapppTargets.cmake
+    NAMESPACE ltla::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ltla_umappp)
+
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/ltla_umapppConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ltla_umappp)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ltla_umapppConfig.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ltla_umappp)
