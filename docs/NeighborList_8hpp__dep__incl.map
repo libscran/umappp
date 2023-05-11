@@ -1,9 +1,9 @@
 <map id="umappp/NeighborList.hpp" name="umappp/NeighborList.hpp">
-<area shape="rect" id="node1" title="Defines the NeighborList typedef." alt="" coords="256,5,427,31"/>
-<area shape="rect" id="node2" href="$Umap_8hpp.html" title="Run the UMAP algorithm." alt="" coords="276,167,407,192"/>
-<area shape="rect" id="node4" href="$combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="33,79,210,119"/>
-<area shape="rect" id="node5" href="$neighbor__similarities_8hpp_source.html" title=" " alt="" coords="234,86,449,111"/>
-<area shape="rect" id="node6" href="$optimize__layout_8hpp_source.html" title=" " alt="" coords="473,86,658,111"/>
-<area shape="rect" id="node7" href="$spectral__init_8hpp_source.html" title=" " alt="" coords="682,86,849,111"/>
-<area shape="rect" id="node3" href="$umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="270,240,413,265"/>
+<area shape="rect" id="node1" title="Defines the NeighborList typedef." alt="" coords="254,5,423,31"/>
+<area shape="rect" id="node2" href="$Umap_8hpp.html" title="Run the UMAP algorithm." alt="" coords="273,168,404,193"/>
+<area shape="rect" id="node4" href="$combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="32,79,208,120"/>
+<area shape="rect" id="node5" href="$neighbor__similarities_8hpp_source.html" title=" " alt="" coords="232,87,445,112"/>
+<area shape="rect" id="node6" href="$optimize__layout_8hpp_source.html" title=" " alt="" coords="469,87,653,112"/>
+<area shape="rect" id="node7" href="$spectral__init_8hpp_source.html" title=" " alt="" coords="677,87,842,112"/>
+<area shape="rect" id="node3" href="$umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="268,241,409,267"/>
 </map>

@@ -109,6 +109,7 @@ $(function() {
 <div class="line">x.<a class="code hl_function" href="classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e">run</a>(&amp;searcher, 2, embedding.data());</div>
 </div><!-- fragment --><p>See the <a href="https://ltla.github.io/umappp">reference documentation</a> for more details.</p>
 <h1>Building projects</h1>
+<h2>CMake with <code>FetchContent</code></h2>
 <p>If you're already using CMake, you can add something like this to your <code>CMakeLists.txt</code>:</p>
 <div class="fragment"><div class="line">include(FetchContent)</div>
 <div class="line"> </div>
@@ -121,11 +122,20 @@ $(function() {
 <div class="line">FetchContent_MakeAvailable(umappp)</div>
 </div><!-- fragment --><p>And then:</p>
 <div class="fragment"><div class="line"># For executables:</div>
-<div class="line">target_link_libraries(myexe umappp)</div>
+<div class="line">target_link_libraries(myexe ltla::umappp)</div>
 <div class="line"> </div>
 <div class="line"># For libaries</div>
-<div class="line">target_link_libraries(mylib INTERFACE umappp)</div>
-</div><!-- fragment --><p>Otherwise, you can just copy the directory in <code>include</code> into some location that is visible to your compiler. Note that this requires the additional dependencies listed in <code>extern</code>:</p>
+<div class="line">target_link_libraries(mylib INTERFACE ltla::umappp)</div>
+</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+<div class="fragment"><div class="line">find_package(ltla_umappp CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(mylib INTERFACE ltla::umappp)</div>
+</div><!-- fragment --><p>To install the library, use:</p>
+<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
+<div class="line">cmake .. -DUMAPPP_TESTS=OFF</div>
+<div class="line">cmake --build . --target install</div>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DUMAPPP_FETCH_EXTERN=OFF</code>. See the commit hashes in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
+<h2>Manual</h2>
+<p>If you're not using CMake, the simple approach is to just copy the files in <code>include/</code> - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the external dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>, which also need to be made available during compilation:</p>
 <ul>
 <li>The <a href="https://github.com/LTLA/CppIrlba"><b>irlba</b></a> library for singular value decomposition (or in this case, an eigendecomposition). This also requires the <a href="https://gitlab.com/libeigen/eigen"><b>Eigen</b></a> library for matrix operations.</li>
 <li>The <a href="https://github.com/LTLA/knncolle"><b>knncolle</b></a> library for nearest neighbor search. If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the <code>UMAPPP_CUSTOM_NEIGHBORS</code> macro.</li>
