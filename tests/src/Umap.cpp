@@ -72,9 +72,11 @@ TEST_P(UmapTest, Basic) {
     EXPECT_EQ(status_partial.epoch(), 200);
     EXPECT_NE(copy, output);
 
+    std::vector<double> replacement(copy.size());
+    status_partial.set_embedding(replacement.data());
     status_partial.run();
     EXPECT_EQ(status_partial.epoch(), 500);
-    EXPECT_EQ(copy, output);
+    EXPECT_EQ(replacement, output);
 
     // Same results with multiple threads.
     runner.set_num_threads(TEST_NUM_THREADS);

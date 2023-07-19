@@ -444,6 +444,24 @@ public:
         }
 
         /**
+         * @param ptr Pointer to a two-dimensional array as described in `embedding()`.
+         * @param copy Whether the contents of the previous array should be copied into `ptr`.
+         *
+         * By default, the `Status` objects returned by `Umap` methods will operate on embeddings in an array specified at `Status` construction time.
+         * This method will change the embedding array for an existing `Status` object, which can be helpful in some situations, 
+         * e.g., to clone a `Status` object and to store its embeddings in a different array than the object.
+         *
+         * Note that the contents of the new array in `ptr` should be the same as the array that it replaces, as `run()` will continue the iteration from the coordinates inside the array.
+         * If a copy was already performed from the old array to the new array, the caller may set `copy = false` to avoid an extra copy.
+         */
+        void set_embedding(Float* ptr, bool copy = true) {
+            if (copy) {
+                std::copy(embedding_, embedding_ + static_cast<size_t>(ndim()) * nobs(), ptr);
+            }
+            embedding_ = ptr;
+        }
+
+        /**
          * @return Current epoch.
          */
         int epoch() const {
