@@ -1,9 +1,19 @@
 <map id="umappp/NeighborList.hpp" name="umappp/NeighborList.hpp">
-<area shape="rect" id="node1" title="Defines the NeighborList typedef." alt="" coords="254,5,423,31"/>
-<area shape="rect" id="node2" href="$Umap_8hpp.html" title="Run the UMAP algorithm." alt="" coords="273,168,404,193"/>
-<area shape="rect" id="node4" href="$combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="32,79,208,120"/>
-<area shape="rect" id="node5" href="$neighbor__similarities_8hpp_source.html" title=" " alt="" coords="232,87,445,112"/>
-<area shape="rect" id="node6" href="$optimize__layout_8hpp_source.html" title=" " alt="" coords="469,87,653,112"/>
-<area shape="rect" id="node7" href="$spectral__init_8hpp_source.html" title=" " alt="" coords="677,87,842,112"/>
-<area shape="rect" id="node3" href="$umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="268,241,409,267"/>
+<area shape="rect" id="Node000001" title="Defines the NeighborList typedef." alt="" coords="254,5,423,31"/>
+<area shape="rect" id="Node000002" href="$Umap_8hpp.html" title="Run the UMAP algorithm." alt="" coords="273,168,404,193"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="239,27,174,34,109,44,55,60,35,70,22,81,12,95,8,108,10,119,16,129,40,145,78,158,125,167,176,172,273,177,273,182,175,178,124,172,77,163,38,150,12,132,5,121,3,107,7,93,18,77,32,65,53,55,108,39,173,29,238,22"/>
+<area shape="rect" id="Node000004" href="$combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="32,79,208,120"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="292,39,175,81,173,76,290,34"/>
+<area shape="rect" id="Node000005" href="$neighbor__similarities_8hpp_source.html" title=" " alt="" coords="232,87,445,112"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="341,46,341,86,336,86,336,46"/>
+<area shape="rect" id="Node000006" href="$optimize__layout_8hpp_source.html" title=" " alt="" coords="469,87,653,112"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="387,34,528,83,526,88,385,39"/>
+<area shape="rect" id="Node000007" href="$spectral__init_8hpp_source.html" title=" " alt="" coords="677,87,842,112"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="421,31,666,76,701,83,700,88,665,82,420,37"/>
+<area shape="rect" id="Node000003" href="$umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="268,241,409,267"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="341,208,341,241,336,241,336,208"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="189,123,306,165,304,170,187,128"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="341,127,341,167,336,167,336,127"/>
+<area shape="poly" id="edge8_Node000006_Node000002" title=" " alt="" coords="514,120,374,170,372,165,512,115"/>
+<area shape="poly" id="edge10_Node000007_Node000002" title=" " alt="" coords="686,118,666,122,405,170,404,165,665,117,685,113"/>
 </map>

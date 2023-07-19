@@ -1,5 +1,7 @@
 <map id="umappp/NeighborList.hpp" name="umappp/NeighborList.hpp">
-<area shape="rect" id="node1" title="Defines the NeighborList typedef." alt="" coords="5,5,175,31"/>
-<area shape="rect" id="node2" title=" " alt="" coords="26,79,77,105"/>
-<area shape="rect" id="node3" title=" " alt="" coords="101,79,159,105"/>
+<area shape="rect" id="Node000001" title="Defines the NeighborList typedef." alt="" coords="5,5,175,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="26,79,77,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="86,32,67,67,62,65,81,30"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="101,79,159,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="99,30,118,65,114,67,94,33"/>
 </map>
