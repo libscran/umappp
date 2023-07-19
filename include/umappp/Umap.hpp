@@ -472,9 +472,12 @@ public:
          * The actual number of epochs performed is equal to the difference between `epoch_limit` and the current number of epochs in `epoch()`.
          * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `Umap::set_num_epochs()`.
          * If zero, defaults to the maximum number of epochs. 
-         *
          */
         void run(int epoch_limit = 0) {
+            if (epoch_limit == 0) {
+                epoch_limit = epochs.total_epochs;
+            }
+
             if (rparams.nthreads == 1 || !rparams.parallel_optimization) {
                 optimize_layout(
                     ndim_,

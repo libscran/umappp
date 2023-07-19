@@ -66,6 +66,16 @@ TEST_P(UmapTest, Basic) {
     runner.run(ndim, nobs, data.data(), ndim, copy.data());
     EXPECT_EQ(copy, output);
 
+    // Same results if we started a little, and then ran the rest.
+    std::fill(copy.begin(), copy.end(), 0);
+    auto status_partial = runner.run(ndim, nobs, data.data(), ndim, copy.data(), 200);
+    EXPECT_EQ(status_partial.epoch(), 200);
+    EXPECT_NE(copy, output);
+
+    status_partial.run();
+    EXPECT_EQ(status_partial.epoch(), 500);
+    EXPECT_EQ(copy, output);
+
     // Same results with multiple threads.
     runner.set_num_threads(TEST_NUM_THREADS);
     std::fill(copy.begin(), copy.end(), 0);
