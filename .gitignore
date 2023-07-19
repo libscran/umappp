@@ -1,0 +1,5 @@
+build
+*.swp
+*.png
+docs/latex
+docs/html
