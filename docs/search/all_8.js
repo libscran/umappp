@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['parallel_5foptimization_0',['parallel_optimization',['../structumappp_1_1Umap_1_1Defaults.html#aa038b2c168974c022c8f3fd17c911f3a',1,'umappp::Umap::Defaults']]]
+  ['min_5fdist_0',['min_dist',['../structumappp_1_1Umap_1_1Defaults.html#a987d4dd72836a457109d601eeef5734f',1,'umappp::Umap::Defaults']]],
+  ['mix_5fratio_1',['mix_ratio',['../structumappp_1_1Umap_1_1Defaults.html#acd4180c23efd818e75a6f7f43beb89c4',1,'umappp::Umap::Defaults']]]
 ];

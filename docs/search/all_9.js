@@ -1,5 +1,12 @@
 var searchData=
 [
-  ['repulsion_5fstrength_0',['repulsion_strength',['../structumappp_1_1Umap_1_1Defaults.html#ac436d5e0666698df6bfe254de1ba8b49',1,'umappp::Umap::Defaults']]],
-  ['run_1',['run',['../structumappp_1_1Umap_1_1Status.html#a6e68a6bf3f7f92534ddcbd4f289abb07',1,'umappp::Umap::Status::run()'],['../classumappp_1_1Umap.html#ab4f8f14f0ceb1e4a8bf4ca1c47489f0e',1,'umappp::Umap::run(const Algorithm *searcher, int ndim, Float *embedding, int epoch_limit=0)'],['../classumappp_1_1Umap.html#a82e94948f34c5bd7aaa6d9f5b7f41eb1',1,'umappp::Umap::run(NeighborList&lt; Float &gt; x, int ndim, Float *embedding, int epoch_limit=0) const'],['../classumappp_1_1Umap.html#a8d12576b1cbacf237b89ccf6942be98a',1,'umappp::Umap::run(int ndim_in, size_t nobs, const Input *input, int ndim_out, Float *embedding, int epoch_limit=0)']]]
+  ['ndim_0',['ndim',['../structumappp_1_1Umap_1_1Status.html#a79a0230e86a366fbd3ccf228e40b1163',1,'umappp::Umap::Status']]],
+  ['negative_5fsample_5frate_1',['negative_sample_rate',['../structumappp_1_1Umap_1_1Defaults.html#ad54b88348149a02bacddbe53ba3e08b5',1,'umappp::Umap::Defaults']]],
+  ['neighbor_2',['Neighbor',['../NeighborList_8hpp.html#a276ec7786ac002c8cd3faa096c2de846',1,'umappp']]],
+  ['neighborlist_3',['NeighborList',['../NeighborList_8hpp.html#aab5cd1cc7e9720f055ba2496f97d9172',1,'umappp']]],
+  ['neighborlist_2ehpp_4',['NeighborList.hpp',['../NeighborList_8hpp.html',1,'']]],
+  ['nobs_5',['nobs',['../structumappp_1_1Umap_1_1Status.html#a5c8c34ce62da51e6fea64d6bb955298b',1,'umappp::Umap::Status']]],
+  ['num_5fepochs_6',['num_epochs',['../structumappp_1_1Umap_1_1Defaults.html#a2ce5003bbe402960498a29f3221f7bef',1,'umappp::Umap::Defaults::num_epochs'],['../structumappp_1_1Umap_1_1Status.html#a3e039db8c5f77c931a7984f943b90a2b',1,'umappp::Umap::Status::num_epochs()']]],
+  ['num_5fneighbors_7',['num_neighbors',['../structumappp_1_1Umap_1_1Defaults.html#a3f69b649356b76ced4468c03be8330c7',1,'umappp::Umap::Defaults']]],
+  ['num_5fthreads_8',['num_threads',['../structumappp_1_1Umap_1_1Defaults.html#aedb568087394a5e9eed086372ae299f8',1,'umappp::Umap::Defaults']]]
 ];
