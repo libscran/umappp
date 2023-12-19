@@ -629,7 +629,7 @@ public:
      */
     template<typename Input = Float>
     Status initialize(int ndim_in, size_t nobs, const Input* input, int ndim_out, Float* embedding) { 
-        knncolle::VpTreeEuclidean<> searcher(ndim_in, nobs, input); 
+        knncolle::VpTreeEuclidean<int, Input, Input, Input> searcher(ndim_in, nobs, input); 
         return initialize(&searcher, ndim_out, embedding);
     }
 #endif

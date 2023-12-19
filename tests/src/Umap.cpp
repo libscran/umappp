@@ -59,6 +59,10 @@ TEST_P(UmapTest, Basic) {
 
     status.run();
     EXPECT_EQ(status.epoch(), 500);
+    for (auto o : output){ 
+        // Check that we don't get any weirdness.
+        EXPECT_FALSE(std::isnan(o));
+    }
 
     // Same results if we ran it from the top.
     std::vector<double> copy(nobs * ndim);
@@ -99,6 +103,30 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(5, 10, 15) // number of neighbors
     )
 );
+
+TEST(UmapTest, SinglePrecision) {
+    int nobs = 87;
+    int k = 5;
+    int ndim = 7;
+
+    std::mt19937_64 rng(nobs * k + 1); 
+    std::normal_distribution<float> dist(0, 1);
+    std::vector<float> data(nobs * ndim);
+    for (int r = 0; r < data.size(); ++r) {
+        data[r] = dist(rng);
+    }
+
+    umappp::Umap<float> runner;
+    std::vector<float> output(nobs * ndim);
+    auto status = runner.initialize(ndim, nobs, data.data(), 2, output.data());
+
+    status.run();
+    EXPECT_EQ(status.epoch(), 500);
+    for (auto o : output){ 
+        // Check that we don't get any weirdness.
+        EXPECT_FALSE(std::isnan(o));
+    }
+}
 
 TEST(UmapTest, EpochDecay) {
     EXPECT_EQ(umappp::choose_num_epochs(-1, 1000), 500);
