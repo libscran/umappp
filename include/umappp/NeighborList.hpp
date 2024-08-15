@@ -7,33 +7,23 @@
 /**
  * @file NeighborList.hpp
  *
- * @brief Defines the `NeighborList` typedef.
+ * @brief Defines the `NeighborList` alias.
  */
 
 namespace umappp {
 
 /**
- * @brief Neighbor specification based on index and distance.
- *
- * @tparam Float Floating-point type.
- *
- * The index refers to the position of the neighboring observation in the dataset.
- * The statistic can store some statistic related to the neighbor, e.g., distance or probabilities.
- */ 
-template<typename Float = double>
-using Neighbor =  std::pair<int, Float>;
-
-/**
  * @brief Lists of neighbors for each observation.
  *
- * @tparam Float Floating-point type.
+ * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Float_ Floating-point type for the distances.
  *
- * Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation.
+ * Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance.
  * Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector.
  * Also, the inner vector for observation `i` should not contain any `Neighbor` with index `i`.
  */
-template<typename Float = double>
-using NeighborList = std::vector<std::vector<Neighbor<Float> > >;
+template<typename Index_, typename Float_>
+using NeighborList = std::vector<std::vector<std::pair<Index_, Float_> > >;
 
 }
 

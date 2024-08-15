@@ -1,0 +1,170 @@
+#ifndef UMAPPP_INITIALIZE_HPP
+#define UMAPPP_INITIALIZE_HPP
+
+#include "NeighborList.hpp"
+#include "combine_neighbor_sets.hpp"
+#include "find_ab.hpp"
+#include "neighbor_similarities.hpp"
+#include "spectral_init.hpp"
+
+#include "knncolle/knncolle.hpp"
+
+#include <random>
+#include <cstdint>
+
+/**
+ * @file initialize.hpp
+ * @brief Initialize the UMAP algorithm.
+ */
+
+namespace umappp {
+
+/**
+ * @cond
+ */
+namespace internal {
+
+inline int choose_num_epochs(int num_epochs, size_t size) {
+    if (num_epochs < 0) {
+        // Choosing the number of epochs. We use a simple formula to decrease
+        // the number of epochs with increasing size, with the aim being that
+        // the 'extra work' beyond the minimal 200 epochs should be the same
+        // regardless of the numbe of observations. Given one calculation per
+        // observation per epoch, this amounts to 300 * 10000 calculations at
+        // the lower bound, so we simply choose a number of epochs that
+        // equalizes the number of calculations for any number of observations.
+        if (num_epochs < 0) {
+            constexpr int limit = 10000, minimal = 200, maximal = 300;
+            if (size <= limit) {
+                num_epochs = minimal + maximal;
+            } else {
+                num_epochs = minimal + static_cast<int>(std::ceil(maximal * limit / static_cast<double>(size)));
+            }
+        }
+    }
+    return num_epochs;
+}
+
+}
+/**
+ * @endcond
+ */
+
+/** 
+ * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Float_ Floating-point type for the distances.
+ *
+ * @param x Indices and distances to the nearest neighbors for each observation.
+ * Note the expectations in the `NeighborList` documentation.
+ * @param num_dim Number of dimensions of the embedding.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * The lifetime of the array should be no shorter than the final call to `Status::run()`.
+ *
+ * @return A `Status` object containing the initial state of the UMAP algorithm.
+ * Further calls to `Status::run()` will update the embeddings in `embedding`.
+ */
+template<typename Index_, typename Float_>
+Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, Float_* embedding, Options options) {
+    neighbor_similarities(x, local_connectivity, bandwidth);
+    combine_neighbor_sets(x, mix_ratio);
+
+    // Choosing the manner of initialization.
+    if (options.init == InitializeMethod::SPECTRAL || options.init == InitializeMethod::SPECTRAL_ONLY) {
+        bool attempt = spectral_init(x, num_dim, embedding, rparams.nthreads);
+        if (!attempt && options.init == InitializeMethod::SPECTRAL) {
+            random_init(x.size(), num_dim, embedding);
+        }
+    } else if (options.init == InitializeMethod::RANDOM) {
+        random_init(x.size(), num_dim, embedding);
+    }
+
+    // Finding a good a/b pair.
+    if (options.a <= 0 || options.b <= 0) {
+        auto found = find_ab(spread, min_dist);
+        options.a = found.first;
+        options.b = found.second;
+    }
+
+    options.num_epochs = internal::choose_num_epochs(options.num_epochs, x.size());
+
+    return Status<Index_, Float_>(
+        similarities_to_epochs(x, options.num_epochs_to_do, options.negative_sample_rate),
+        options,
+        num_dim,
+        embedding
+    );
+}
+
+/**
+ * @tparam Dim_ Integer type for the dimensions of the input dataset.
+ * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Float_ Floating-point type for the distances.
+ *
+ * @param index A `knncolle::Prebuilt` instance constructed from the input dataset.
+ * @param num_dim Number of dimensions of the UMAP embedding.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * The lifetime of the array should be no shorter than the final call to `Status::run()`.
+ *
+ * @return A `Status` object containing the initial state of the UMAP algorithm.
+ * Further calls to `Status::run()` will update the embeddings in `embedding`.
+ */
+template<typename Dim_, typename Index_, typename Float_>
+Status initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
+    const size_t N = searcher->nobs();
+    NeighborList<Float> output(N);
+
+#ifndef UMAPPP_CUSTOM_PARALLEL
+    #pragma omp parallel for num_threads(rparams.nthreads)
+    for (size_t i = 0; i < N; ++i) {
+#else
+    UMAPPP_CUSTOM_PARALLEL(N, [&](size_t first, size_t last) -> void {
+    for (size_t i = first; i < last; ++i) {
+#endif
+
+        output[i] = searcher->find_nearest_neighbors(i, num_neighbors);
+
+#ifndef UMAPPP_CUSTOM_PARALLEL
+    }
+#else
+    }
+    }, rparams.nthreads);
+#endif
+
+    return initialize(std::move(output), num_dim, embedding);
+}
+
+/**
+ * @tparam Dim_ Integer type for the dimensions of the input dataset.
+ * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Float_ Floating-point type for the distances.
+ * 
+ * @param data_dim Number of dimensions of the input dataset.
+ * @param num_obs Number of observations in the input dataset.
+ * @param[in] data Pointer to an array containing the input high-dimensional data as a column-major matrix.
+ * Each row corresponds to a dimension (`data_dim`) and each column corresponds to an observation (`num_obs`).
+ * @param num_dim Number of dimensions of the embedding.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * The lifetime of the array should be no shorter than the final call to `Status::run()`.
+ *
+ * @return A `Status` object containing the initial state of the UMAP algorithm.
+ * Further calls to `Status::run()` will update the embeddings in `embedding`.
+ */
+template<typename Dim_, typename Index_, typename Float_>
+Status initialize(
+    Dim_ data_dim,
+    Index_ num_obs,
+    const Float_* data,
+    const knncolle::Builder<knncolle::SimpleMatrix<Dim_, Index_, Float_>, Float_>& builder,
+    int num_dim,
+    Float_* embedding)
+{ 
+    auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(data_dim, num_obs, data));
+    return initialize(prebuilt, num_dim, embedding);
+}
+
+}
+
+#endif

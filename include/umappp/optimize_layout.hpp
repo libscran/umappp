@@ -5,9 +5,12 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 #include <thread>
 #include <atomic>
+#else
+#include <stdexcept>
 #endif
 
 #include "NeighborList.hpp"
