@@ -23,7 +23,7 @@ namespace internal {
 template<typename Index_, typename Float_>
 bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, Float_* Y, int nthreads) {
     Index_ nobs = edges.size();
-    std::vector<double> sums(nobs);
+    std::vector<double> sums(nobs); // we deliberately use double-precision to avoid difficult problems from overflow/underflow inside IRLBA.
     std::vector<size_t> pointers;
     pointers.reserve(nobs + 1);
     pointers.push_back(0);
@@ -46,7 +46,7 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
     // Creating a normalized sparse matrix. Everything before TRANSFORM is the
     // actual normalized laplacian, everything after TRANSFORM is what we did
     // to the laplacian to make it possible to get the smallest eigenvectors. 
-    std::vector<double> values; // deliberately double-precision for accuracy here.
+    std::vector<double> values;
     values.reserve(reservable);
     std::vector<Index_> indices;
     indices.reserve(reservable);
@@ -57,7 +57,7 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
 
         for (; cIt != last && cIt->first < c; ++cIt) {
             indices.push_back(cIt->first);
-            values.push_back(- cIt->second / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
+            values.push_back(- static_cast<double>(cIt->second) / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
         }
 
         // Adding unity at the diagonal.
@@ -66,7 +66,7 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
 
         for (; cIt != current.end(); ++cIt) {
             indices.push_back(cIt->first);
-            values.push_back(- cIt->second / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
+            values.push_back(- static_cast<double>(cIt->second) / sums[cIt->first] / sums[c] /* TRANSFORM */ * (-1) );
         }
     }
 
