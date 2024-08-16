@@ -24,10 +24,10 @@ if(UMAPPP_FETCH_EXTERN)
 else()
     find_package(ltla_aarand CONFIG REQUIRED)
     find_package(ltla_irlba CONFIG REQUIRED)
-    find_package(ltla_knncolle CONFIG REQUIRED)
+    find_package(knncolle_knncolle CONFIG REQUIRED)
 endif()
 
-target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba ltla::knncolle)
+target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba knncolle::knncolle)
 
 # Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
