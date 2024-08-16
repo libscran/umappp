@@ -21,7 +21,7 @@ protected:
         std::normal_distribution<> dist(0, 1);
 
         std::vector<double> data(nobs * ndim);
-        for (int r = 0; r < data.size(); ++r) {
+        for (size_t r = 0; r < data.size(); ++r) {
             data[r] = dist(rng);
         }
 

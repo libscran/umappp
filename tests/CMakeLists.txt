@@ -16,11 +16,11 @@ enable_testing()
 
 add_executable(
     libtest 
-#    src/spectral_init.cpp
+    src/spectral_init.cpp
     src/combine_neighbor_sets.cpp
-#    src/neighbor_similarities.cpp
-#    src/optimize_layout.cpp
-#    src/find_ab.cpp
+    src/neighbor_similarities.cpp
+    src/optimize_layout.cpp
+    src/find_ab.cpp
 #    src/Umap.cpp
 )
 
@@ -45,6 +45,7 @@ target_link_libraries(
 )
 
 target_compile_definitions(cuspartest PRIVATE TEST_CUSTOM_PARALLEL=1)
+target_compile_options(libtest PRIVATE -Wall -Werror -Wpedantic -Wextra)
 
 set(CODE_COVERAGE "Enable coverage testing" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

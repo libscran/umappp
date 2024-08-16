@@ -1,27 +1,6 @@
 #ifndef UMAPPP_SPECTRAL_INIT_HPP
 #define UMAPPP_SPECTRAL_INIT_HPP
 
-#ifndef IRLBA_CUSTOM_PARALLEL
-#ifdef UMAPPP_CUSTOM_PARALLEL
-namespace umappp {
-
-template<class Function>
-void irlba_parallelize_(int nthreads, Function fun) {
-    UMAPPP_CUSTOM_PARALLEL(nthreads, [&](size_t f, size_t l) -> void {
-        // This loop should be trivial if f + 1== l when nthreads == njobs.
-        // Nonetheless, we still have a loop just in case the arbitrary
-        // scheduling does wacky things. 
-        for (size_t i = f; i < l; ++i) {
-            fun(f);
-        }
-    }, nthreads);
-}
-
-}
-#define IRLBA_CUSTOM_PARALLEL umappp::irlba_parallelize_
-#endif
-#endif
-
 #include "irlba/irlba.hpp"
 #include "irlba/parallel.hpp"
 
@@ -34,19 +13,23 @@ void irlba_parallelize_(int nthreads, Function fun) {
 
 namespace umappp {
 
+namespace internal {
+
 /* Peeled from the function of the same name in the uwot package,
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
+ *
+ * It is assumed that 'edges' has already been symmetrized.
  */
-template<typename Float>
-bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, int nthreads) {
-    size_t nobs = edges.size();
+template<typename Index_, typename Float_>
+bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, Float_* Y, int nthreads) {
+    Index_ nobs = edges.size();
     std::vector<double> sums(nobs);
     std::vector<size_t> pointers;
     pointers.reserve(nobs + 1);
     pointers.push_back(0);
     size_t reservable = 0;
 
-    for (size_t c = 0; c < nobs; ++c) {
+    for (Index_ c = 0; c < nobs; ++c) {
         const auto& current = edges[c];
 
         // +1 for self, assuming that no entry of 'current' is equal to 'c'.
@@ -63,12 +46,12 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, 
     // Creating a normalized sparse matrix. Everything before TRANSFORM is the
     // actual normalized laplacian, everything after TRANSFORM is what we did
     // to the laplacian to make it possible to get the smallest eigenvectors. 
-    std::vector<double> values;
+    std::vector<double> values; // deliberately double-precision for accuracy here.
     values.reserve(reservable);
-    std::vector<int> indices;
+    std::vector<Index_> indices;
     indices.reserve(reservable);
 
-    for (size_t c = 0; c < nobs; ++c) {
+    for (Index_ c = 0; c < nobs; ++c) {
         const auto& current = edges[c]; 
         auto cIt = current.begin(), last = current.end();
 
@@ -112,11 +95,16 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, 
      * see LTLA/umappp#4 for the discussion.
      */
 
-    irlba::ParallelSparseMatrix<> mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), nthreads);
+    irlba::ParallelSparseMatrix<
+        decltype(values),
+        decltype(indices),
+        decltype(pointers),
+        Eigen::VectorXd // deliberately double-precision here.
+    > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
     irlba::EigenThreadScope tscope(nthreads);
 
-    irlba::Irlba runner;
-    auto actual = runner.set_number(ndim + 1).run(mat);
+    irlba::Options opt;
+    auto actual = irlba::compute(mat, ndim + 1, opt);
     auto ev = actual.U.rightCols(ndim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
@@ -124,34 +112,33 @@ bool normalized_laplacian(const NeighborList<Float>& edges, int ndim, Float* Y, 
     const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
     const double expansion = (max_val > 0 ? 10 / max_val : 1);
 
-    for (size_t c = 0; c < nobs; ++c) {
-        size_t offset = c * ndim;
-        for (int d = 0; d < ndim; ++d) {
-            Y[offset + d] = ev(c, d) * expansion; // TODO: put back the jitter step.
+    for (Index_ c = 0; c < nobs; ++c) {
+        for (int d = 0; d < ndim; ++d, ++Y) {
+            *Y = ev.coeff(c, d) * expansion; // TODO: put back the jitter step.
         }
     }
     return true;
 }
 
-template<typename Float>
-bool has_multiple_components(const NeighborList<Float>& edges) {
+template<typename Index_, typename Float_>
+bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
     if (!edges.size()) {
         return false;
     }
 
     size_t in_component = 1;
-    std::vector<int> remaining(1, 0);
-    std::vector<int> mapping(edges.size(), -1);
-    mapping[0] = 0;
+    std::vector<Index_> remaining(1, 0);
+    std::vector<unsigned char> traversed(edges.size(), 0);
+    traversed[0] = 1;
 
     do {
         int curfriend = remaining.back();
         remaining.pop_back();
 
         for (const auto& ff : edges[curfriend]) {
-            if (mapping[ff.first] == -1) {
+            if (traversed[ff.first] == 0) {
                 remaining.push_back(ff.first);
-                mapping[ff.first] = 0;
+                traversed[ff.first] = 1;
                 ++in_component;
             }
         }
@@ -160,8 +147,8 @@ bool has_multiple_components(const NeighborList<Float>& edges) {
     return in_component != edges.size();
 }
 
-template<typename Float>
-bool spectral_init(const NeighborList<Float>& edges, int ndim, Float* vals, int nthreads) {
+template<typename Index_, typename Float_>
+bool spectral_init(const NeighborList<Index_, Float_>& edges, int ndim, Float_* vals, int nthreads) {
     if (!has_multiple_components(edges)) {
         if (normalized_laplacian(edges, ndim, vals, nthreads)) {
             return true;
@@ -170,13 +157,16 @@ bool spectral_init(const NeighborList<Float>& edges, int ndim, Float* vals, int 
     return false;
 }
 
-template<typename Float>
-void random_init(size_t nobs, int ndim, Float * vals) {
-    std::mt19937_64 rng(nobs * ndim); // for a bit of deterministic variety.
-    for (size_t i = 0; i < nobs * ndim; ++i) {
-        vals[i] = aarand::standard_uniform<Float>(rng) * static_cast<Float>(20) - static_cast<Float>(10); // values from (-10, 10).
+template<typename Float_>
+void random_init(size_t nobs, int ndim, Float_ * vals) {
+    size_t num = nobs * static_cast<size_t>(ndim); // cast to avoid overflow.
+    std::mt19937_64 rng(num); // for a bit of deterministic variety.
+    for (size_t i = 0; i < num; ++i) {
+        vals[i] = aarand::standard_uniform<Float_>(rng) * static_cast<Float_>(20) - static_cast<Float_>(10); // values from (-10, 10).
     }
     return;
+}
+
 }
 
 }
