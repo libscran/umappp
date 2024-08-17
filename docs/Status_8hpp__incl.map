@@ -1,5 +1,5 @@
 <map id="umappp/Status.hpp" name="umappp/Status.hpp">
-<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="134,5,268,31"/>
+<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="135,5,268,31"/>
 <area shape="rect" id="Node000002" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="5,79,96,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,34,91,74,89,70,174,29"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="11,153,71,178"/>
@@ -10,15 +10,15 @@
 <area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="233,29,341,71,339,75,231,34"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="52,105,47,138,42,137,46,105"/>
 <area shape="poly" id="edge8_Node000004_Node000003" title=" " alt="" coords="225,108,87,152,86,147,223,103"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="300,226,358,252"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="301,226,358,252"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="213,108,178,120,148,136,138,145,132,155,131,165,137,177,151,192,167,205,206,222,247,232,285,236,285,241,246,237,205,227,165,209,147,196,132,180,126,166,127,153,134,142,145,132,176,115,211,103"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="147,153,199,178"/>
 <area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="248,107,201,145,198,141,245,103"/>
 <area shape="rect" id="Node000007" title=" " alt="" coords="224,153,298,178"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="264,105,264,137,258,137,258,105"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="264,105,264,137,259,137,259,105"/>
 <area shape="rect" id="Node000008" title=" " alt="" coords="322,153,379,178"/>
 <area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="278,103,325,141,322,145,275,107"/>
-<area shape="rect" id="Node000009" title=" " alt="" coords="403,153,460,178"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="403,153,461,178"/>
 <area shape="poly" id="edge9_Node000004_Node000009" title=" " alt="" coords="291,103,390,144,388,149,289,108"/>
 <area shape="rect" id="Node000010" title=" " alt="" coords="484,153,545,178"/>
 <area shape="poly" id="edge10_Node000004_Node000010" title=" " alt="" coords="305,103,470,149,469,154,303,108"/>
@@ -28,5 +28,5 @@
 <area shape="poly" id="edge14_Node000004_Node000013" title=" " alt="" coords="329,100,342,102,697,150,696,155,341,107,328,106"/>
 <area shape="poly" id="edge13_Node000011_Node000005" title=" " alt="" coords="577,182,374,230,373,225,576,176"/>
 <area shape="rect" id="Node000012" title=" " alt="" coords="602,226,654,252"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="630,179,630,211,625,211,625,179"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="631,179,631,211,625,211,625,179"/>
 </map>

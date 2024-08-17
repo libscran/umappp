@@ -1,7 +1,7 @@
 var searchData=
 [
   ['negative_5fsample_5frate_0',['negative_sample_rate',['../structumappp_1_1Options.html#a10686bad854f25acf6542787b5d0a071',1,'umappp::Options']]],
-  ['neighborlist_1',['NeighborList',['../NeighborList_8hpp.html#a81d3f4003221b708a30630ae0bb20b38',1,'umappp']]],
+  ['neighborlist_1',['NeighborList',['../NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58',1,'umappp']]],
   ['neighborlist_2ehpp_2',['NeighborList.hpp',['../NeighborList_8hpp.html',1,'']]],
   ['num_5fdimensions_3',['num_dimensions',['../classumappp_1_1Status.html#adee7c0c16fd8ddf5fa19a7e6e7e44d4d',1,'umappp::Status']]],
   ['num_5fepochs_4',['num_epochs',['../structumappp_1_1Options.html#ab9f6ed93fb2d025cf94f7e556d82cdb9',1,'umappp::Options::num_epochs'],['../classumappp_1_1Status.html#ac03b32aa0acd6f912afdc589c5fea105',1,'umappp::Status::num_epochs()']]],

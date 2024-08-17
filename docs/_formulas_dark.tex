@@ -1,12 +1,10 @@
 \documentclass{article}
-\usepackage{iftex}
 \usepackage{ifthen}
 \usepackage{epsfig}
 \usepackage[utf8]{inputenc}
 \usepackage{xcolor}
 \color{white}
 \pagecolor{black}
-\ifPDFTeX
 \usepackage{newunicodechar}
   \makeatletter
     \def\doxynewunicodechar#1#2{%
@@ -27,7 +25,6 @@
   \doxynewunicodechar{²}{${}^{2}$}% Superscript two
   \doxynewunicodechar{³}{${}^{3}$}% Superscript three
 
-\fi
 \pagestyle{empty}
 \begin{document}
 $A$
