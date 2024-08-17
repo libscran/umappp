@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -89,15 +96,16 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span>umappp {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceumappp.html">umappp</a> {</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">   26</a></span><span class="keyword">using </span><a class="code hl_typedef" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">NeighborList</a> = std::vector&lt;std::vector&lt;std::pair&lt;Index_, Float_&gt; &gt; &gt;;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceumappp.html#afe025fafcc120fcb90e8c62177013d58">   26</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceumappp.html#afe025fafcc120fcb90e8c62177013d58">NeighborList</a> = std::vector&lt;std::vector&lt;std::pair&lt;Index_, Float_&gt; &gt; &gt;;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aNeighborList_8hpp_html_afe025fafcc120fcb90e8c62177013d58"><div class="ttname"><a href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">umappp::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::pair&lt; Index_, Float_ &gt; &gt; &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> NeighborList.hpp:26</div></div>
+<div class="ttc" id="anamespaceumappp_html"><div class="ttname"><a href="namespaceumappp.html">umappp</a></div><div class="ttdoc">Methods for UMAP.</div><div class="ttdef"><b>Definition</b> initialize.hpp:21</div></div>
+<div class="ttc" id="anamespaceumappp_html_afe025fafcc120fcb90e8c62177013d58"><div class="ttname"><a href="namespaceumappp.html#afe025fafcc120fcb90e8c62177013d58">umappp::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::pair&lt; Index_, Float_ &gt; &gt; &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> NeighborList.hpp:26</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

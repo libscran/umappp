@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['num_5fdimensions_0',['num_dimensions',['../classumappp_1_1Status.html#adee7c0c16fd8ddf5fa19a7e6e7e44d4d',1,'umappp::Status']]],
-  ['num_5fepochs_1',['num_epochs',['../classumappp_1_1Status.html#ac03b32aa0acd6f912afdc589c5fea105',1,'umappp::Status']]],
-  ['num_5fobservations_2',['num_observations',['../classumappp_1_1Status.html#a44365f9e414f75354b4d9b7533013454',1,'umappp::Status']]]
+  ['denormalize_0',['denormalize',['https://knncolle.github.io/knncolle/structknncolle_1_1EuclideanDistance.html#a1bb3cf480fc39ebb740c9f840626a6a5',1,'knncolle::EuclideanDistance::denormalize()'],['https://knncolle.github.io/knncolle/structknncolle_1_1ManhattanDistance.html#a4cae134de658e4b96433db80b62a549e',1,'knncolle::ManhattanDistance::denormalize()'],['https://knncolle.github.io/knncolle/structknncolle_1_1MockDistance.html#ae3456039934506172efe9d6bde895d96',1,'knncolle::MockDistance::denormalize()']]]
 ];

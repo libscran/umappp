@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -75,11 +82,13 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">umappp.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Overall header for the <b>umappp</b> library. This allows for a reasonably intuitive <code>#include "umappp/umappp.hpp"</code> call to include the library.  
+<p>Overall header for the <b>umappp</b> library.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="Options_8hpp_source.html">Options.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Status_8hpp_source.html">Status.hpp</a>&quot;</code><br />
@@ -89,84 +98,53 @@ Include dependency graph for umappp.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="umappp_8hpp__incl.png" border="0" usemap="#aumappp_2umappp_8hpp" alt=""/></div>
 <map name="aumappp_2umappp_8hpp" id="aumappp_2umappp_8hpp">
-<area shape="rect" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="110,5,252,31"/>
-<area shape="rect" href="Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="53,226,143,252"/>
-<area shape="poly" title=" " alt="" coords="178,33,130,154,109,213,104,211,125,152,173,31"/>
-<area shape="rect" href="Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="139,153,223,178"/>
-<area shape="poly" title=" " alt="" coords="184,31,184,137,178,137,178,31"/>
-<area shape="rect" href="initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="691,79,783,105"/>
-<area shape="poly" title=" " alt="" coords="252,26,676,80,675,85,251,31"/>
-<area shape="rect" title=" " alt="" coords="5,300,66,326"/>
-<area shape="poly" title=" " alt="" coords="90,254,58,290,54,286,86,250"/>
-<area shape="poly" title=" " alt="" coords="169,181,125,218,122,214,165,177"/>
-<area shape="poly" title=" " alt="" coords="183,179,177,215,169,235,157,254,126,275,81,296,79,291,124,271,154,250,164,233,172,213,178,178"/>
-<area shape="rect" href="optimize__layout_8hpp_source.html" title=" " alt="" coords="296,226,431,252"/>
-<area shape="poly" title=" " alt="" coords="213,176,319,218,317,223,211,181"/>
-<area shape="rect" title=" " alt="" coords="1362,300,1426,326"/>
-<area shape="poly" title=" " alt="" coords="223,165,387,170,615,180,844,197,938,209,1010,224,1035,236,1060,250,1138,270,1201,278,1265,284,1347,297,1346,302,1265,290,1200,284,1137,275,1059,254,1033,241,1008,229,938,215,843,203,615,185,387,175,223,170"/>
-<area shape="poly" title=" " alt="" coords="299,255,81,302,80,297,298,250"/>
-<area shape="rect" title=" " alt="" coords="927,374,984,399"/>
-<area shape="poly" title=" " alt="" coords="343,255,321,270,301,288,291,307,291,315,296,324,308,331,329,338,391,349,567,362,856,371,911,377,911,382,855,376,567,367,391,354,327,343,306,336,292,328,286,317,285,305,297,284,318,265,340,250"/>
-<area shape="rect" title=" " alt="" coords="307,300,359,326"/>
-<area shape="poly" title=" " alt="" coords="361,253,346,287,342,285,356,251"/>
-<area shape="rect" title=" " alt="" coords="902,300,977,326"/>
-<area shape="poly" title=" " alt="" coords="431,245,887,297,887,303,431,250"/>
-<area shape="rect" title=" " alt="" coords="383,300,440,326"/>
-<area shape="poly" title=" " alt="" coords="374,251,397,285,393,288,369,254"/>
-<area shape="rect" title=" " alt="" coords="90,300,147,326"/>
-<area shape="poly" title=" " alt="" coords="323,255,162,301,161,296,321,250"/>
-<area shape="rect" title=" " alt="" coords="171,300,231,326"/>
-<area shape="poly" title=" " alt="" coords="337,255,244,296,241,291,335,250"/>
-<area shape="rect" href="NeighborList_8hpp.html" title="Defines the NeighborList alias." alt="" coords="759,300,878,326"/>
-<area shape="poly" title=" " alt="" coords="432,248,743,297,743,302,431,254"/>
-<area shape="rect" title=" " alt="" coords="607,300,734,326"/>
-<area shape="poly" title=" " alt="" coords="416,250,604,293,603,299,415,255"/>
-<area shape="poly" title=" " alt="" coords="843,324,920,364,917,368,840,329"/>
-<area shape="rect" title=" " alt="" coords="793,374,844,399"/>
-<area shape="poly" title=" " alt="" coords="821,326,821,358,816,358,816,326"/>
-<area shape="poly" title=" " alt="" coords="694,108,516,159,286,229,81,298,80,293,284,224,514,154,693,103"/>
-<area shape="poly" title=" " alt="" coords="691,100,495,121,241,155,238,156,237,151,240,150,494,116,690,95"/>
-<area shape="poly" title=" " alt="" coords="736,106,730,133,726,171,727,212,739,251,756,273,778,290,775,294,752,277,734,253,722,213,720,170,725,132,731,105"/>
-<area shape="poly" title=" " alt="" coords="783,96,875,109,998,133,1134,171,1201,195,1266,224,1321,256,1368,288,1365,292,1319,260,1264,229,1199,200,1132,176,996,138,874,114,782,101"/>
-<area shape="rect" href="combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="1071,226,1253,252"/>
-<area shape="poly" title=" " alt="" coords="783,96,888,115,950,131,1010,150,1077,182,1134,215,1131,220,1075,187,1008,155,948,136,887,121,782,102"/>
-<area shape="rect" href="find__ab_8hpp_source.html" title=" " alt="" coords="748,226,835,252"/>
-<area shape="poly" title=" " alt="" coords="744,104,784,211,779,213,739,106"/>
-<area shape="rect" href="neighbor__similarities_8hpp_source.html" title=" " alt="" coords="487,226,651,252"/>
-<area shape="poly" title=" " alt="" coords="725,107,596,218,592,214,721,103"/>
-<area shape="rect" href="spectral__init_8hpp_source.html" title=" " alt="" coords="882,226,997,252"/>
-<area shape="poly" title=" " alt="" coords="751,103,791,137,841,176,905,216,902,221,838,181,787,141,748,107"/>
-<area shape="rect" title=" " alt="" coords="851,153,996,178"/>
-<area shape="poly" title=" " alt="" coords="769,103,878,144,877,149,768,108"/>
-<area shape="poly" title=" " alt="" coords="1254,239,1337,243,1424,253,1499,271,1527,283,1547,298,1553,313,1547,328,1517,342,1463,354,1308,371,1135,382,1000,387,999,381,1135,376,1307,366,1462,349,1515,337,1543,324,1548,313,1543,302,1525,288,1497,276,1423,259,1336,249,1254,244"/>
-<area shape="poly" title=" " alt="" coords="1125,255,992,298,991,292,1124,250"/>
-<area shape="poly" title=" " alt="" coords="1104,255,892,299,891,294,1103,250"/>
-<area shape="rect" title=" " alt="" coords="1451,300,1532,326"/>
-<area shape="poly" title=" " alt="" coords="1219,250,1436,297,1435,302,1218,255"/>
-<area shape="poly" title=" " alt="" coords="836,245,925,265,966,280,991,298,997,314,995,332,979,363,974,360,990,330,992,315,987,302,963,285,924,271,834,250"/>
-<area shape="poly" title=" " alt="" coords="748,249,621,270,456,302,455,297,620,265,748,244"/>
-<area shape="poly" title=" " alt="" coords="571,252,576,288,584,308,596,323,636,334,723,349,912,377,911,382,722,354,635,339,593,328,579,310,571,290,566,253"/>
-<area shape="poly" title=" " alt="" coords="529,255,375,301,373,296,527,250"/>
-<area shape="poly" title=" " alt="" coords="640,250,887,297,886,302,639,255"/>
-<area shape="poly" title=" " alt="" coords="543,255,453,296,451,291,541,250"/>
-<area shape="poly" title=" " alt="" coords="612,250,762,293,761,298,610,255"/>
-<area shape="rect" title=" " alt="" coords="465,300,532,326"/>
-<area shape="poly" title=" " alt="" coords="559,254,523,291,519,287,555,250"/>
-<area shape="poly" title=" " alt="" coords="975,250,1008,269,1023,283,1035,299,1039,319,1031,338,1015,354,996,368,992,363,1011,350,1026,335,1034,318,1030,301,1019,286,1005,273,973,255"/>
-<area shape="poly" title=" " alt="" coords="942,252,942,284,937,284,937,252"/>
-<area shape="poly" title=" " alt="" coords="920,255,853,294,851,289,918,250"/>
-<area shape="poly" title=" " alt="" coords="894,255,731,298,730,293,893,250"/>
-<area shape="poly" title=" " alt="" coords="998,247,1016,249,1180,270,1254,280,1347,297,1346,302,1253,285,1180,275,1015,255,997,252"/>
-<area shape="rect" title=" " alt="" coords="1240,300,1338,326"/>
-<area shape="poly" title=" " alt="" coords="998,250,1225,296,1224,301,997,255"/>
-<area shape="rect" title=" " alt="" coords="1102,300,1217,326"/>
-<area shape="poly" title=" " alt="" coords="978,250,1109,292,1107,297,976,255"/>
+<area shape="rect" title="Overall header for the umappp library." alt="" coords="167,5,308,31"/>
+<area shape="rect" href="Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="5,226,96,252"/>
+<area shape="poly" title=" " alt="" coords="229,33,72,216,68,213,225,30"/>
+<area shape="rect" href="Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="196,153,279,178"/>
+<area shape="poly" title=" " alt="" coords="240,31,240,137,235,137,235,31"/>
+<area shape="rect" href="initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="569,79,660,105"/>
+<area shape="poly" title=" " alt="" coords="302,29,554,76,553,82,301,34"/>
+<area shape="rect" title=" " alt="" coords="103,300,163,326"/>
+<area shape="poly" title=" " alt="" coords="66,251,110,288,106,292,63,255"/>
+<area shape="poly" title=" " alt="" coords="206,181,97,223,96,218,205,176"/>
+<area shape="poly" title=" " alt="" coords="215,181,187,201,161,228,147,256,139,285,134,284,142,254,156,225,183,197,212,177"/>
+<area shape="rect" title=" " alt="" coords="170,226,304,252"/>
+<area shape="poly" title=" " alt="" coords="240,179,240,211,235,211,235,179"/>
+<area shape="rect" title=" " alt="" coords="329,226,393,252"/>
+<area shape="poly" title=" " alt="" coords="260,177,329,216,326,221,257,181"/>
+<area shape="poly" title=" " alt="" coords="569,104,512,122,483,136,458,155,447,167,440,179,434,204,427,229,419,242,407,254,366,273,305,289,179,309,179,304,304,283,364,268,404,250,415,239,422,227,429,203,435,177,442,164,454,151,481,131,510,117,568,99"/>
+<area shape="poly" title=" " alt="" coords="569,104,294,156,293,151,568,99"/>
+<area shape="poly" title=" " alt="" coords="569,100,532,106,491,116,451,132,414,155,389,182,373,213,368,211,385,179,410,151,448,127,490,111,531,101,568,94"/>
+<area shape="rect" href="NeighborList_8hpp.html" title="Defines the NeighborList alias." alt="" coords="468,153,588,178"/>
+<area shape="poly" title=" " alt="" coords="601,107,556,145,552,141,598,103"/>
+<area shape="rect" title=" " alt="" coords="611,153,794,178"/>
+<area shape="poly" title=" " alt="" coords="631,103,678,141,674,145,628,107"/>
+<area shape="rect" title=" " alt="" coords="818,153,904,178"/>
+<area shape="poly" title=" " alt="" coords="657,103,805,145,804,150,656,108"/>
+<area shape="rect" title=" " alt="" coords="929,153,1092,178"/>
+<area shape="poly" title=" " alt="" coords="661,99,929,147,928,152,660,104"/>
+<area shape="rect" title=" " alt="" coords="1117,153,1232,178"/>
+<area shape="poly" title=" " alt="" coords="661,96,849,117,1102,150,1101,155,848,122,660,101"/>
+<area shape="rect" target="_parent" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html" title=" " alt="" coords="1257,153,1402,178"/>
+<area shape="poly" title=" " alt="" coords="661,94,904,116,1241,150,1241,155,904,121,661,100"/>
+<area shape="rect" title=" " alt="" coords="485,226,536,252"/>
+<area shape="poly" title=" " alt="" coords="528,179,520,212,514,211,522,178"/>
+<area shape="rect" title=" " alt="" coords="561,226,618,252"/>
+<area shape="poly" title=" " alt="" coords="540,177,571,213,567,216,536,180"/>
 </map>
 </div>
 </div>
 <p><a href="umappp_8hpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceumappp" id="r_namespaceumappp"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceumappp.html">umappp</a></td></tr>
+<tr class="memdesc:namespaceumappp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Methods for UMAP. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Overall header for the <b>umappp</b> library. This allows for a reasonably intuitive <code>#include "umappp/umappp.hpp"</code> call to include the library. </p>
+<div class="textblock"><p>Overall header for the <b>umappp</b> library. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

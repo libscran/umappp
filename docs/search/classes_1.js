@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['status_0',['Status',['../classumappp_1_1Status.html',1,'umappp']]]
+  ['euclideandistance_0',['EuclideanDistance',['https://knncolle.github.io/knncolle/structknncolle_1_1EuclideanDistance.html',1,'knncolle']]]
 ];

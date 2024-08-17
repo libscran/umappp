@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['run_0',['run',['../classumappp_1_1Status.html#ae0ce400ada7d45bd5b72ecca3fd0535a',1,'umappp::Status']]]
+  ['embedding_0',['embedding',['../classumappp_1_1Status.html#a3b3cdb3bfb439021b4342f60c395a6cf',1,'umappp::Status']]],
+  ['epoch_1',['epoch',['../classumappp_1_1Status.html#a7b6b70dce24aa2f446f786df2140ed67',1,'umappp::Status']]]
 ];

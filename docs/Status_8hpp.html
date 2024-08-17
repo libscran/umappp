@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -76,7 +83,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">Status.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -92,36 +100,16 @@ Include dependency graph for Status.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Status_8hpp__incl.png" border="0" usemap="#aumappp_2Status_8hpp" alt=""/></div>
 <map name="aumappp_2Status_8hpp" id="aumappp_2Status_8hpp">
-<area shape="rect" title="Status of the UMAP algorithm." alt="" coords="135,5,268,31"/>
+<area shape="rect" title="Status of the UMAP algorithm." alt="" coords="119,5,252,31"/>
 <area shape="rect" href="Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="5,79,96,105"/>
-<area shape="poly" title=" " alt="" coords="177,34,91,74,89,70,174,29"/>
-<area shape="rect" title=" " alt="" coords="11,153,71,178"/>
-<area shape="poly" title=" " alt="" coords="190,33,110,107,68,144,64,140,106,103,187,29"/>
-<area shape="rect" href="optimize__layout_8hpp_source.html" title=" " alt="" coords="194,79,328,105"/>
-<area shape="poly" title=" " alt="" coords="213,30,243,65,239,69,209,33"/>
-<area shape="rect" title=" " alt="" coords="353,79,417,105"/>
-<area shape="poly" title=" " alt="" coords="233,29,341,71,339,75,231,34"/>
-<area shape="poly" title=" " alt="" coords="52,105,47,138,42,137,46,105"/>
-<area shape="poly" title=" " alt="" coords="225,108,87,152,86,147,223,103"/>
-<area shape="rect" title=" " alt="" coords="301,226,358,252"/>
-<area shape="poly" title=" " alt="" coords="213,108,178,120,148,136,138,145,132,155,131,165,137,177,151,192,167,205,206,222,247,232,285,236,285,241,246,237,205,227,165,209,147,196,132,180,126,166,127,153,134,142,145,132,176,115,211,103"/>
-<area shape="rect" title=" " alt="" coords="147,153,199,178"/>
-<area shape="poly" title=" " alt="" coords="248,107,201,145,198,141,245,103"/>
-<area shape="rect" title=" " alt="" coords="224,153,298,178"/>
-<area shape="poly" title=" " alt="" coords="264,105,264,137,259,137,259,105"/>
-<area shape="rect" title=" " alt="" coords="322,153,379,178"/>
-<area shape="poly" title=" " alt="" coords="278,103,325,141,322,145,275,107"/>
-<area shape="rect" title=" " alt="" coords="403,153,461,178"/>
-<area shape="poly" title=" " alt="" coords="291,103,390,144,388,149,289,108"/>
-<area shape="rect" title=" " alt="" coords="484,153,545,178"/>
-<area shape="poly" title=" " alt="" coords="305,103,470,149,469,154,303,108"/>
-<area shape="rect" href="NeighborList_8hpp.html" title="Defines the NeighborList alias." alt="" coords="568,153,688,178"/>
-<area shape="poly" title=" " alt="" coords="324,103,554,147,553,152,323,108"/>
-<area shape="rect" title=" " alt="" coords="712,153,840,178"/>
-<area shape="poly" title=" " alt="" coords="329,100,342,102,697,150,696,155,341,107,328,106"/>
-<area shape="poly" title=" " alt="" coords="577,182,374,230,373,225,576,176"/>
-<area shape="rect" title=" " alt="" coords="602,226,654,252"/>
-<area shape="poly" title=" " alt="" coords="631,179,631,211,625,211,625,179"/>
+<area shape="poly" title=" " alt="" coords="164,34,88,74,85,69,161,29"/>
+<area shape="rect" title=" " alt="" coords="62,153,122,178"/>
+<area shape="poly" title=" " alt="" coords="180,33,110,141,106,138,175,30"/>
+<area shape="rect" title=" " alt="" coords="170,79,304,105"/>
+<area shape="poly" title=" " alt="" coords="196,30,222,65,217,68,192,33"/>
+<area shape="rect" title=" " alt="" coords="329,79,393,105"/>
+<area shape="poly" title=" " alt="" coords="216,29,318,70,316,75,214,34"/>
+<area shape="poly" title=" " alt="" coords="60,104,80,138,75,141,55,106"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -132,7 +120,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="rect" title="Status of the UMAP algorithm." alt="" coords="63,5,196,31"/>
 <area shape="rect" href="initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="5,79,147,105"/>
 <area shape="poly" title=" " alt="" coords="114,45,87,80,83,77,109,42"/>
-<area shape="rect" href="umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="59,153,200,178"/>
+<area shape="rect" href="umappp_8hpp.html" title="Overall header for the umappp library." alt="" coords="59,153,200,178"/>
 <area shape="poly" title=" " alt="" coords="147,44,161,78,162,100,157,121,140,153,136,151,152,119,157,99,156,80,142,46"/>
 <area shape="poly" title=" " alt="" coords="96,115,122,151,118,154,92,119"/>
 </map>
@@ -144,6 +132,12 @@ This graph shows which files directly or indirectly include this file:</div>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Status.html">umappp::Status&lt; Index_, Float_ &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a> of the UMAP optimization iterations.  <a href="classumappp_1_1Status.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceumappp" id="r_namespaceumappp"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceumappp.html">umappp</a></td></tr>
+<tr class="memdesc:namespaceumappp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Methods for UMAP. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

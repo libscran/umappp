@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -74,7 +81,7 @@ $(function() {
   <div class="headertitle"><div class="title">A C++ library for UMAP </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__2github_2workspace_2README"></a> <img src="https://github.com/LTLA/umappp/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/umappp/actions/workflows/doxygenate.yaml/badge.svg" alt="Documentation" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/umappp/actions/workflows/compare-uwot.yaml/badge.svg" alt="uwot comparison" style="pointer-events: none;" class="inline"/> <a href="https://codecov.io/gh/LTLA/umappp"><img src="https://codecov.io/gh/LTLA/umappp/branch/master/graph/badge.svg?token=IKFEAP5J55" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md__2github_2workspace_2README"></a> <img src="https://github.com/libscran/umappp/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/libscran/umappp/actions/workflows/doxygenate.yaml/badge.svg" alt="Documentation" style="pointer-events: none;" class="inline"/> <img src="https://github.com/libscran/umappp/actions/workflows/compare-uwot.yaml/badge.svg" alt="uwot comparison" style="pointer-events: none;" class="inline"/> <a href="https://codecov.io/gh/libscran/umappp"><img src="https://codecov.io/gh/libscran/umappp/branch/master/graph/badge.svg?token=XoOTZ0LNPo" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1>Overview</h1>
 <p><b>umappp</b> is a header-only C++ implementation of the Uniform Manifold Approximation and Projection (UMAP) algorithm (McInnes, Healy and Melville, 2018). UMAP is a non-linear dimensionality reduction technique that is most commonly used for visualization of complex datasets. This is achieved by placing each observation on a low-dimensional (usually 2D) embedding in a manner that preserves the neighborhood of each observation from the high-dimensional original space. The aim is to ensure that the local structure of the data is faithfully recapitulated in lower dimensions Further theoretical details can be found in the <a href="https://umap-learn.readthedocs.io/en/latest/how_umap_works.html">original UMAP documentation</a>; the implementation here is derived from the C++ code in the <a href="https://github.com/jlmelville/uwot"><b>uwot</b> R package</a>.</p>
 <h1>Quick start</h1>
@@ -87,11 +94,11 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="comment">// Initialize the UMAP state:</span></div>
 <div class="line"><a class="code hl_struct" href="structumappp_1_1Options.html">umappp::Options</a> opt;</div>
-<div class="line"><span class="keyword">auto</span> status = umappp::initialize(</div>
+<div class="line"><span class="keyword">auto</span> status = <a class="code hl_function" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a>(</div>
 <div class="line">    ndim,</div>
 <div class="line">    nobs,</div>
 <div class="line">    data.data(),</div>
-<div class="line">    knncolle::VptreeBuilder(), <span class="comment">// algorithm to find neighbors</span></div>
+<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), <span class="comment">// algorithm to find neighbors</span></div>
 <div class="line">    out_dim,</div>
 <div class="line">    embedding.data(),</div>
 <div class="line">    opt</div>
@@ -100,8 +107,10 @@ $(function() {
 <div class="line"><span class="comment">// Run UMAP algorithm to completion. This modifies the</span></div>
 <div class="line"><span class="comment">// values in the output &#39;embedding&#39; vector.</span></div>
 <div class="line">status.run();</div>
+<div class="ttc" id="aclassknncolle_1_1VptreeBuilder_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a></div></div>
+<div class="ttc" id="anamespaceumappp_html_af1dd7a21c6a6cbea17af256b3095b662"><div class="ttname"><a href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, int num_dim, Float_ *embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:71</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:28</div></div>
-<div class="ttc" id="aumappp_8hpp_html"><div class="ttname"><a href="umappp_8hpp.html">umappp.hpp</a></div><div class="ttdoc">Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp...</div></div>
+<div class="ttc" id="aumappp_8hpp_html"><div class="ttname"><a href="umappp_8hpp.html">umappp.hpp</a></div><div class="ttdoc">Overall header for the umappp library.</div></div>
 </div><!-- fragment --><p>We can modify parameters in the <code>Options</code> class that is passed to <code>initialize()</code>:</p>
 <div class="fragment"><div class="line">opt.<a class="code hl_variable" href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">num_neighbors</a> = 20;</div>
 <div class="line">opt.<a class="code hl_variable" href="structumappp_1_1Options.html#ab9f6ed93fb2d025cf94f7e556d82cdb9">num_epochs</a> = 200;</div>
@@ -110,11 +119,11 @@ $(function() {
 <div class="ttc" id="astructumappp_1_1Options_html_a95cc4a76b0d051fc15fb4dbbc9cb6520"><div class="ttname"><a href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">umappp::Options::num_neighbors</a></div><div class="ttdeci">int num_neighbors</div><div class="ttdef"><b>Definition</b> Options.hpp:120</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_ab9f6ed93fb2d025cf94f7e556d82cdb9"><div class="ttname"><a href="structumappp_1_1Options.html#ab9f6ed93fb2d025cf94f7e556d82cdb9">umappp::Options::num_epochs</a></div><div class="ttdeci">int num_epochs</div><div class="ttdef"><b>Definition</b> Options.hpp:100</div></div>
 </div><!-- fragment --><p>We can also run the algorithm up to the specified number of epochs, which is occasionally useful for inspecting the intermediate states of the embedding:</p>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> status2 = umappp::initialize(</div>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> status2 = <a class="code hl_function" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a>(</div>
 <div class="line">    ndim,</div>
 <div class="line">    nobs,</div>
 <div class="line">    data.data(),</div>
-<div class="line">    knncolle::VptreeBuilder(), <span class="comment">// algorithm to find neighbors</span></div>
+<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), <span class="comment">// algorithm to find neighbors</span></div>
 <div class="line">    out_dim,</div>
 <div class="line">    embedding.data(),</div>
 <div class="line">    opt</div>
@@ -126,10 +135,11 @@ $(function() {
 <div class="line">}</div>
 </div><!-- fragment --><p>Advanced users can control the neighbor search by either providing the search results directly (as a vector of vectors of index-distance pairs) or by providing an appropriate <a href="https://github.com/knncolle/knncolle"><b>knncolle</b></a> subclass to the <code>initialize()</code> function:</p>
 <div class="fragment"><div class="line"><span class="keyword">auto</span> annoy_idx = knncolle::AnnoyBuilder().build_unique(</div>
-<div class="line">    knncolle::SimpleMatrix(ndim, nobs, data.data())</div>
+<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a>(ndim, nobs, data.data())</div>
 <div class="line">);</div>
-<div class="line"><span class="keyword">auto</span> status_annoy = umappp::initialize(*annoy_idx, 2, embedding.data(), opt);</div>
+<div class="line"><span class="keyword">auto</span> status_annoy = <a class="code hl_function" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a>(*annoy_idx, 2, embedding.data(), opt);</div>
 <div class="line">status_annoy.run();</div>
+<div class="ttc" id="aclassknncolle_1_1SimpleMatrix_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></div></div>
 </div><!-- fragment --><p>See the <a href="https://ltla.github.io/umappp">reference documentation</a> for more details.</p>
 <h1>Building projects</h1>
 <h2>CMake with <code>FetchContent</code></h2>
@@ -145,25 +155,20 @@ $(function() {
 <div class="line">FetchContent_MakeAvailable(umappp)</div>
 </div><!-- fragment --><p>And then:</p>
 <div class="fragment"><div class="line"># For executables:</div>
-<div class="line">target_link_libraries(myexe ltla::umappp)</div>
+<div class="line">target_link_libraries(myexe libscran::umappp)</div>
 <div class="line"> </div>
 <div class="line"># For libaries</div>
-<div class="line">target_link_libraries(mylib INTERFACE ltla::umappp)</div>
+<div class="line">target_link_libraries(mylib INTERFACE libscran::umappp)</div>
 </div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
-<div class="fragment"><div class="line">find_package(ltla_umappp CONFIG REQUIRED)</div>
-<div class="line">target_link_libraries(mylib INTERFACE ltla::umappp)</div>
+<div class="fragment"><div class="line">find_package(libscran_umappp CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(mylib INTERFACE libscran::umappp)</div>
 </div><!-- fragment --><p>To install the library, use:</p>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake .. -DUMAPPP_TESTS=OFF</div>
 <div class="line">cmake --build . --target install</div>
-</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DUMAPPP_FETCH_EXTERN=OFF</code>. See the commit hashes in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DUMAPPP_FETCH_EXTERN=OFF</code>. See <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
 <h2>Manual</h2>
-<p>If you're not using CMake, the simple approach is to just copy the files in <code>include/</code> - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the external dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>, which also need to be made available during compilation:</p>
-<ul>
-<li>The <a href="https://github.com/LTLA/CppIrlba"><b>irlba</b></a> library for singular value decomposition (or in this case, an eigendecomposition). This also requires the <a href="https://gitlab.com/libeigen/eigen"><b>Eigen</b></a> library for matrix operations.</li>
-<li>The <a href="https://github.com/LTLA/knncolle"><b>knncolle</b></a> library for nearest neighbor search. If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the <code>UMAPPP_CUSTOM_NEIGHBORS</code> macro.</li>
-<li>The <a href="https://github.com/LTLA/aarand"><b>aarand</b></a> library for random distribution functions.</li>
-</ul>
+<p>If you're not using CMake, the simple approach is to just copy the files in <code>include/</code> - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the external dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>, which also need to be made available during compilation.</p>
 <h1>References</h1>
 <p>McInnes L, Healy J, Melville J (2020). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. <em>arXiv</em>, <a href="https://arxiv.org/abs/1802.03426">https://arxiv.org/abs/1802.03426</a> </p>
 </div></div><!-- PageDoc -->

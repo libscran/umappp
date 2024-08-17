@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['set_5fembedding_0',['set_embedding',['../classumappp_1_1Status.html#aa6048a8bc7155826c4fc16bee4c00005',1,'umappp::Status']]]
+  ['find_5fnearest_5fneighbors_0',['find_nearest_neighbors',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a22e035b2d5eb293fd828a67e61f3213d',1,'knncolle']]],
+  ['find_5fnearest_5fneighbors_5findex_5fonly_1',['find_nearest_neighbors_index_only',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a0b726765329530a709095ba304033a0d',1,'knncolle']]]
 ];

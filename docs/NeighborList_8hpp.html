@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -76,6 +83,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">NeighborList.hpp File Reference</div></div>
 </div><!--header-->
@@ -102,68 +110,32 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="NeighborList_8hpp__dep__incl.png" border="0" usemap="#aumappp_2NeighborList_8hppdep" alt=""/></div>
 <map name="aumappp_2NeighborList_8hppdep" id="aumappp_2NeighborList_8hppdep">
-<area shape="rect" title="Defines the NeighborList alias." alt="" coords="196,5,365,31"/>
-<area shape="rect" href="combine__neighbor__sets_8hpp_source.html" title=" " alt="" coords="80,153,256,193"/>
-<area shape="poly" title=" " alt="" coords="279,47,271,77,257,106,232,133,205,154,201,150,229,129,253,103,266,75,274,46"/>
-<area shape="rect" href="initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="195,241,336,267"/>
-<area shape="poly" title=" " alt="" coords="181,32,83,50,44,64,20,81,12,93,9,105,13,133,29,162,57,191,88,213,123,229,160,239,195,246,194,251,159,244,121,234,85,218,53,195,25,166,8,135,4,105,8,91,16,77,41,59,81,45,180,27"/>
-<area shape="rect" href="neighbor__similarities_8hpp_source.html" title=" " alt="" coords="30,79,243,105"/>
-<area shape="poly" title=" " alt="" coords="244,41,162,81,160,76,241,36"/>
-<area shape="rect" href="optimize__layout_8hpp_source.html" title=" " alt="" coords="413,79,598,105"/>
-<area shape="poly" title=" " alt="" coords="334,34,468,76,466,81,332,39"/>
-<area shape="rect" href="spectral__init_8hpp_source.html" title=" " alt="" coords="280,160,446,186"/>
-<area shape="poly" title=" " alt="" coords="296,44,359,159,354,161,292,46"/>
-<area shape="poly" title=" " alt="" coords="206,201,252,239,249,243,202,205"/>
-<area shape="rect" href="umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="248,315,390,341"/>
-<area shape="poly" title=" " alt="" coords="286,278,312,313,308,316,281,281"/>
-<area shape="poly" title=" " alt="" coords="104,116,85,133,71,154,64,174,65,182,70,192,95,216,127,233,161,243,195,249,194,254,160,248,125,238,92,220,66,195,60,184,59,173,66,151,81,129,101,112"/>
-<area shape="rect" href="Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="470,160,603,186"/>
-<area shape="poly" title=" " alt="" coords="518,118,534,159,529,161,513,120"/>
-<area shape="poly" title=" " alt="" coords="481,193,308,243,307,238,479,188"/>
-<area shape="poly" title=" " alt="" coords="508,197,337,317,334,312,505,193"/>
-<area shape="poly" title=" " alt="" coords="338,198,282,243,279,239,335,193"/>
+<area shape="rect" title="Defines the NeighborList alias." alt="" coords="5,5,175,31"/>
+<area shape="rect" href="initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="19,79,161,105"/>
+<area shape="poly" title=" " alt="" coords="93,46,93,79,87,79,87,46"/>
+<area shape="rect" href="umappp_8hpp.html" title="Overall header for the umappp library." alt="" coords="19,153,161,178"/>
+<area shape="poly" title=" " alt="" coords="93,120,93,152,87,152,87,120"/>
 </map>
 </div>
 </div>
 <p><a href="NeighborList_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceumappp" id="r_namespaceumappp"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceumappp.html">umappp</a></td></tr>
+<tr class="memdesc:namespaceumappp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Methods for UMAP. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:afe025fafcc120fcb90e8c62177013d58" id="r_afe025fafcc120fcb90e8c62177013d58"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">typename</a> <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">Index_</a> , <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">typename</a> <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">Float_</a> &gt; </td></tr>
-<tr class="memitem:afe025fafcc120fcb90e8c62177013d58"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">umappp::NeighborList</a> = std::vector&lt; std::vector&lt; std::pair&lt; <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">Index_</a>, <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">Float_</a> &gt; &gt; &gt;</td></tr>
+<tr class="memitem:afe025fafcc120fcb90e8c62177013d58" id="r_afe025fafcc120fcb90e8c62177013d58"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classumappp_1_1Status.html">typename</a> <a class="el" href="classumappp_1_1Status.html">Index_</a> , <a class="el" href="classumappp_1_1Status.html">typename</a> <a class="el" href="classumappp_1_1Status.html">Float_</a> &gt; </td></tr>
+<tr class="memitem:afe025fafcc120fcb90e8c62177013d58"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Status.html">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceumappp.html#afe025fafcc120fcb90e8c62177013d58">umappp::NeighborList</a> = std::vector&lt; std::vector&lt; std::pair&lt; <a class="el" href="classumappp_1_1Status.html">Index_</a>, <a class="el" href="classumappp_1_1Status.html">Float_</a> &gt; &gt; &gt;</td></tr>
 <tr class="memdesc:afe025fafcc120fcb90e8c62177013d58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <br /></td></tr>
 <tr class="separator:afe025fafcc120fcb90e8c62177013d58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Defines the <code>NeighborList</code> alias. </p>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="afe025fafcc120fcb90e8c62177013d58" name="afe025fafcc120fcb90e8c62177013d58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe025fafcc120fcb90e8c62177013d58">&#9670;&#160;</a></span>NeighborList</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Index_ , typename Float_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="NeighborList_8hpp.html#afe025fafcc120fcb90e8c62177013d58">umappp::NeighborList</a> = typedef std::vector&lt;std::vector&lt;std::pair&lt;Index_, Float_&gt; &gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Lists of neighbors for each observation. </p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Index_</td><td>Integer type of the neighbor indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type for the distances.</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance. Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector. Also, the inner vector for observation <code>i</code> should not contain any <code>Neighbor</code> with index <code>i</code>. </p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
