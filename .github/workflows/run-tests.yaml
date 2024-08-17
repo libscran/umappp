@@ -17,12 +17,6 @@ jobs:
         - {
             name: "Ubuntu Latest GCC", 
             os: ubuntu-latest,
-            cov: false
-          }
-        - {
-            name: "Ubuntu Latest GCC, coverage enabled", 
-            os: ubuntu-latest,
-            cov: true
           }
         - {
             name: "macOS Latest Clang", 
@@ -30,18 +24,18 @@ jobs:
           }
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
 
     - name: Configure the build
-      if: ${{ matrix.config.cov == false }}
-      run: cmake -S . -B build -DTEST_NUM_THREADS=2
+      if: ${{ matrix.config.os != 'ubuntu-latest' }}
+      run: cmake -S . -B build
 
     - name: Configure the build with coverage
-      if: ${{ matrix.config.cov == true }}
-      run: cmake -S . -B build -DCODE_COVERAGE=ON -DTEST_NUM_THREADS=2
+      if: ${{ matrix.config.os == 'ubuntu-latest' }}
+      run: cmake -S . -B build -DCODE_COVERAGE=ON
 
     - name: Run the build
       run: cmake --build build
@@ -52,13 +46,15 @@ jobs:
         ctest
 
     - name: Generate code coverage
-      if: ${{ matrix.config.cov == true }}
+      if: ${{ matrix.config.os == 'ubuntu-latest' }}
       run: |
         cd build/tests/CMakeFiles/libtest.dir/src/
         gcov -abcfu *.gcno
 
     - name: Upload to Codecov
-      if: ${{ matrix.config.cov == true }}
-      uses: codecov/codecov-action@v1
+      if: ${{ matrix.config.os == 'ubuntu-latest' }}
+      uses: codecov/codecov-action@v3
       with:
         directory: build/tests/CMakeFiles/libtest.dir/src/
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
