@@ -1,0 +1,33 @@
+on:
+  workflow_run:
+    workflows: [Run unit tests]
+    types: [completed]
+    branches: [master]
+
+name: Tag project version 
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get current version
+      id: current
+      run: |
+        current=$(cat CMakeLists.txt | grep '  *VERSION' | sed 's/.*VERSION //g')
+        echo "Current version is ${current}"
+        echo "version=v${current}" >> $GITHUB_OUTPUT
+
+    - name: Get latest version
+      id: latest
+      uses: actions-ecosystem/action-get-latest-tag@v1
+      with:
+        semver_only: true
+
+    - name: Tag version if new
+      if: ${{ steps.current.outputs.version != steps.latest.outputs.tag }}
+      uses: actions-ecosystem/action-push-tag@v1
+      with:
+        tag: ${{ steps.current.outputs.version }}
