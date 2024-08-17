@@ -2,17 +2,17 @@
 #define UMAPPP_COMBINE_NEIGHBOR_SETS_HPP
 
 #include <vector>
-#include <limits>
-#include <cmath>
 #include <algorithm>
-#include <numeric>
+#include <type_traits>
 
 #include "NeighborList.hpp"
 
 namespace umappp {
 
-template<typename Float>
-void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
+namespace internal {
+
+template<typename Index_, typename Float_>
+void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio = 1) {
     std::vector<size_t> last(x.size());
     std::vector<size_t> original(x.size());
 
@@ -40,8 +40,8 @@ void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
 
             if (curlast < limits && target[curlast].first == desired) {
                 if (desired < y.first) { // don't average it twice.
-                    Float product = y.second * target[curlast].second;
-                    Float prob_final;
+                    Float_ product = y.second * target[curlast].second;
+                    Float_ prob_final;
 
                     if (mix_ratio == 1) {
                         prob_final = y.second + target[curlast].second - product;
@@ -88,6 +88,8 @@ void combine_neighbor_sets(NeighborList<Float>& x, Float mix_ratio = 1) {
     }
 
     return;
+}
+
 }
 
 }

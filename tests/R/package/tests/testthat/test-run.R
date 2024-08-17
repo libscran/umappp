@@ -1,6 +1,4 @@
-# Building the function.
-library(Rcpp)
-sourceCpp("test.cpp")
+# library(testthat); library(umappp); source("test-run.R")
 
 # Generating some data.
 set.seed(10)
@@ -8,18 +6,18 @@ y <- matrix(rnorm(50, sd=2), ncol=10)
 id <- sample(nrow(y), 500, replace=TRUE)
 mat <- y[id,] + matrix(rnorm(5000), ncol=10)
 
-library(FNN)
-res <- FNN::get.knn(mat, k=15) 
+library(BiocNeighbors)
+res <- findKNN(mat, k=15) 
 
 library(uwot)
 library(testthat)
 
 test_that("initialization is done correctly", {
-    obs <- initialize_umap(t(res$nn.index - 1L), t(res$nn.dist), 2)
+    obs <- umappp:::initialize_umap(t(res$index - 1L), t(res$distance), ndim=2)
 
     # Reference calculation.
     d2sr <- uwot:::data2set(mat, NULL, metric="precomputed", method="umap",
-        nn_method = list(idx = cbind(1:nrow(mat), res$nn.index), dist = cbind(0, res$nn.dist)),
+        nn_method = list(idx = cbind(1:nrow(mat), res$index), dist = cbind(0, res$distance)),
         local_connectivity = 1,
         bandwidth = 1, 
         n_threads=1, 
@@ -40,13 +38,19 @@ test_that("initialization is done correctly", {
     expect_equal(epochs_per_sample, obs[[2]][[3]])
 })
 
+set.seed(10000)
 test_that("general run is not too inconsistent", {
-    ref <- uwot::umap(X = mat, nn_method=list(idx=cbind(1:nrow(mat), res$nn.index), dist=cbind(0, res$nn.dist)), a=2, b=1)
-    obs <- run_umap(t(res$nn.index - 1L), t(res$nn.dist), 2, 2, 1, 123)
+    ref <- uwot::umap(X = mat, nn_method=list(idx=cbind(1:nrow(mat), res$index), dist=cbind(0, res$distance)), a=2, b=1)
+    obs <- runUmap(res$index, res$distance, ndim=2, a=2, b=1, seed=100)
 
-    # Values are within range.
-    expect_true(all(obs < 10 & obs > -10))
-#    expect_true(all(obs2 < 10 & obs2 > -10)) # Who knows why GHA doesn't like this, but oh well.
+    # Values are within a similar range and scale.
+    expect_true(all(obs < 15 & obs > -15))
+    expect_true(all(ref < 15 & ref > -15))
+
+    expect_gt(var(ref[,1]), 10)
+    expect_gt(var(obs[,1]), 10)
+    expect_gt(var(ref[,2]), 10)
+    expect_gt(var(obs[,2]), 10)
 
     png("demo.png", width=10, height=5, units="in", res=120)
     par(mfrow=c(1,2))

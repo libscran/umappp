@@ -1,9 +1,5 @@
 #include <gtest/gtest.h>
 
-#ifndef TEST_NUM_THREADS
-#define TEST_NUM_THREADS 3
-#endif
-
 #ifdef TEST_CUSTOM_PARALLEL
 // Define before umappp includes.
 #include "custom_parallel.h"
@@ -16,12 +12,12 @@
 
 class SpectralInitTest : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
-    static umappp::NeighborList<> mock(int n) {
+    static umappp::NeighborList<int, double> mock(int n) {
         // Creating a mock symmetric matrix.
         std::mt19937_64 rng(1234567890);
         std::uniform_real_distribution<> dist(0, 1);
 
-        umappp::NeighborList<> edges(n);
+        umappp::NeighborList<int, double> edges(n);
         edges.resize(n);
         for (int r = 0; r < n; ++r) {
             for (int c = 0; c < r; ++c) {
@@ -43,7 +39,7 @@ TEST_P(SpectralInitTest, Basic) {
     std::vector<double> output(ndim * order);
 
     auto edges = mock(order);
-    EXPECT_TRUE(umappp::spectral_init<>(edges, ndim, output.data(), 1));
+    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), 1));
 
     for (auto o : output) { // filled with _something_.
         EXPECT_TRUE(o != 0);
@@ -51,7 +47,7 @@ TEST_P(SpectralInitTest, Basic) {
 
     // Same result with multiple threads.
     std::vector<double> copy(ndim * order);
-    umappp::spectral_init<>(edges, ndim, copy.data(), TEST_NUM_THREADS);
+    umappp::internal::spectral_init(edges, ndim, copy.data(), 3);
     EXPECT_EQ(output, copy);
 }
 
@@ -73,7 +69,7 @@ TEST_P(SpectralInitTest, MultiComponents) {
     }
 
     std::vector<double> output(edges1.size() + edges2.size());
-    EXPECT_FALSE(umappp::spectral_init<>(edges, ndim, output.data(), 1));
+    EXPECT_FALSE(umappp::internal::spectral_init(edges, ndim, output.data(), 1));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -85,7 +81,7 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-void symmetrize(umappp::NeighborList<>& x) {
+static void symmetrize(umappp::NeighborList<int, double>& x) {
     std::vector<size_t> available;
     available.reserve(x.size());
     for (const auto& y : x) {
@@ -104,33 +100,33 @@ void symmetrize(umappp::NeighborList<>& x) {
 TEST(ComponentTest, Simple) {
     int order = 5;
 
-    umappp::NeighborList<> edges(order);
+    umappp::NeighborList<int, double> edges(order);
     edges[4].emplace_back(0, 0.5);
     edges[4].emplace_back(1, 0.5);
     edges[3].emplace_back(2, 0.5);
 
     auto copy = edges;
     symmetrize(copy);
-    EXPECT_TRUE(umappp::has_multiple_components(copy));
+    EXPECT_TRUE(umappp::internal::has_multiple_components(copy));
 
     // Merging into one component.
     edges[3].emplace_back(1, 0.5);
 
     copy = edges;
     symmetrize(copy);
-    EXPECT_FALSE(umappp::has_multiple_components(copy));
+    EXPECT_FALSE(umappp::internal::has_multiple_components(copy));
 
     {
         int order = 5;
-        umappp::NeighborList<> edges(order);
-        EXPECT_TRUE(umappp::has_multiple_components(edges));
+        umappp::NeighborList<int, double> edges(order);
+        EXPECT_TRUE(umappp::internal::has_multiple_components(edges));
 
         // Sticking in an edge to merge nodes.
         edges[3].emplace_back(1, 0.5);
 
         auto copy = edges;
         symmetrize(copy);
-        EXPECT_TRUE(umappp::has_multiple_components(copy));
+        EXPECT_TRUE(umappp::internal::has_multiple_components(copy));
     }
         
     {
@@ -139,7 +135,7 @@ TEST(ComponentTest, Simple) {
         // Deliberately checking the case where one node splits into two,
         // or two nodes merge into one, depending on whether we are 
         // traversing in order of increasing or decreasing index.
-        umappp::NeighborList<> edges(order);
+        umappp::NeighborList<int, double> edges(order);
         edges[4].emplace_back(2, 0.5);
         edges[4].emplace_back(3, 0.5);
 
@@ -147,6 +143,6 @@ TEST(ComponentTest, Simple) {
         edges[5].emplace_back(0, 0.5);
 
         symmetrize(edges);
-        EXPECT_TRUE(umappp::has_multiple_components(edges));
+        EXPECT_TRUE(umappp::internal::has_multiple_components(edges));
     }
 }

@@ -7,8 +7,8 @@
 
 class SimilarityTest : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
-    template<class Param>
-    void assemble(Param p) {
+    void SetUp() {
+        auto p = GetParam();
         nobs = std::get<0>(p);
         k = std::get<1>(p);
 
@@ -16,33 +16,40 @@ protected:
         std::normal_distribution<> dist(0, 1);
 
         data.resize(nobs * ndim);
-        for (int r = 0; r < data.size(); ++r) {
+        for (size_t r = 0; r < data.size(); ++r) {
             data[r] = dist(rng);
         }
-    }
-
-    auto generate_neighbors () { 
-        knncolle::VpTreeEuclidean<> searcher(ndim, nobs, data.data());
-        std::vector<std::vector<std::pair<int, double> > > stored;
-        stored.reserve(nobs);
-        for (size_t i = 0; i < searcher.nobs(); ++i) {
-            stored.push_back(searcher.find_nearest_neighbors(i, k));
-        }
-        return stored;
     }
 
     int nobs, k;
     int ndim = 5;
     std::vector<double> data;
+
+protected:
+    static auto generate_neighbors(int ndim, int nobs, const std::vector<double>& data, int k) {
+        std::vector<std::vector<std::pair<int, double> > > neighbors(nobs);
+        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
+        auto searcher = index->initialize();
+        std::vector<int> indices;
+        std::vector<double> distances;
+
+        for (int i = 0; i < nobs; ++i) {
+            searcher->search(i, k, &indices, &distances);
+            size_t actual_k = indices.size();
+            for (size_t x = 0; x < actual_k; ++x) {
+                neighbors[i].emplace_back(indices[x], distances[x]);
+            }
+        }
+
+        return neighbors;
+    }
 };
 
 TEST_P(SimilarityTest, Basic) {
-    assemble(GetParam());
-    auto stored = generate_neighbors();
-    
-    umappp::neighbor_similarities<>(stored);
+    auto neighbors = generate_neighbors(ndim, nobs, data, k);
+    umappp::internal::neighbor_similarities(neighbors);
 
-    for (const auto& s : stored) {
+    for (const auto& s : neighbors) {
         double prev = 1;
         bool first = true;
         for (const auto& v : s){ 
@@ -59,34 +66,31 @@ TEST_P(SimilarityTest, Basic) {
 }
 
 TEST_P(SimilarityTest, ZeroDistance) {
-    assemble(GetParam());
-
     // Clone first vector into the second and third.
     std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim);
     std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim * 2);
 
-    auto stored = generate_neighbors();
+    auto neighbors = generate_neighbors(ndim, nobs, data, k);
     for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(stored[i][0].second, 0);
-        EXPECT_EQ(stored[i][1].second, 0);
+        EXPECT_EQ(neighbors[i][0].second, 0);
+        EXPECT_EQ(neighbors[i][1].second, 0);
     }
 
     // Distances of 0 map to weights of 1.
-    umappp::neighbor_similarities<>(stored);
+    umappp::internal::neighbor_similarities(neighbors);
     for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(stored[i][0].second, 1);
-        EXPECT_EQ(stored[i][1].second, 1);
+        EXPECT_EQ(neighbors[i][0].second, 1);
+        EXPECT_EQ(neighbors[i][1].second, 1);
     }
 }
 
 TEST_P(SimilarityTest, EdgeCases) {
-    assemble(GetParam());
-    auto stored = generate_neighbors();
+    auto neighbors = generate_neighbors(ndim, nobs, data, k);
 
     // Forcing the fallback when local_connectivity is too high.
-    umappp::neighbor_similarities<>(stored, 100.0); 
+    umappp::internal::neighbor_similarities(neighbors, 100.0); 
 
-    for (const auto& s : stored) {
+    for (const auto& s : neighbors) {
         for (const auto& v : s){ 
             EXPECT_EQ(v.second, 1);
         }
@@ -96,12 +100,12 @@ TEST_P(SimilarityTest, EdgeCases) {
     for (int i = 1; i < k; ++i) {
         std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim * i);
     }
-    stored = generate_neighbors();
+    neighbors = generate_neighbors(ndim, nobs, data, k);
 
-    umappp::neighbor_similarities<>(stored);
-    auto ref = stored[0];
+    umappp::internal::neighbor_similarities(neighbors);
+    auto ref = neighbors[0];
     for (int i = 0; i < k; ++i) {
-        for (auto j : stored[i]) {
+        for (auto j : neighbors[i]) {
             EXPECT_EQ(j.second, 1);
         }
     }

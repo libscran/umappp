@@ -1,0 +1,13 @@
+# The assumption is that someone has already run cmake -S . -B build in the
+# root directory for this repository, so that the headers for all dependencies
+# are available.
+BUILD_DIR=../../../../build/_deps
+PKG_CPPFLAGS=-I${BUILD_DIR}/aarand-src/include \
+    -I${BUILD_DIR}/kmeans-src/include \
+    -I${BUILD_DIR}/powerit-src/include \
+    -I${BUILD_DIR}/knncolle-src/include \
+    -I${BUILD_DIR}/irlba-src/include \
+    -I${BUILD_DIR}/eigen-src \
+    -I../../../../include
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS)

@@ -24,21 +24,19 @@ jobs:
     - name: Install packages
       shell: Rscript {0}
       run: |
-        BiocManager::install(c("uwot", "FNN", "Rcpp", "testthat"))
+        BiocManager::install(c("uwot", "BiocNeighbors", "Rcpp", "testthat"))
 
-    - name: Set up the environment
-      run: |
-        cd tests/R
-        bash build.sh
+    - name: Install the test package
+      run: R CMD INSTALL tests/R/package
 
     - name: Run the comparisons
       shell: Rscript {0}
       run: |
-        setwd("tests/R")
-        output <- testthat::test_file("run.R", stop_on_failure=TRUE)
+        setwd("tests/R/package/tests")
+        source("testthat.R")
 
     - uses: actions/upload-artifact@v2
       with:
         name: demo-file 
-        path: tests/R/demo.png 
+        path: tests/R/package/tests/testthat/demo.png 
 

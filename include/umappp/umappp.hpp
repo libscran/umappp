@@ -8,6 +8,8 @@
  * This allows for a reasonably intuitive `#include "umappp/umappp.hpp"` call to include the library.
  */
 
-#include "Umap.hpp"
+#include "Options.hpp"
+#include "Status.hpp"
+#include "initialize.hpp"
 
 #endif

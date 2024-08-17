@@ -16,43 +16,69 @@ the implementation here is derived from the C++ code in the [**uwot** R package]
 
 ## Quick start
 
-Given a pointer to a column-major input array with `ndim` rows and `nobs` columns, we can compute the UMAP embedding easily:
+Given a pointer to a column-major input array with `ndim` rows and `nobs` columns, we use `initialize()` to start the UMAP algorithm and `run()` to run it across epochs:
 
 ```cpp
-#include "umappp/Umap.hpp"
+#include "umappp/umappp.hpp"
 
-std::vector<double> embedding(npts * 2);
-umappp::Umap x;
-x.run(ndim, nobs, data.data(), 2, embedding.data());
+// Set number of dimensions in the output embedding.
+size_t out_dim = 2;
+std::vector<double> embedding(npts * out_dim);
+
+// Initialize the UMAP state:
+umappp::Options opt;
+auto status = umappp::initialize(
+    ndim,
+    nobs,
+    data.data(),
+    knncolle::VptreeBuilder(), // algorithm to find neighbors
+    out_dim,
+    embedding.data(),
+    opt
+);
+
+// Run UMAP algorithm to completion. This modifies the
+// values in the output 'embedding' vector.
+status.run();
 ```
 
-We can modify parameters by calling the relevant setters in the `Umap` class:
+We can modify parameters in the `Options` class that is passed to `initialize()`:
 
 ```cpp
-umappp::Umap x;
-x.set_num_neighbors(20).set_num_epochs(200);
+opt.num_neighbors = 20;
+opt.num_epochs = 200;
+opt.min_dist = 0.2;
 ```
 
-We can initialize and run the algorithm up to the specified number of epochs:
+We can also run the algorithm up to the specified number of epochs,
+which is occasionally useful for inspecting the intermediate states of the embedding:
 
 ```cpp
-umappp::Umap x;
-
-auto status = x.initialize(ndim, nobs, data.data(), 2, embedding.data());
+auto status2 = umappp::initialize(
+    ndim,
+    nobs,
+    data.data(),
+    knncolle::VptreeBuilder(), // algorithm to find neighbors
+    out_dim,
+    embedding.data(),
+    opt
+);
 
 for (int iter = 10; iter < 200; iter += 10) {
-    status.run(2, embedding.data(), iter);
+    status2.run(iter);
     // do something with the current embedding, e.g., create an animation
 }
 ```
 
 Advanced users can control the neighbor search by either providing the search results directly (as a vector of vectors of index-distance pairs)
-or by providing an appropriate [**knncolle**](https://github.com/LTLA/knncolle) subclass to the `run()` or `initialize()` functions:
+or by providing an appropriate [**knncolle**](https://github.com/knncolle/knncolle) subclass to the `initialize()` function:
 
 ```cpp
-umappp::Umap x;
-knncolle::AnnoyEuclidean<> searcher(ndim, nobs, data.data());
-x.run(&searcher, 2, embedding.data());
+auto annoy_idx = knncolle::AnnoyBuilder().build_unique(
+    knncolle::SimpleMatrix(ndim, nobs, data.data())
+);
+auto status_annoy = umappp::initialize(*annoy_idx, 2, embedding.data(), opt);
+status_annoy.run();
 ```
 
 See the [reference documentation](https://ltla.github.io/umappp) for more details.

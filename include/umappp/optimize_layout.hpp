@@ -5,9 +5,13 @@
 #include <limits>
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 #include <thread>
 #include <atomic>
+#else
+#include <stdexcept>
 #endif
 
 #include "NeighborList.hpp"
@@ -15,25 +19,27 @@
 
 namespace umappp {
 
-template<typename Float>
+namespace internal {
+
+template<typename Index_, typename Float_>
 struct EpochData {
-    EpochData(size_t nobs) : head(nobs) {}
+    EpochData(Index_ nobs) : head(nobs) {}
 
     int total_epochs;
     int current_epoch = 0;
 
     std::vector<size_t> head;
-    std::vector<int> tail;
-    std::vector<Float> epochs_per_sample;
+    std::vector<Index_> tail;
+    std::vector<Float_> epochs_per_sample;
 
-    std::vector<Float> epoch_of_next_sample;
-    std::vector<Float> epoch_of_next_negative_sample;
-    Float negative_sample_rate;
+    std::vector<Float_> epoch_of_next_sample;
+    std::vector<Float_> epoch_of_next_negative_sample;
+    Float_ negative_sample_rate;
 };
 
-template<typename Float>
-EpochData<Float> similarities_to_epochs(const NeighborList<Float>& p, int num_epochs, Float negative_sample_rate) {
-    Float maxed = 0;
+template<typename Index_, typename Float_>
+EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Float_>& p, int num_epochs, Float_ negative_sample_rate) {
+    Float_ maxed = 0;
     size_t count = 0;
     for (const auto& x : p) {
         count += x.size();
@@ -42,11 +48,11 @@ EpochData<Float> similarities_to_epochs(const NeighborList<Float>& p, int num_ep
         }
     }
 
-    EpochData<Float> output(p.size());
+    EpochData<Index_, Float_> output(p.size());
     output.total_epochs = num_epochs;
     output.tail.reserve(count);
     output.epochs_per_sample.reserve(count);
-    const Float limit = maxed / num_epochs;
+    const Float_ limit = maxed / num_epochs;
 
     size_t last = 0;
     for (size_t i = 0; i < p.size(); ++i) {
@@ -72,20 +78,21 @@ EpochData<Float> similarities_to_epochs(const NeighborList<Float>& p, int num_ep
     return output;       
 }
 
-template<typename Float>
-Float quick_squared_distance(const Float* left, const Float* right, int ndim) {
-    Float dist2 = 0;
-    for (int d = 0; d < ndim; ++d, ++left, ++right) {
-        dist2 += (*left - *right) * (*left - *right);
+template<typename Float_>
+Float_ quick_squared_distance(const Float_* left, const Float_* right, size_t ndim) {
+    Float_ dist2 = 0;
+    for (size_t d = 0; d < ndim; ++d) {
+        Float_ delta = (left[d] - right[d]);
+        dist2 += delta * delta;
     }
-    constexpr Float dist_eps = std::numeric_limits<Float>::epsilon();
+    constexpr Float_ dist_eps = std::numeric_limits<Float_>::epsilon();
     return std::max(dist_eps, dist2);
 }
 
-template<typename Float>
-Float clamp(Float input) {
-    constexpr Float min_gradient = -4;
-    constexpr Float max_gradient = 4;
+template<typename Float_>
+Float_ clamp(Float_ input) {
+    constexpr Float_ min_gradient = -4;
+    constexpr Float_ max_gradient = 4;
     return std::min(std::max(input, min_gradient), max_gradient);
 }
 
@@ -93,16 +100,16 @@ Float clamp(Float input) {
  ***************** Serial code ***********************
  *****************************************************/
 
-template<typename Float, class Setup, class Rng>
+template<typename Index_, typename Float_, class Rng_>
 void optimize_layout(
-    int ndim,
-    Float* embedding, 
-    Setup& setup,
-    Float a, 
-    Float b, 
-    Float gamma,
-    Float initial_alpha,
-    Rng& rng,
+    size_t ndim, // use a size_t here for safer pointer arithmetic.
+    Float_* embedding, 
+    EpochData<Index_, Float_>& setup,
+    Float_ a, 
+    Float_ b, 
+    Float_ gamma,
+    Float_ initial_alpha,
+    Rng_& rng,
     int epoch_limit
 ) {
     auto& n = setup.current_epoch;
@@ -111,15 +118,15 @@ void optimize_layout(
     if (epoch_limit> 0) {
         limit_epochs = std::min(epoch_limit, num_epochs);
     }
-    
+
     const size_t num_obs = setup.head.size(); 
     for (; n < limit_epochs; ++n) {
-        const Float epoch = n;
-        const Float alpha = initial_alpha * (1.0 - epoch / num_epochs);
+        const Float_ epoch = n;
+        const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
         for (size_t i = 0; i < num_obs; ++i) {
             size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-            Float* left = embedding + i * ndim;
+            Float_* left = embedding + i * ndim; // everything is already a size_t, no need to cast.
 
             for (size_t j = start; j < end; ++j) {
                 if (setup.epoch_of_next_sample[j] > epoch) {
@@ -127,16 +134,20 @@ void optimize_layout(
                 }
 
                 {
-                    Float* right = embedding + setup.tail[j] * ndim;
-                    Float dist2 = quick_squared_distance(left, right, ndim);
-                    const Float pd2b = std::pow(dist2, b);
-                    const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+                    Float_* right = embedding + static_cast<size_t>(setup.tail[j]) * ndim;
+                    Float_ dist2 = quick_squared_distance(left, right, ndim);
+                    const Float_ pd2b = std::pow(dist2, b);
+                    const Float_ grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
 
-                    Float* lcopy = left;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                        Float gradient = alpha * clamp(grad_coef * (*lcopy - *right));
-                        *lcopy += gradient;
-                        *right -= gradient;
+#ifdef _OPENMP
+                    #pragma omp simd
+#endif
+                    for (size_t d = 0; d < ndim; ++d) {
+                        auto& l = left[d];
+                        auto& r = right[d];
+                        Float_ gradient = alpha * clamp(grad_coef * (l - r));
+                        l += gradient;
+                        r -= gradient;
                     }
                 }
 
@@ -151,13 +162,15 @@ void optimize_layout(
                         continue;
                     }
 
-                    const Float* right = embedding + sampled * ndim;
-                    Float dist2 = quick_squared_distance(left, right, ndim);
-                    const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
+                    const Float_* right = embedding + sampled * ndim; // already size_t's, no need to cast.
+                    Float_ dist2 = quick_squared_distance(left, right, ndim);
+                    const Float_ grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
 
-                    Float* lcopy = left;
-                    for (int d = 0; d < ndim; ++d, ++lcopy, ++right) {
-                        *lcopy += alpha * clamp(grad_coef * (*lcopy - *right));
+#ifdef _OPENMP
+                    #pragma omp simd
+#endif
+                    for (size_t d = 0; d < ndim; ++d) {
+                        left[d] += alpha * clamp(grad_coef * (left[d] - right[d]));
                     }
                 }
 
@@ -179,66 +192,82 @@ void optimize_layout(
  *****************************************************/
 
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
-template<class Float, class Setup>
-struct BusyWaiterThread {
-public:
-    std::vector<size_t> selections;
-    std::vector<unsigned char> skips;
-    size_t observation;
-    Float alpha;
-
+template<typename Index_, typename Float_>
+class BusyWaiterThread {
 private:
-    int ndim;
-    Float* embedding;
-    const Setup* setup;
-    Float a;
-    Float b;
-    Float gamma;
+    // Settable parameters.
+    std::vector<size_t> my_selections;
+    std::vector<unsigned char> my_skips;
+    size_t my_observation;
+    Float_ my_alpha;
 
-    std::vector<Float> self_modified;
+    // Private constructor parameters. 
+    size_t my_ndim;
+    Float_* my_embedding;
+    const EpochData<Index_, Float_>* my_setup;
+    Float_ my_a;
+    Float_ my_b;
+    Float_ my_gamma;
 
-private:
-    std::thread pool;
-    std::atomic<bool> ready = false;
-    bool finished = false;
-    bool active = false;
+    // Private internal parameters.
+    std::vector<Float_> my_self_modified;
+    std::thread my_worker;
+    std::atomic<bool> my_ready = false;
+    bool my_finished = false;
+    bool my_active = false;
 
 public:
     void run() {
-        ready.store(true, std::memory_order_release);
+        my_ready.store(true, std::memory_order_release);
     }
 
     void wait() {
-        while (ready.load(std::memory_order_acquire)) {
+        while (my_ready.load(std::memory_order_acquire)) {
             ;
         }
     }
 
+    std::vector<size_t>& get_selections() {
+        return my_selections;
+    }
+
+    std::vector<unsigned char>& get_skips() {
+        return my_skips;
+    }
+
+    size_t& get_observation() {
+        return my_observation;
+    }
+
+    Float_& get_alpha() {
+        return my_alpha;
+    }
+
     void migrate_parameters(BusyWaiterThread& src) {
-        selections.swap(src.selections);
-        skips.swap(src.skips);
-        alpha = src.alpha;
-        observation = src.observation;
+        my_selections.swap(src.my_selections);
+        my_skips.swap(src.my_skips);
+        my_alpha = src.my_alpha;
+        my_observation = src.my_observation;
     }
 
     void transfer_coordinates() {
-        std::copy(self_modified.begin(), self_modified.end(), embedding + observation * ndim);
+        size_t offset = my_observation * my_ndim; // both already size_t's, no need to cast.
+        std::copy(my_self_modified.begin(), my_self_modified.end(), my_embedding + offset);
     }
 
 public:
     void run_direct() {
-        auto seIt = selections.begin();
-        auto skIt = skips.begin();
-        const size_t i = observation;
-        const size_t start = (i == 0 ? 0 : setup->head[i-1]), end = setup->head[i];
+        auto seIt = my_selections.begin();
+        auto skIt = my_skips.begin();
+        const size_t start = (my_observation == 0 ? 0 : my_setup->head[my_observation-1]), end = my_setup->head[my_observation];
 
         // Copying it over into a thread-local buffer to avoid false sharing.
         // We don't bother doing this for the neighbors, though, as it's 
         // tedious to make sure that the modified values are available during negative sampling.
         // (This isn't a problem for the self, as the self cannot be its own negative sample.)
         {
-            const Float* left = embedding + i * ndim;
-            std::copy(left, left + ndim, self_modified.data());
+            const Float_* left = my_embedding + my_observation * my_ndim;
+            std::copy_n(left, my_ndim, my_self_modified.data());
         }
 
         for (size_t j = start; j < end; ++j) {
@@ -247,29 +276,37 @@ public:
             }
 
             {
-                Float* left = self_modified.data();
-                Float* right = embedding + setup->tail[j] * ndim;
+                Float_* left = my_self_modified.data();
+                Float_* right = my_embedding + static_cast<size_t>(my_setup->tail[j]) * my_ndim; // cast to avoid overflow.
 
-                Float dist2 = quick_squared_distance(left, right, ndim);
-                const Float pd2b = std::pow(dist2, b);
-                const Float grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
+                Float_ dist2 = quick_squared_distance(left, right, my_ndim);
+                const Float_ pd2b = std::pow(dist2, my_b);
+                const Float_ grad_coef = (-2 * my_a * my_b * pd2b) / (dist2 * (my_a * pd2b + 1.0));
 
-                for (int d = 0; d < ndim; ++d, ++left, ++right) {
-                    Float gradient = alpha * clamp(grad_coef * (*left - *right));
-                    *left += gradient;
-                    *right -= gradient;
+#ifdef _OPENMP
+                #pragma omp simd
+#endif
+                for (size_t d = 0; d < my_ndim; ++d) {
+                    auto& l = left[d];
+                    auto& r = right[d];
+                    Float_ gradient = my_alpha * clamp(grad_coef * (l - r));
+                    l += gradient;
+                    r -= gradient;
                 }
             }
 
-            while (seIt != selections.end() && *seIt != -1) {
-                Float* left = self_modified.data();
-                const Float* right = embedding + (*seIt) * ndim;
+            while (seIt != my_selections.end() && *seIt != static_cast<size_t>(-1)) {
+                Float_* left = my_self_modified.data();
+                const Float_* right = my_embedding + (*seIt) * my_ndim;
 
-                Float dist2 = quick_squared_distance(left, right, ndim);
-                const Float grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
+                Float_ dist2 = quick_squared_distance(left, right, my_ndim);
+                const Float_ grad_coef = 2 * my_gamma * my_b / ((0.001 + dist2) * (my_a * std::pow(dist2, my_b) + 1.0));
 
-                for (int d = 0; d < ndim; ++d, ++left, ++right) {
-                    *left += alpha * clamp(grad_coef * (*left - *right));
+#ifdef _OPENMP
+                #pragma omp simd
+#endif
+                for (size_t d = 0; d < my_ndim; ++d) {
+                    left[d] += my_alpha * clamp(grad_coef * (left[d] - right[d]));
                 }
                 ++seIt;
             }
@@ -277,96 +314,87 @@ public:
         }
     }
 
-private:
-    void loop() {
-        while (true) {
-            while (!ready.load(std::memory_order_acquire)) {
-                ;
-            }
-            if (finished) {
-                break;
-            }
-            run_direct();
-            ready.store(false, std::memory_order_release);
-        }
-    }
-
 public:
-    BusyWaiterThread() {}
-
-    BusyWaiterThread(int ndim_, Float* embedding_, Setup& setup_, Float a_, Float b_, Float gamma_) : 
-        ndim(ndim_),
-        embedding(embedding_),
-        setup(&setup_),
-        a(a_), 
-        b(b_),
-        gamma(gamma_),
-        self_modified(ndim)
+    BusyWaiterThread(int ndim, Float_* embedding, const EpochData<Index_, Float_>* setup, Float_ a, Float_ b, Float_ gamma) : 
+        my_ndim(ndim),
+        my_embedding(embedding),
+        my_setup(setup),
+        my_a(a), 
+        my_b(b),
+        my_gamma(gamma),
+        my_self_modified(my_ndim)
     {}
 
     void start() {
-        active = true;
-        pool = std::thread(&BusyWaiterThread::loop, this);
+        my_active = true;
+        my_worker = std::thread(&BusyWaiterThread::loop, this);
+    }
+ 
+private:
+    void loop() {
+        while (true) {
+            while (!my_ready.load(std::memory_order_acquire)) {
+                ;
+            }
+            if (my_finished) {
+                break;
+            }
+            run_direct();
+            my_ready.store(false, std::memory_order_release);
+        }
     }
 
 public:
     ~BusyWaiterThread() {
-        if (active) {
-            finished = true;
-            ready.store(true, std::memory_order_release);
-            pool.join();
+        if (my_active) {
+            my_finished = true;
+            my_ready.store(true, std::memory_order_release);
+            my_worker.join();
         }
     }
 
-    BusyWaiterThread(BusyWaiterThread&&) = default;
-    BusyWaiterThread& operator=(BusyWaiterThread&&) = default;
-
-    BusyWaiterThread(const BusyWaiterThread& src) :
-        selections(src.selections),
-        skips(src.skips),
-        observation(src.observation),
-
-        ndim(src.ndim),
-        embedding(src.embedding),
-        setup(src.setup),
-        a(src.a), 
-        b(src.b),
-        gamma(src.gamma),
-        alpha(src.alpha),
-
-        self_modified(src.self_modified)
+    // Note that the atomic is not moveable, so this move constructor strictly
+    // mimics the regular constructor. As such, this had better not be called
+    // after start() (i.e., when the worker thread is running).
+    BusyWaiterThread(BusyWaiterThread&& src) :
+        my_ndim(src.my_ndim),
+        my_embedding(src.my_embedding),
+        my_setup(src.my_setup),
+        my_a(src.my_a), 
+        my_b(src.my_b),
+        my_gamma(src.my_gamma),
+        my_self_modified(std::move(src.my_self_modified))
     {}
 
-    BusyWaiterThread& operator=(const BusyWaiterThread& src) {
-        selections = src.selections;
-        skips = src.skips;
-        observation = src.observation;
-
-        ndim = src.ndim;
-        embedding = src.embedding;
-        setup = src.setup;
-        a = src.a; 
-        b = src.b;
-        gamma = src.gamma;
-        alpha = src.alpha;
-
-        self_modified = src.self_modified;
+    // Ditto the comment above.
+    BusyWaiterThread& operator=(BusyWaiterThread&& src) {
+        my_ndim = src.my_ndim;
+        my_embedding = src.my_embedding;
+        my_setup = src.my_setup;
+        my_a = src.my_a;
+        my_b = src.my_b;
+        my_gamma = src.my_gamma;
+        my_self_modified = std::move(src.my_self_modified);
+        return *this;
     }
+
+    BusyWaiterThread& operator=(const BusyWaiterThread&) = delete;
+    BusyWaiterThread(const BusyWaiterThread& src) = delete;
 };
 #endif
 
 //#define PRINT false
 
-template<typename Float, class Setup, class Rng>
+template<typename Index_, typename Float_, class Rng_>
 void optimize_layout_parallel(
-    int ndim,
-    Float* embedding, 
-    Setup& setup,
-    Float a, 
-    Float b, 
-    Float gamma,
-    Float initial_alpha,
-    Rng& rng,
+    size_t ndim, // use a size_t here for safer pointer arithmetic.
+    Float_* embedding, 
+    EpochData<Index_, Float_>& setup,
+    Float_ a, 
+    Float_ b, 
+    Float_ gamma,
+    Float_ initial_alpha,
+    Rng_& rng,
     int epoch_limit,
     int nthreads
 ) {
@@ -383,21 +411,21 @@ void optimize_layout_parallel(
     std::vector<unsigned char> touch_type(num_obs);
 
     // We run some things directly in this main thread to avoid excessive busy-waiting.
-    BusyWaiterThread<Float, Setup> staging(ndim, embedding, setup, a, b, gamma);
+    BusyWaiterThread<Index_, Float_> staging(ndim, embedding, &setup, a, b, gamma);
 
     int nthreadsm1 = nthreads - 1;
-    std::vector<BusyWaiterThread<Float, Setup> > pool;
+    std::vector<BusyWaiterThread<Index_, Float_> > pool;
     pool.reserve(nthreadsm1);
     for (int t = 0; t < nthreadsm1; ++t) {
-        pool.emplace_back(ndim, embedding, setup, a, b, gamma);
+        pool.emplace_back(ndim, embedding, &setup, a, b, gamma);
         pool.back().start();
     }
 
     std::vector<int> jobs_in_progress;
 
     for (; n < limit_epochs; ++n) {
-        const Float epoch = n;
-        const Float alpha = initial_alpha * (1.0 - epoch / num_epochs);
+        const Float_ epoch = n;
+        const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
         int base_iteration = 0;
         std::fill(last_touched.begin(), last_touched.end(), -1);
@@ -408,13 +436,13 @@ void optimize_layout_parallel(
 //            if (PRINT) { std::cout << "size is " << jobs_in_progress.size() << std::endl; }
 
             for (int t = jobs_in_progress.size(); t < nthreads && i < num_obs; ++t) {
-                staging.alpha = alpha;
-                staging.observation = i;
+                staging.get_alpha() = alpha;
+                staging.get_observation() = i;
 
                 // Tapping the RNG here in the serial section.
-                auto& selections = staging.selections;
+                auto& selections = staging.get_selections();
                 selections.clear();
-                auto& skips = staging.skips;
+                auto& skips = staging.get_skips();
                 skips.clear();
 
                 const int self_iteration = i;
@@ -499,7 +527,7 @@ void optimize_layout_parallel(
                     // set for the next round, under the expectation that the
                     // pending thread becomes the first thread.
                     for (auto s : selections) {
-                        if (s != -1) {
+                        if (s != static_cast<size_t>(-1)) {
                             auto& touched = last_touched[s];
                             if (touched != self_iteration) {
                                 touched = self_iteration;
@@ -555,6 +583,8 @@ void optimize_layout_parallel(
 #else
     throw std::runtime_error("umappp was not compiled with support for parallel optimization");
 #endif
+}
+
 }
 
 }
