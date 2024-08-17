@@ -1,0 +1,36 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+name: Check CMake install
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Configure the build
+      run: cmake -S . -B build -DUMAPPP_TESTS=OFF
+
+    - name: Install the library
+      run: sudo cmake --install build
+
+    - name: Test downstream usage
+      run: |
+        mkdir _downstream
+        touch _downstream/source.cpp
+        cat << EOF > _downstream/CMakeLists.txt
+        cmake_minimum_required(VERSION 3.24)
+        project(test_install)
+        add_executable(whee source.cpp)
+        find_package(libscran_umappp)
+        target_link_libraries(whee libscran::umappp)
+        EOF
+        cd _downstream && cmake -S . -B build

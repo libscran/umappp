@@ -1,9 +1,9 @@
 # A C++ library for UMAP
 
-![Unit tests](https://github.com/LTLA/umappp/actions/workflows/run-tests.yaml/badge.svg)
-![Documentation](https://github.com/LTLA/umappp/actions/workflows/doxygenate.yaml/badge.svg)
-![uwot comparison](https://github.com/LTLA/umappp/actions/workflows/compare-uwot.yaml/badge.svg)
-[![Codecov](https://codecov.io/gh/LTLA/umappp/branch/master/graph/badge.svg?token=IKFEAP5J55)](https://codecov.io/gh/LTLA/umappp)
+![Unit tests](https://github.com/libscran/umappp/actions/workflows/run-tests.yaml/badge.svg)
+![Documentation](https://github.com/libscran/umappp/actions/workflows/doxygenate.yaml/badge.svg)
+![uwot comparison](https://github.com/libscran/umappp/actions/workflows/compare-uwot.yaml/badge.svg)
+[![Codecov](https://codecov.io/gh/libscran/umappp/branch/master/graph/badge.svg?token=XoOTZ0LNPo)](https://codecov.io/gh/libscran/umappp)
 
 ## Overview 
 
@@ -94,7 +94,7 @@ include(FetchContent)
 
 FetchContent_Declare(
   umappp 
-  GIT_REPOSITORY https://github.com/LTLA/umappp
+  GIT_REPOSITORY https://github.com/libscran/umappp
   GIT_TAG master # or any version of interest
 )
 
@@ -105,17 +105,17 @@ And then:
 
 ```cmake
 # For executables:
-target_link_libraries(myexe ltla::umappp)
+target_link_libraries(myexe libscran::umappp)
 
 # For libaries
-target_link_libraries(mylib INTERFACE ltla::umappp)
+target_link_libraries(mylib INTERFACE libscran::umappp)
 ```
 
 ### CMake with `find_package()`
 
 ```cmake
-find_package(ltla_umappp CONFIG REQUIRED)
-target_link_libraries(mylib INTERFACE ltla::umappp)
+find_package(libscran_umappp CONFIG REQUIRED)
+target_link_libraries(mylib INTERFACE libscran::umappp)
 ```
 
 To install the library, use:
@@ -128,18 +128,12 @@ cmake --build . --target install
 
 By default, this will use `FetchContent` to fetch all external dependencies.
 If you want to install them manually, use `-DUMAPPP_FETCH_EXTERN=OFF`.
-See the commit hashes in [`extern/CMakeLists.txt`](extern/CMakeLists.txt) to find compatible versions of each dependency.
+See [`extern/CMakeLists.txt`](extern/CMakeLists.txt) to find compatible versions of each dependency.
 
 ### Manual
 
 If you're not using CMake, the simple approach is to just copy the files in `include/` - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's `-I`.
-This requires the external dependencies listed in [`extern/CMakeLists.txt`](extern/CMakeLists.txt), which also need to be made available during compilation:
-
-- The [**irlba**](https://github.com/LTLA/CppIrlba) library for singular value decomposition (or in this case, an eigendecomposition).
-  This also requires the [**Eigen**](https://gitlab.com/libeigen/eigen) library for matrix operations.
-- The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
-  If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `UMAPPP_CUSTOM_NEIGHBORS` macro.
-- The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
+This requires the external dependencies listed in [`extern/CMakeLists.txt`](extern/CMakeLists.txt), which also need to be made available during compilation.
 
 ## References
 

@@ -5,4 +5,4 @@ find_dependency(ltla_aarand CONFIG REQUIRED)
 find_dependency(ltla_irlba CONFIG REQUIRED)
 find_dependency(knncolle_knncolle CONFIG REQUIRED)
 
-include("${CMAKE_CURRENT_LIST_DIR}/ltla_umapppTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/libscran_umapppTargets.cmake")
