@@ -18,6 +18,8 @@ namespace umappp {
  * @brief Status of the UMAP optimization iterations.
  * @tparam Index_ Integer type of the neighbor indices.
  * @tparam Float_ Floating-point type for the distances.
+ *
+ * Instances of this class should not be constructed directly, but instead returned by `initialize()`.
  */
 template<typename Index_, typename Float_>
 class Status {

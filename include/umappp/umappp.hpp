@@ -3,13 +3,17 @@
 
 /**
  * @file umappp.hpp
- *
  * @brief Overall header for the **umappp** library.
- * This allows for a reasonably intuitive `#include "umappp/umappp.hpp"` call to include the library.
  */
 
 #include "Options.hpp"
 #include "Status.hpp"
 #include "initialize.hpp"
+
+/**
+ * @namespace umappp
+ * @brief Methods for UMAP.
+ */
+namespace umappp {}
 
 #endif
