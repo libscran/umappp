@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['initmethod_0',['InitMethod',['../Umap_8hpp.html#ae4b89fd36b2966f7e6298c50573a89d0',1,'umappp']]]
+  ['initializemethod_0',['InitializeMethod',['../Options_8hpp.html#aaa5af620ed59b3a603d5b9eacf510d69',1,'umappp']]]
 ];

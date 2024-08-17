@@ -1,0 +1,11 @@
+<map id="umappp/Options.hpp" name="umappp/Options.hpp">
+<area shape="rect" id="Node000001" title="Options for the UMAP algorithm." alt="" coords="112,5,253,31"/>
+<area shape="rect" id="Node000002" href="$Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="64,79,197,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,45,142,80,137,77,163,42"/>
+<area shape="rect" id="Node000004" href="$umappp_8hpp.html" title="Overall header for the umappp library. This allows for a reasonably intuitive #include &quot;umappp/umappp..." alt="" coords="113,226,255,252"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="199,44,212,78,215,121,210,163,191,227,186,225,205,162,210,121,207,80,194,46"/>
+<area shape="rect" id="Node000003" href="$initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="5,153,147,178"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="115,118,87,154,83,151,110,115"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="146,118,161,152,184,225,179,227,156,154,141,120"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,185,167,224,164,228,106,190"/>
+</map>

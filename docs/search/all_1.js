@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['b_0',['b',['../structumappp_1_1Umap_1_1Defaults.html#a7d478096697d7eebb22fd4db045adaee',1,'umappp::Umap::Defaults']]],
-  ['bandwidth_1',['bandwidth',['../structumappp_1_1Umap_1_1Defaults.html#a233c1244942cb75695cfe255052b496a',1,'umappp::Umap::Defaults']]]
+  ['b_0',['b',['../structumappp_1_1Options.html#a930c1c1f134a31c87f9f8bc6f4595cce',1,'umappp::Options']]],
+  ['bandwidth_1',['bandwidth',['../structumappp_1_1Options.html#a6d3525b86af984de0cb5471b6e4f12a9',1,'umappp::Options']]]
 ];

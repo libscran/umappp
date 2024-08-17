@@ -97,17 +97,17 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UMAPPP_COMBINE_NEIGHBOR_SETS_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;numeric&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="NeighborList_8hpp.html">NeighborList.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="NeighborList_8hpp.html">NeighborList.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>umappp {</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>umappp {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>internal {</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Float&gt;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">void</span> combine_neighbor_sets(NeighborList&lt;Float&gt;&amp; x, Float mix_ratio = 1) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">void</span> combine_neighbor_sets(NeighborList&lt;Index_, Float_&gt;&amp; x, Float_ mix_ratio = 1) {</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    std::vector&lt;size_t&gt; last(x.size());</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    std::vector&lt;size_t&gt; original(x.size());</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
@@ -135,8 +135,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">if</span> (curlast &lt; limits &amp;&amp; target[curlast].first == desired) {</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                <span class="keywordflow">if</span> (desired &lt; y.first) { <span class="comment">// don&#39;t average it twice.</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    Float product = y.second * target[curlast].second;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    Float prob_final;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    Float_ product = y.second * target[curlast].second;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    Float_ prob_final;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                    <span class="keywordflow">if</span> (mix_ratio == 1) {</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                        prob_final = y.second + target[curlast].second - product;</div>
@@ -187,8 +187,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aNeighborList_8hpp_html"><div class="ttname"><a href="NeighborList_8hpp.html">NeighborList.hpp</a></div><div class="ttdoc">Defines the NeighborList typedef.</div></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aNeighborList_8hpp_html"><div class="ttname"><a href="NeighborList_8hpp.html">NeighborList.hpp</a></div><div class="ttdoc">Defines the NeighborList alias.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

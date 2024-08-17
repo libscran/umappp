@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['negative_5fsample_5frate_0',['negative_sample_rate',['../structumappp_1_1Umap_1_1Defaults.html#ad54b88348149a02bacddbe53ba3e08b5',1,'umappp::Umap::Defaults']]],
-  ['num_5fepochs_1',['num_epochs',['../structumappp_1_1Umap_1_1Defaults.html#a2ce5003bbe402960498a29f3221f7bef',1,'umappp::Umap::Defaults']]],
-  ['num_5fneighbors_2',['num_neighbors',['../structumappp_1_1Umap_1_1Defaults.html#a3f69b649356b76ced4468c03be8330c7',1,'umappp::Umap::Defaults']]],
-  ['num_5fthreads_3',['num_threads',['../structumappp_1_1Umap_1_1Defaults.html#aedb568087394a5e9eed086372ae299f8',1,'umappp::Umap::Defaults']]]
+  ['negative_5fsample_5frate_0',['negative_sample_rate',['../structumappp_1_1Options.html#a10686bad854f25acf6542787b5d0a071',1,'umappp::Options']]],
+  ['num_5fepochs_1',['num_epochs',['../structumappp_1_1Options.html#ab9f6ed93fb2d025cf94f7e556d82cdb9',1,'umappp::Options']]],
+  ['num_5fneighbors_2',['num_neighbors',['../structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520',1,'umappp::Options']]],
+  ['num_5fthreads_3',['num_threads',['../structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa',1,'umappp::Options']]]
 ];
