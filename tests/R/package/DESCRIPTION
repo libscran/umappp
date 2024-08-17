@@ -1,0 +1,15 @@
+Package: umappp
+Version: 0.1.0
+Title: Bindings to the Umappp C++ Library
+Description:
+    Bindings for testing the umappp C++ library, not intended for real-world use.
+Imports:
+    Rcpp
+Suggests:
+    testthat,
+    uwot,
+    BiocNeighbors
+LinkingTo:
+    Rcpp
+Encoding: UTF-8
+RoxygenNote: 7.3.2

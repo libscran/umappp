@@ -45,6 +45,18 @@ private:
 
 public:
     /**
+     * @cond
+     */
+    // Only used for testing, specifically in comparison to uwot:::data2set.
+    const auto& get_epoch_data() const {
+        return my_epochs;
+    }
+    /**
+     * @endcond
+     */
+
+public:
+    /**
      * @return Number of dimensions of the embedding.
      */
     int num_dimensions() const {
