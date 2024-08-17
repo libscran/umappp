@@ -6,6 +6,7 @@
 #include "find_ab.hpp"
 #include "neighbor_similarities.hpp"
 #include "spectral_init.hpp"
+#include "Status.hpp"
 
 #include "knncolle/knncolle.hpp"
 
@@ -66,22 +67,22 @@ inline int choose_num_epochs(int num_epochs, size_t size) {
  */
 template<typename Index_, typename Float_>
 Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, Float_* embedding, Options options) {
-    neighbor_similarities(x, local_connectivity, bandwidth);
-    combine_neighbor_sets(x, mix_ratio);
+    internal::neighbor_similarities<Index_, Float_>(x, options.local_connectivity, options.bandwidth);
+    internal::combine_neighbor_sets<Index_, Float_>(x, options.mix_ratio);
 
     // Choosing the manner of initialization.
-    if (options.init == InitializeMethod::SPECTRAL || options.init == InitializeMethod::SPECTRAL_ONLY) {
-        bool attempt = spectral_init(x, num_dim, embedding, rparams.nthreads);
-        if (!attempt && options.init == InitializeMethod::SPECTRAL) {
-            random_init(x.size(), num_dim, embedding);
+    if (options.initialize == InitializeMethod::SPECTRAL || options.initialize == InitializeMethod::SPECTRAL_ONLY) {
+        bool attempt = internal::spectral_init(x, num_dim, embedding, options.num_threads);
+        if (!attempt && options.initialize == InitializeMethod::SPECTRAL) {
+            internal::random_init(x.size(), num_dim, embedding);
         }
-    } else if (options.init == InitializeMethod::RANDOM) {
-        random_init(x.size(), num_dim, embedding);
+    } else if (options.initialize == InitializeMethod::RANDOM) {
+        internal::random_init(x.size(), num_dim, embedding);
     }
 
     // Finding a good a/b pair.
     if (options.a <= 0 || options.b <= 0) {
-        auto found = find_ab(spread, min_dist);
+        auto found = internal::find_ab(options.spread, options.min_dist);
         options.a = found.first;
         options.b = found.second;
     }
@@ -89,7 +90,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
     options.num_epochs = internal::choose_num_epochs(options.num_epochs, x.size());
 
     return Status<Index_, Float_>(
-        similarities_to_epochs(x, options.num_epochs_to_do, options.negative_sample_rate),
+        internal::similarities_to_epochs<Index_, Float_>(x, options.num_epochs, options.negative_sample_rate),
         options,
         num_dim,
         embedding
@@ -111,28 +112,47 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Dim_, typename Index_, typename Float_>
-Status initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
-    const size_t N = searcher->nobs();
-    NeighborList<Float> output(N);
+Status<Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
+    const size_t N = prebuilt.num_observations();
+    NeighborList<Index_, Float_> output(N);
 
 #ifndef UMAPPP_CUSTOM_PARALLEL
-    #pragma omp parallel for num_threads(rparams.nthreads)
-    for (size_t i = 0; i < N; ++i) {
+#ifdef _OPENMP
+    #pragma omp parallel num_threads(options.num_threads)
+#endif
+    {
 #else
     UMAPPP_CUSTOM_PARALLEL(N, [&](size_t first, size_t last) -> void {
-    for (size_t i = first; i < last; ++i) {
 #endif
 
-        output[i] = searcher->find_nearest_neighbors(i, num_neighbors);
+        auto searcher = prebuilt.initialize();
+        std::vector<Index_> indices;
+        std::vector<Float_> distances;
 
 #ifndef UMAPPP_CUSTOM_PARALLEL
-    }
+#ifdef _OPENMP
+        #pragma omp for
+#endif
+        for (size_t i = 0; i < N; ++i) {
 #else
-    }
-    }, rparams.nthreads);
+        for (size_t i = first; i < last; ++i) {
 #endif
 
-    return initialize(std::move(output), num_dim, embedding);
+            searcher->search(i, options.num_neighbors, &indices, &distances);
+            size_t actual_k = indices.size(); 
+            for (size_t x = 0; x < actual_k; ++x) {
+                output[i].emplace_back(indices[x], distances[x]);
+            }
+
+#ifndef UMAPPP_CUSTOM_PARALLEL
+        }
+    }
+#else
+        }
+    }, options.num_threads);
+#endif
+
+    return initialize(std::move(output), num_dim, embedding, std::move(options));
 }
 
 /**
@@ -153,16 +173,17 @@ Status initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int 
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Dim_, typename Index_, typename Float_>
-Status initialize(
+Status<Index_, Float_> initialize(
     Dim_ data_dim,
     Index_ num_obs,
     const Float_* data,
     const knncolle::Builder<knncolle::SimpleMatrix<Dim_, Index_, Float_>, Float_>& builder,
     int num_dim,
-    Float_* embedding)
+    Float_* embedding,
+    Options options)
 { 
     auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(data_dim, num_obs, data));
-    return initialize(prebuilt, num_dim, embedding);
+    return initialize(*prebuilt, num_dim, embedding, std::move(options));
 }
 
 }

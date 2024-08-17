@@ -4,10 +4,6 @@
 #include "Options.hpp"
 #include "optimize_layout.hpp"
 
-#ifndef UMAPPP_CUSTOM_NEIGHBORS
-#include "knncolle/knncolle.hpp"
-#endif
-
 #include <random>
 #include <cstdint>
 
@@ -29,8 +25,8 @@ public:
     /**
      * @cond
      */
-    Status(EpochData<Index_, Float_> epochs, Options options, int num_dim, Float_* embedding) : 
-        my_epochs(std::move(e)),
+    Status(internal::EpochData<Index_, Float_> epochs, Options options, int num_dim, Float_* embedding) : 
+        my_epochs(std::move(epochs)),
         my_options(std::move(options)),
         my_engine(my_options.seed),
         my_num_dim(num_dim),
@@ -41,7 +37,7 @@ public:
      */
 
 private:
-    EpochData<Index_, Float_> my_epochs;
+    internal::EpochData<Index_, Float_> my_epochs;
     Options my_options;
     std::mt19937_64 my_engine;
     int my_num_dim;
@@ -76,7 +72,7 @@ public:
      */
     void set_embedding(Float_* ptr, bool copy = true) {
         if (copy) {
-            size_t n = static_cast<size_t>(my_dimensions()) * num_observations(); // cast to avoid overflow.
+            size_t n = static_cast<size_t>(num_dimensions()) * num_observations(); // cast to avoid overflow.
             std::copy_n(my_embedding, n, ptr);
         }
         my_embedding = ptr;
@@ -86,7 +82,7 @@ public:
      * @return Current epoch.
      */
     int epoch() const {
-        return epochs.current_epoch;
+        return my_epochs.current_epoch;
     }
 
     /**
@@ -94,14 +90,14 @@ public:
      * This is typically determined by the value of `Options::max_epochs` used in `initialize()`.
      */
     int num_epochs() const {
-        return epochs.total_epochs;
+        return my_epochs.total_epochs;
     }
 
     /**
      * @return The number of observations in the dataset.
      */
     size_t num_observations() const {
-        return epochs.head.size();
+        return my_epochs.head.size();
     }
 
 public:
@@ -115,11 +111,11 @@ public:
      */
     void run(int epoch_limit = 0) {
         if (epoch_limit == 0) {
-            epoch_limit = epochs.total_epochs;
+            epoch_limit = my_epochs.total_epochs;
         }
 
-        if (my_options.nthreads == 1 || !my_options.parallel_optimization) {
-            optimize_layout(
+        if (my_options.num_threads == 1 || !my_options.parallel_optimization) {
+            internal::optimize_layout<Index_, Float_>(
                 my_num_dim,
                 my_embedding,
                 my_epochs,
@@ -131,7 +127,7 @@ public:
                 epoch_limit
             );
         } else {
-            optimize_layout_parallel(
+            internal::optimize_layout_parallel<Index_, Float_>(
                 my_num_dim,
                 my_embedding,
                 my_epochs,
@@ -141,7 +137,7 @@ public:
                 my_options.learning_rate,
                 my_engine,
                 epoch_limit,
-                my_options.nthreads
+                my_options.num_threads
             );
         }
         return;
