@@ -98,8 +98,8 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
     irlba::ParallelSparseMatrix<
         decltype(values),
         decltype(indices),
-        decltype(pointers),
-        Eigen::VectorXd // deliberately double-precision here.
+        decltype(pointers)
+        // Eigen::VectorXd // TODO: deliberately double-precision here, but not available in 2.0.0
     > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
     irlba::EigenThreadScope tscope(nthreads);
 
