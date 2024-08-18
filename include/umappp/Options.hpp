@@ -57,7 +57,7 @@ struct Options {
      * Smaller values will increase local clustering while larger values favor a more even distribution of points throughout the low-dimensional space.
      * This is interpreted relative to the spread of points in `Options::spread`.
      */
-    double min_dist = 0.01;
+    double min_dist = 0.1;
 
     /**
      * Positive value for the \f$a\f$ parameter for the fuzzy set membership strength calculations.
