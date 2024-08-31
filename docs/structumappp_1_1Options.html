@@ -322,7 +322,8 @@ Public Attributes</h2></td></tr>
 <li><code>fun</code>, a lambda that accepts two arguments, <code>start</code> and <code>end</code>.</li>
 <li><code>nthreads</code>, an integer specifying the number of threads to use.</li>
 </ul>
-<p>The function should split <code>[0, njobs)</code> into any number of contiguous, non-overlapping intervals, and call <code>fun</code> on each interval, possibly in different threads. The details of the splitting and evaluation are left to the discretion of the developer defining the macro. The function should only return once all evaluations of <code>fun</code> are complete. </p>
+<p>The function should split <code>[0, njobs)</code> into any number of contiguous, non-overlapping intervals, and call <code>fun</code> on each interval, possibly in different threads. The details of the splitting and evaluation are left to the discretion of the developer defining the macro. The function should only return once all evaluations of <code>fun</code> are complete.</p>
+<p>For the nearest neighbor search, the parallelization scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code>. </p>
 
 </div>
 </div>

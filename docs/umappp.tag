@@ -215,10 +215,10 @@
     <class kind="struct">umappp::Options</class>
     <class kind="class">umappp::Status</class>
     <member kind="typedef">
-      <type>std::vector&lt; std::vector&lt; std::pair&lt; Index_, Float_ &gt; &gt; &gt;</type>
+      <type>knncolle::NeighborList&lt; Index_, Float_ &gt;</type>
       <name>NeighborList</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>afe025fafcc120fcb90e8c62177013d58</anchor>
+      <anchor>a4af858f5d08e350616f7324c2714722c</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumeration">
