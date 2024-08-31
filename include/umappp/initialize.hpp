@@ -116,45 +116,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
  */
 template<typename Dim_, typename Index_, typename Float_>
 Status<Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
-    const size_t N = prebuilt.num_observations();
-    NeighborList<Index_, Float_> output(N);
-
-#ifndef UMAPPP_CUSTOM_PARALLEL
-#ifdef _OPENMP
-    #pragma omp parallel num_threads(options.num_threads)
-#endif
-    {
-#else
-    UMAPPP_CUSTOM_PARALLEL(N, [&](size_t first, size_t last) -> void {
-#endif
-
-        auto searcher = prebuilt.initialize();
-        std::vector<Index_> indices;
-        std::vector<Float_> distances;
-
-#ifndef UMAPPP_CUSTOM_PARALLEL
-#ifdef _OPENMP
-        #pragma omp for
-#endif
-        for (size_t i = 0; i < N; ++i) {
-#else
-        for (size_t i = first; i < last; ++i) {
-#endif
-
-            searcher->search(i, options.num_neighbors, &indices, &distances);
-            size_t actual_k = indices.size(); 
-            for (size_t x = 0; x < actual_k; ++x) {
-                output[i].emplace_back(indices[x], distances[x]);
-            }
-
-#ifndef UMAPPP_CUSTOM_PARALLEL
-        }
-    }
-#else
-        }
-    }, options.num_threads);
-#endif
-
+    auto output = knncolle::find_nearest_neighbors(prebuilt, options.num_neighbors, options.num_threads);
     return initialize(std::move(output), num_dim, embedding, std::move(options));
 }
 

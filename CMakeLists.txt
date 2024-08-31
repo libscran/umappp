@@ -24,7 +24,7 @@ if(UMAPPP_FETCH_EXTERN)
 else()
     find_package(ltla_aarand CONFIG REQUIRED)
     find_package(ltla_irlba CONFIG REQUIRED)
-    find_package(knncolle_knncolle CONFIG REQUIRED)
+    find_package(knncolle_knncolle 2.3.0 CONFIG REQUIRED)
 endif()
 
 target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba knncolle::knncolle)

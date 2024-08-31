@@ -139,6 +139,8 @@ struct Options {
      * The function should split `[0, njobs)` into any number of contiguous, non-overlapping intervals, and call `fun` on each interval, possibly in different threads.
      * The details of the splitting and evaluation are left to the discretion of the developer defining the macro. 
      * The function should only return once all evaluations of `fun` are complete.
+     *
+     * For the nearest neighbor search, the parallelization scheme is determined by `knncolle::parallelize()`.
      */
     int num_threads = 1;
 

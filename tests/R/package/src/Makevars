@@ -7,6 +7,7 @@ PKG_CPPFLAGS=-I${BUILD_DIR}/aarand-src/include \
     -I${BUILD_DIR}/powerit-src/include \
     -I${BUILD_DIR}/knncolle-src/include \
     -I${BUILD_DIR}/irlba-src/include \
+    -I${BUILD_DIR}/subpar-src/include \
     -I${BUILD_DIR}/eigen-src \
     -I../../../../include
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
