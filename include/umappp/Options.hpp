@@ -126,21 +126,10 @@ struct Options {
 
     /**
      * Number of threads to use.
-     * This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in `initialize()`) and spectral initialization.
-     * If `Options::parallel_optimization` is true, it will also affect the layout optimization, i.e., the gradient descent iterations.
-     *
-     * The `UMAPPP_CUSTOM_PARALLEL` macro can be set to a function that specifies a custom parallelization scheme.
-     * This function should be a template that accept three arguments:
-     *
-     * - `njobs`, an integer specifying the number of jobs.
-     * - `fun`, a lambda that accepts two arguments, `start` and `end`.
-     * - `nthreads`, an integer specifying the number of threads to use.
-     *
-     * The function should split `[0, njobs)` into any number of contiguous, non-overlapping intervals, and call `fun` on each interval, possibly in different threads.
-     * The details of the splitting and evaluation are left to the discretion of the developer defining the macro. 
-     * The function should only return once all evaluations of `fun` are complete.
-     *
-     * For the nearest neighbor search, the parallelization scheme is determined by `knncolle::parallelize()`.
+     * The parallelization scheme is determined by `parallelize()` for most calculations.
+     * The exception is the nearest-neighbor search in some of the `initialize()` overloads, where the scheme is determined by `knncolle::parallelize()` instead.
+     * 
+     * If `Options::parallel_optimization = true`, this option will also affect the layout optimization, i.e., the gradient descent iterations.
      */
     int num_threads = 1;
 

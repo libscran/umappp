@@ -60,16 +60,3 @@ add_executable(
 
 decorate_executable(cuspartest)
 target_compile_definitions(cuspartest PRIVATE TEST_CUSTOM_PARALLEL=1)
-
-find_package(OpenMP)
-if (OpenMP_FOUND)
-    add_executable(
-        omptest 
-        src/umappp.cpp
-        src/spectral_init.cpp
-        src/optimize_layout.cpp
-    )
-
-    decorate_executable(omptest)
-    target_link_libraries(omptest OpenMP::OpenMP_CXX)
-endif()

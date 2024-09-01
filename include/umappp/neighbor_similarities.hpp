@@ -8,6 +8,7 @@
 #include <numeric>
 
 #include "NeighborList.hpp"
+#include "parallelize.hpp"
 
 namespace umappp {
 
@@ -21,31 +22,14 @@ void neighbor_similarities(
     int max_iter = 64, 
     Float_ tol = 1e-5, 
     Float_ min_k_dist_scale = 1e-3,
-    [[maybe_unused]] int num_threads = 1
+    int num_threads = 1
 ) {
     constexpr Float_ max_val = std::numeric_limits<Float_>::max();
     size_t npoints = x.size();
 
-#ifndef UMAPPP_CUSTOM_PARALLEL
-#ifdef _OPENMP
-    #pragma omp parallel num_threads(num_threads)
-#endif
-    {
-#else
-    UMAPPP_CUSTOM_PARALLEL(npoints, [&](size_t first, size_t last) -> void {
-#endif
-
+    parallelize(num_threads, npoints, [&](int, size_t start, size_t length) {
         std::vector<Float_> non_zero_distances;
-
-#ifndef UMAPPP_CUSTOM_PARALLEL
-#ifdef _OPENMP
-        #pragma omp for
-#endif
-        for (size_t i = 0; i < npoints; ++i) {
-#else
-        for (size_t i = first; i < last; ++i) {
-#endif
-
+        for (size_t i = start, end = start + length; i < end; ++i) {
             auto& all_neighbors = x[i];
             const int n_neighbors = all_neighbors.size();
 
@@ -142,14 +126,8 @@ void neighbor_similarities(
                     dist = 1;
                 }
             }
-
-#ifndef UMAPPP_CUSTOM_PARALLEL
         }
-    }
-#else
-        }
-    }, num_threads);
-#endif
+    });
 
     return;
 }
