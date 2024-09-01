@@ -315,15 +315,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of threads to use. This setting affects nearest neighbor detection (if an existing list of neighbors is not supplied in <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">initialize()</a></code>) and spectral initialization. If <code><a class="el" href="structumappp_1_1Options.html#a491527e816984728af1c161fd6dddea0">Options::parallel_optimization</a></code> is true, it will also affect the layout optimization, i.e., the gradient descent iterations.</p>
-<p>The <code>UMAPPP_CUSTOM_PARALLEL</code> macro can be set to a function that specifies a custom parallelization scheme. This function should be a template that accept three arguments:</p>
-<ul>
-<li><code>njobs</code>, an integer specifying the number of jobs.</li>
-<li><code>fun</code>, a lambda that accepts two arguments, <code>start</code> and <code>end</code>.</li>
-<li><code>nthreads</code>, an integer specifying the number of threads to use.</li>
-</ul>
-<p>The function should split <code>[0, njobs)</code> into any number of contiguous, non-overlapping intervals, and call <code>fun</code> on each interval, possibly in different threads. The details of the splitting and evaluation are left to the discretion of the developer defining the macro. The function should only return once all evaluations of <code>fun</code> are complete.</p>
-<p>For the nearest neighbor search, the parallelization scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code>. </p>
+<p>Number of threads to use. The parallelization scheme is determined by <code>parallelize()</code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
+<p>If <code><a class="el" href="structumappp_1_1Options.html#a491527e816984728af1c161fd6dddea0">Options::parallel_optimization</a> = true</code>, this option will also affect the layout optimization, i.e., the gradient descent iterations. </p>
 
 </div>
 </div>
