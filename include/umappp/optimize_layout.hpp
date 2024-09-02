@@ -139,9 +139,6 @@ void optimize_layout(
                     const Float_ pd2b = std::pow(dist2, b);
                     const Float_ grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
 
-#ifdef _OPENMP
-                    #pragma omp simd
-#endif
                     for (size_t d = 0; d < ndim; ++d) {
                         auto& l = left[d];
                         auto& r = right[d];
@@ -166,9 +163,6 @@ void optimize_layout(
                     Float_ dist2 = quick_squared_distance(left, right, ndim);
                     const Float_ grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
 
-#ifdef _OPENMP
-                    #pragma omp simd
-#endif
                     for (size_t d = 0; d < ndim; ++d) {
                         left[d] += alpha * clamp(grad_coef * (left[d] - right[d]));
                     }
@@ -283,9 +277,6 @@ public:
                 const Float_ pd2b = std::pow(dist2, my_b);
                 const Float_ grad_coef = (-2 * my_a * my_b * pd2b) / (dist2 * (my_a * pd2b + 1.0));
 
-#ifdef _OPENMP
-                #pragma omp simd
-#endif
                 for (size_t d = 0; d < my_ndim; ++d) {
                     auto& l = left[d];
                     auto& r = right[d];
@@ -302,9 +293,6 @@ public:
                 Float_ dist2 = quick_squared_distance(left, right, my_ndim);
                 const Float_ grad_coef = 2 * my_gamma * my_b / ((0.001 + dist2) * (my_a * std::pow(dist2, my_b) + 1.0));
 
-#ifdef _OPENMP
-                #pragma omp simd
-#endif
                 for (size_t d = 0; d < my_ndim; ++d) {
                     left[d] += my_alpha * clamp(grad_coef * (left[d] - right[d]));
                 }
