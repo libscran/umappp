@@ -22,16 +22,13 @@ namespace internal {
  * We do so by minimizing the least squares difference at grid points. The
  * original uwot:::find_ab_params does this via R's inbuilt nls() function, so
  * we follow its lead by using the Gauss-Newton method. (We add some
- * Levenbug-style dampening to guarantee convergence.)
+ * Levenberg-Marquadt-style dampening to guarantee convergence.)
  *
  * Derivatives were obtained using the following code in R:
  *
- * > delta <- expression((1/(1+ a * x^(2*b)) - y)^2)
+ * > delta <- expression(y - 1/(1+ a * x^(2*b)))
  * > D(delta, "a")
  * > D(delta, "b")
- * > D(D(delta, "a"), "a")
- * > D(D(delta, "b"), "a")
- * > D(D(delta, "b"), "b")
  *
  * To test, evaluate with:
  *
@@ -45,7 +42,9 @@ namespace internal {
  */
  
 template<typename Float_>
-std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist, Float_ grid = 300, Float_ limit = 0.5, int iter = 50, Float_ tol = 1e-6) {
+std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist) {
+    constexpr Float_ grid = 300;
+
     // Compute the x and y coordinates of the expected distance curve.
     std::vector<Float_> grid_x(grid), grid_y(grid), log_x(grid);
     const Float_ delta = spread * 3 / grid;
@@ -55,113 +54,114 @@ std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist, Float_ grid = 
         grid_y[g] = (grid_x[g] <= min_dist ? 1 : std::exp(- (grid_x[g] - min_dist) / spread));
     }
 
-    // Starting estimates, obtained by solving for 'exp(- (x - d) / s) = limit'.
-    // We use 'limit = 0.5' because that's where most interesting stuff happens in this curve.
-    Float_ x_half = std::log(limit) * -spread + min_dist;
-    Float_ d_half = limit / -spread;
+    // Starting estimates, obtained by matching the coordinates/gradients of
+    // the two curves (ignoring the pmin) where 'exp(- (x - d) / s) = limit'.
+    // We use 'limit = 0.5' because that's where most interesting stuff
+    // happens, given that the curve is bounded between 0 and 1 on the y-axis.
+    constexpr Float_ limit = 0.5;
+    Float_ x_half = std::log(limit) * -spread + min_dist; // guaranteed > 0, as log(limit) is negative.
+    Float_ d_half = limit / -spread; // first derivative at x_half.
     Float_ b = - d_half * x_half / (1 / limit - 1) / (2 * limit * limit);
     Float_ a = (1 / limit - 1) / std::pow(x_half, 2 * b);
 
-    std::vector<Float_> observed_y(grid), xpow(grid);
+    std::vector<Float_> fit_y(grid), xpow(grid), grid_resid(grid);
     auto compute_ss = [&](Float_ A, Float_ B) -> Float_ {
         for (int g = 0; g < grid; ++g) {
             xpow[g] = std::pow(grid_x[g], 2 * B);
-            observed_y[g] = 1 / (1 + A * xpow[g]);
+            fit_y[g] = 1 / (1 + A * xpow[g]);
+            grid_resid[g] = grid_y[g] - fit_y[g];
         }
 
         Float_ ss = 0;
         for (int g = 0; g < grid; ++g) {
-            ss += (grid_y[g] - observed_y[g]) * (grid_y[g] - observed_y[g]);
+            auto r = grid_resid[g];
+            ss += r * r;
         }
 
         return ss;
     };
     Float_ ss = compute_ss(a, b);
 
-    for (int it = 0; it < iter; ++it) {
-        // Computing the first and second derivatives of the sum of squared differences.
-        Float_ da = 0, db = 0, daa = 0, dab = 0, dbb = 0;
+    // Starting with basically no Levenberg-Marquardt dampening,
+    // under the assumption that the starting estimates are pretty good.
+    Float_ lm_dampener = 0;
+
+    constexpr int gn_iter = 50; // i.e., Gauss-Newton iterations.
+    for (int it = 0; it < gn_iter; ++it) {
+        /* Using Wikipedia's notation (https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm):
+         *
+         * J^T J = [ da2   dadb ]
+         *         [ dadb  db2  ] 
+         *
+         * J^T r(Beta) = [ da_resid ]
+         *               [ db_resid ]
+         */
+        Float_ da2 = 0, db2 = 0, dadb = 0, da_resid = 0, db_resid = 0;
+
         for (int g = 0; g < grid; ++g) {
-            const Float_& gy = grid_y[g];
-            const Float_& oy = observed_y[g];
+            const Float_ x2b = xpow[g]; // set by the last compute_ss() call.
+            const Float_ oy = fit_y[g]; // ditto
+            const Float_ resid = grid_resid[g]; // ditto
 
-            const Float_& x2b = xpow[g];
-            const Float_ logx2 = log_x[g] * 2;
-            const Float_ delta = oy - gy;
+            // x^(2 * b)/(1 + a * x^(2 * b))^2
+            const Float_ da = x2b * oy * oy;
 
-            // -(2 * (x^(2 * b)/(1 + a * x^(2 * b))^2 * (1/(1 + a * x^(2 * b)) - y)))
-            da += -2 * x2b * oy * oy * delta;
+            // a * (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2
+            const Float_ db = a * (log_x[g] * 2) * da; // reusing expression above.
 
-            // -(2 * (a * (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2 * (1/(1 + a * x^(2 * b)) - y)))
-            db += -2 * a * x2b * logx2 * oy * oy * delta;
-
-            // 2 * (
-            //     x^(2 * b)/(1 + a * x^(2 * b))^2 * (x^(2 * b)/(1 + a * x^(2 * b))^2) 
-            //     + x^(2 * b) * (2 * (x^(2 * b) * (1 + a * x^(2 * b))))/((1 + a * x^(2 * b))^2)^2 * (1/(1 + a * x^(2 * b)) - y)
-            // ) 
-            daa += 2 * (
-                x2b * oy * oy * x2b * oy * oy
-                + x2b * 2 * x2b * oy * oy * oy * delta
-            );
-
-            //-(2 * 
-            //    (
-            //        (
-            //            (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2 
-            //            - a * (x^(2 * b) * (log(x) * 2)) * (2 * (x^(2 * b) * (1 + a * x^(2 * b))))/((1 + a * x^(2 * b))^2)^2
-            //        ) 
-            //        * (1/(1 + a * x^(2 * b)) - y) 
-            //        - a * (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2 * (x^(2 * b)/(1 + a * x^(2 * b))^2)
-            //    )
-            //)
-            dab += -2 * (
-                (
-                    x2b * logx2 * oy * oy
-                    - a * x2b * logx2 * 2 * x2b * oy * oy * oy
-                ) * delta
-                - a * x2b * logx2 * oy * oy * x2b * oy * oy
-            );
-
-            // -(2 * 
-            //     (
-            //         (
-            //             a * (x^(2 * b) * (log(x) * 2) * (log(x) * 2))/(1 + a * x^(2 * b))^2 
-            //             - a * (x^(2 * b) * (log(x) * 2)) * (2 * (a * (x^(2 * b) * (log(x) * 2)) * (1 + a * x^(2 * b))))/((1 + a * x^(2 * b))^2)^2
-            //         ) 
-            //         * (1/(1 + a * x^(2 * b)) - y) 
-            //         - a * (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2 * (a * (x^(2 * b) * (log(x) * 2))/(1 + a * x^(2 * b))^2)
-            //     )
-            // ) 
-            dbb += -2 * (
-                (
-                    (a * x2b * logx2 * logx2 * oy * oy)
-                    - (a * x2b * logx2 * 2 * a * x2b * logx2 * oy * oy * oy)
-                ) * delta 
-                - a * x2b * logx2 * oy * oy * a * x2b * logx2 * oy * oy
-            );
+            da2 += da * da;
+            db2 += db * db;
+            dadb += da * db;
+            da_resid += da * resid;
+            db_resid += db * resid;
         }
 
-        // Applying the Newton iterations with damping.
-        Float_ determinant = daa * dbb - dab * dab;
-        const Float_ delta_a = (da * dbb - dab * db) / determinant;
-        const Float_ delta_b = (- da * dab + daa * db) / determinant; 
+        bool okay = false;
+        Float_ candidate_a, candidate_b, ss_next;
 
-        Float_ ss_next = 0;
-        Float_ factor = 1;
-        for (int inner = 0; inner < 10; ++inner, factor /= 2) {
-            ss_next = compute_ss(a - factor * delta_a, b - factor * delta_b);
+        // To get from epsilon to max_dampener for a double-precision Float_ is
+        // 62 Levenberg-Marquardt iterations; that should be acceptable for the
+        // pathological case, as it is comparable to gn_iter.
+        constexpr Float_ max_dampener = 1024; 
+
+        while (lm_dampener < max_dampener) {
+            const Float_ mult = 1 + lm_dampener; 
+            const Float_ damped_da2 = da2 * mult;
+            const Float_ damped_db2 = db2 * mult;
+
+            const Float_ determinant = damped_da2 * damped_db2 - dadb * dadb;
+            const Float_ delta_a = - (da_resid * damped_db2 - dadb * db_resid) / determinant;
+            const Float_ delta_b = - (- da_resid * dadb + damped_da2 * db_resid) / determinant;
+
+            candidate_a = a + delta_a;
+            candidate_b = b + delta_b;
+
+            ss_next = compute_ss(candidate_a, candidate_b);
             if (ss_next < ss) {
+                okay = true;
+                lm_dampener /= 2;
                 break;
+            }
+
+            if (lm_dampener == 0) {
+                lm_dampener = std::numeric_limits<Float_>::epsilon();
+            } else {
+                lm_dampener *= 2;
             }
         }
 
-        if (ss && 1 - ss_next/ss > tol) {
-            a -= factor * delta_a;
-            b -= factor * delta_b;
-            ss = ss_next;
-        } else {
+        if (!okay) { // Give up, I guess... hopefully this doesn't cause too much damage.
             break;
         }
+
+        constexpr Float_ tol = 1e-6;
+        if (ss - ss_next <= ss * tol) { // Converged successfully within the relative tolerance.
+            break;
+        }
+
+        a = candidate_a;
+        b = candidate_b;
+        ss = ss_next;
     }
 
     return std::make_pair(a, b);
