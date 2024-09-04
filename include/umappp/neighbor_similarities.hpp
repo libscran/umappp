@@ -18,18 +18,18 @@ namespace internal {
  * The aim of this function is to convert distances into probability-like
  * similarities using a Gaussian kernel. Our aim is to find 'sigma' such that:
  *
- * sum( exp( - max(0, dist - rho) / sigma ) ) = target
+ * sum( exp( - max(0, dist_i - rho) / sigma ) ) = target
  *
  * Where 'rho' and 'target' are constants, and the sum is computed over all
- * neighbors for each observation.
+ * neighbors 'i' for each observation. We ignore any duplicate points, i.e.,
+ * neighbors with zero distances.
  *
  * Note that we only need to explicitly compute the sum over neighbors where
  * 'dist > rho'. For closer neighbors, the exp() expression is equal to 1, so
  * we just add the number of such neighbors to the sum.
  *
- * We using Newton's method with a fallback to a binary search if the former
- * doesn't give sensible steps. We use the inverse sigma instead of the sigma
- * as it makes the derivative in Newton's method a lot easier to deal with.
+ * We use Newton's method with a fallback to a binary search if the former
+ * doesn't give sensible steps. 
  * 
  * NOTE: the UMAPPP_R_PACKAGE_TESTING macro recapitulates the gaussian kernel
  * calculation of the uwot package so that we can get a more precise comparison
@@ -94,7 +94,7 @@ void neighbor_similarities(
 
             // Pre-computing the difference between each distance and rho to reduce work in the inner iterations.
             active_delta.clear();
-            Float_ num_le_rho = num_zero;
+            Float_ num_le_rho = 0;
             for (int k = num_zero; k < n_neighbors; ++k) {
                 auto curdist = all_neighbors[k].second;
                 if (curdist > rho) {
@@ -112,10 +112,10 @@ void neighbor_similarities(
                 continue;
             }
 
-            // Our initial inverse sigma is chosen to match the scale of the largest delta so that we start in the right ballpark.
-            Float_ invsigma = 
+            // Our initial sigma is chosen to match the scale of the largest delta so that we start in the right ballpark.
+            Float_ sigma = 
 #ifndef UMAPPP_R_PACKAGE_TESTING
-                1.0 / active_delta.back();
+                active_delta.back();
 #else
                 1.0
 #endif
@@ -129,11 +129,14 @@ void neighbor_similarities(
 
             for (int iter = 0; iter < max_iter; ++iter) {
                 Float_ observed = num_le_rho;
-                Float_ deriv = 0; // Also computing the derivative with respect to 'invsigma'.
-                for (auto d : active_delta) {
-                    Float_ current = std::exp(- d * invsigma);
-                    observed += current;
-                    deriv += -d * current;
+                Float_ deriv = 0; // Also computing the derivative with respect to 'sigma'.
+                {
+                    const Float_ invsigma = 1 / sigma, invsigma2 = invsigma * invsigma;
+                    for (auto d : active_delta) {
+                        Float_ current = std::exp(- d * invsigma);
+                        observed += current;
+                        deriv += d * current * invsigma2;
+                    }
                 }
 
                 Float_ diff = observed - target;
@@ -142,22 +145,22 @@ void neighbor_similarities(
                 }
 
                 // Refining the search interval for a (potential) binary search
-                // later. We know that this function is decreasing with respect
-                // to increasing 'invsigma', so if the diff is positive, the
-                // current 'invsigma' must be on the left of the root.
+                // later. We know that this function is increasing with respect
+                // to increasing 'sigma', so if the diff is positive, the
+                // current 'sigma' must be on the right of the root.
                 if (diff > 0) {
-                    lo = invsigma;
+                    hi = sigma;
                 } else {
-                    hi = invsigma;
+                    lo = sigma;
                 }
 
                 bool nr_ok = false;
                 if constexpr(use_newton_) {
                     // Attempt a Newton-Raphson search first.
                     if (deriv) {
-                        const Float_ alt_invsigma = invsigma - (diff / deriv); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.
-                        if (alt_invsigma > lo && alt_invsigma < hi) {
-                            invsigma = alt_invsigma;
+                        const Float_ alt_sigma = sigma - (diff / deriv); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.
+                        if (alt_sigma > lo && alt_sigma < hi) {
+                            sigma = alt_sigma;
                             nr_ok = true;
                         }
                     }
@@ -166,30 +169,30 @@ void neighbor_similarities(
                 if (!nr_ok) {
                     // Falling back to a binary search, if Newton's method failed or was not requested.
                     if (diff > 0) {
-                        if (hi == max_val) {
-                            invsigma *= 2;
-                        } else {
-                            invsigma += (hi - invsigma) / 2; // overflow-safe midpoint with the upper boundary.
-                        }
+                        sigma += (lo - sigma) / 2; // overflow-safe midpoint with the lower boundary.
                     } else {
-                        invsigma += (lo - invsigma) / 2; // overflow-safe midpoint with the lower boundary.
+                        if (hi == max_val) {
+                            sigma *= 2;
+                        } else {
+                            sigma += (hi - sigma) / 2; // overflow-safe midpoint with the upper boundary.
+                        }
                     }
                 }
 
-                if (std::isinf(invsigma)) {
+                if (sigma == 0) {
                     break;
                 }
             }
 
-            // Protect against an overly large invsigma, i.e., sigma = std::max(min_k_dist_scale * mean_dist, sigma).
+            // Protect against an overly small sigma.
             Float_ mean_dist = 0;
             for (const auto& x : all_neighbors) {
                 mean_dist += x.second;
             }
             mean_dist /= n_neighbors;
-            Float_ threshold = 1.0 / (min_k_dist_scale * mean_dist);
-            invsigma = std::min(threshold, invsigma);
+            sigma = std::max(min_k_dist_scale * mean_dist, sigma);
 
+            Float_ invsigma = 1 / sigma;
             for (int k = 0; k < n_neighbors; ++k) {
                 Float_& dist = all_neighbors[k].second;
                 if (dist > rho) {
