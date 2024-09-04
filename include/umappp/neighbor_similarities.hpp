@@ -21,8 +21,7 @@ namespace internal {
  * sum( exp( - max(0, dist_i - rho) / sigma ) ) = target
  *
  * Where 'rho' and 'target' are constants, and the sum is computed over all
- * neighbors 'i' for each observation. We ignore any duplicate points, i.e.,
- * neighbors with zero distances.
+ * neighbors 'i' for each observation.
  *
  * Note that we only need to explicitly compute the sum over neighbors where
  * 'dist > rho'. For closer neighbors, the exp() expression is equal to 1, so
@@ -58,11 +57,12 @@ void neighbor_similarities(
 
         for (size_t i = start, end = start + length; i < end; ++i) {
             auto& all_neighbors = x[i];
-            const int n_neighbors = all_neighbors.size();
-            if (n_neighbors == 0) {
+            const int num_neighbors = all_neighbors.size();
+            if (num_neighbors == 0) {
                 continue;
             }
 
+            // Define rho as the distance to the nearest (non-identical) neighbor at 'local_connectivity', possibly with interpolation.
             int num_zero = 0;
             for (const auto& f : all_neighbors) {
                 if (f.second) {
@@ -71,31 +71,30 @@ void neighbor_similarities(
                 ++num_zero;
             }
 
-            // Find rho, the distance to the nearest non-identical neighbor at 'local_connectivity', possibly with interpolation.
-            int raw_connect_index = std::floor(local_connectivity);
+            const int raw_connect_index = std::floor(local_connectivity);
             const Float_ interpolation = local_connectivity - raw_connect_index;
-            int connect_index = num_zero + raw_connect_index;
+            const int connect_index = num_zero + raw_connect_index;
 
-            if (n_neighbors <= connect_index) {
+            if (num_neighbors <= connect_index) {
                 // When this happens, 'rho' is just theoretically set to the
                 // maximum distance. In such cases, the weights are always just
                 // set to 1 in the remaining code, because no distance can be
                 // greater than 'rho'. If that's the case, we might as well
                 // save some time and compute it here.
-                for (int k = 0; k < n_neighbors; ++k) {
+                for (int k = 0; k < num_neighbors; ++k) {
                     all_neighbors[k].second = 1;
                 }
                 continue;
             }
 
-            const Float_ lower = (connect_index > 0 ? all_neighbors[connect_index - 1].second : 0); // 'connect_index' is 1-based, so we need to -1.
+            const Float_ lower = (connect_index > 0 ? all_neighbors[connect_index - 1].second : 0); // 'local_connectivity' (and thus 'connect_index') is 1-based, hence the -1.
             const Float_ upper = all_neighbors[connect_index].second;
             const Float_ rho = lower + interpolation * (upper - lower);
 
             // Pre-computing the difference between each distance and rho to reduce work in the inner iterations.
             active_delta.clear();
-            Float_ num_le_rho = 0;
-            for (int k = num_zero; k < n_neighbors; ++k) {
+            Float_ num_le_rho = num_zero;
+            for (int k = num_zero; k < num_neighbors; ++k) {
                 auto curdist = all_neighbors[k].second;
                 if (curdist > rho) {
                     active_delta.push_back(curdist - rho);
@@ -105,8 +104,8 @@ void neighbor_similarities(
             }
 
             if (active_delta.empty()) {
-                // Same logic as above.
-                for (int k = 0; k < n_neighbors; ++k) {
+                // Same early-return logic as above.
+                for (int k = 0; k < num_neighbors; ++k) {
                     all_neighbors[k].second = 1;
                 }
                 continue;
@@ -125,7 +124,7 @@ void neighbor_similarities(
             constexpr Float_ max_val = std::numeric_limits<Float_>::max();
             Float_ hi = max_val;
 
-            const Float_ target = std::log2(all_neighbors.size() + 1) * bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
+            const Float_ target = std::log2(num_neighbors + 1) * bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
 
             for (int iter = 0; iter < max_iter; ++iter) {
                 Float_ observed = num_le_rho;
@@ -139,7 +138,7 @@ void neighbor_similarities(
                     }
                 }
 
-                Float_ diff = observed - target;
+                const Float_ diff = observed - target;
                 if (std::abs(diff) < tol) {
                     break;
                 }
@@ -189,11 +188,11 @@ void neighbor_similarities(
             for (const auto& x : all_neighbors) {
                 mean_dist += x.second;
             }
-            mean_dist /= n_neighbors;
+            mean_dist /= num_neighbors;
             sigma = std::max(min_k_dist_scale * mean_dist, sigma);
 
-            Float_ invsigma = 1 / sigma;
-            for (int k = 0; k < n_neighbors; ++k) {
+            const Float_ invsigma = 1 / sigma;
+            for (int k = 0; k < num_neighbors; ++k) {
                 Float_& dist = all_neighbors[k].second;
                 if (dist > rho) {
                     dist = std::exp(-(dist - rho) * invsigma);
