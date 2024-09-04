@@ -5,12 +5,13 @@
 
 #include <map>
 
-class SimilarityTest : public ::testing::TestWithParam<std::tuple<int, int> > {
+class SimilarityTest : public ::testing::TestWithParam<std::tuple<int, int, double> > {
 protected:
     void SetUp() {
         auto p = GetParam();
         nobs = std::get<0>(p);
         k = std::get<1>(p);
+        connectivity = std::get<2>(p);
 
         std::mt19937_64 rng(nobs * k); // for some variety
         std::normal_distribution<> dist(0, 1);
@@ -23,6 +24,7 @@ protected:
 
     int nobs, k;
     int ndim = 5;
+    double connectivity;
     std::vector<double> data;
 
 protected:
@@ -45,77 +47,143 @@ protected:
     }
 };
 
-TEST_P(SimilarityTest, Basic) {
+TEST_P(SimilarityTest, Newton) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
-    umappp::internal::neighbor_similarities(neighbors);
+    umappp::internal::neighbor_similarities(neighbors, connectivity);
 
     for (const auto& s : neighbors) {
         double prev = 1;
-        bool first = true;
-        for (const auto& v : s){ 
-            if (first) {
+        double observed = 0;
+
+        for (size_t i = 0; i < s.size(); ++i) {
+            const auto& v = s[i];
+            if (i < static_cast<size_t>(connectivity)) {
                 EXPECT_EQ(v.second, 1);
-                first = false;
             } else {
-                EXPECT_TRUE(v.second < 1);
+                EXPECT_LT(v.second, 1);
             }
             EXPECT_TRUE(v.second <= prev); // should be decreasing
             prev = v.second;
+            observed += v.second;
         }
+
+        // Checking for proper convergence.
+        double expected = std::log2(s.size() + 1);
+        EXPECT_LT(std::abs(observed - expected), 1e-5);
     }
 }
 
-TEST_P(SimilarityTest, ZeroDistance) {
-    // Clone first vector into the second and third.
-    std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim);
-    std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim * 2);
-
+TEST_P(SimilarityTest, BinarySearch) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
-    for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(neighbors[i][0].second, 0);
-        EXPECT_EQ(neighbors[i][1].second, 0);
-    }
-
-    // Distances of 0 map to weights of 1.
-    umappp::internal::neighbor_similarities(neighbors);
-    for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(neighbors[i][0].second, 1);
-        EXPECT_EQ(neighbors[i][1].second, 1);
-    }
-}
-
-TEST_P(SimilarityTest, EdgeCases) {
-    auto neighbors = generate_neighbors(ndim, nobs, data, k);
-
-    // Forcing the fallback when local_connectivity is too high.
-    umappp::internal::neighbor_similarities(neighbors, 100.0); 
+    umappp::internal::neighbor_similarities<false>(neighbors, connectivity); 
 
     for (const auto& s : neighbors) {
-        for (const auto& v : s){ 
-            EXPECT_EQ(v.second, 1);
-        }
-    }
+        double prev = 1;
+        double observed = 0;
 
-    // Clone first vector into the next 'k' neighbors; this results in all-zero distances.
-    for (int i = 1; i < k; ++i) {
-        std::copy(data.begin(), data.begin() + ndim, data.begin() + ndim * i);
-    }
-    neighbors = generate_neighbors(ndim, nobs, data, k);
-
-    umappp::internal::neighbor_similarities(neighbors);
-    auto ref = neighbors[0];
-    for (int i = 0; i < k; ++i) {
-        for (auto j : neighbors[i]) {
-            EXPECT_EQ(j.second, 1);
+        for (size_t i = 0; i < s.size(); ++i) {
+            const auto& v = s[i];
+            if (i < static_cast<size_t>(connectivity)) {
+                EXPECT_EQ(v.second, 1);
+            } else {
+                EXPECT_LT(v.second, 1);
+            }
+            EXPECT_TRUE(v.second <= prev); // should be decreasing
+            prev = v.second;
+            observed += v.second;
         }
+
+        // Checking for proper convergence.
+        double expected = std::log2(s.size() + 1);
+        EXPECT_LT(std::abs(observed - expected), 1e-5);
     }
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    Similarity,
+    NeighborSimilarities,
     SimilarityTest,
     ::testing::Combine(
         ::testing::Values(50, 100, 200), // number of observations
-        ::testing::Values(5, 10, 15) // number of neighbors 
+        ::testing::Values(5, 10, 15), // number of neighbors 
+        ::testing::Values(0.4, 1, 1.3, 2, 2.5) // local connectivity.
     )
 );
+
+TEST(NeighborSimilarities, Empty) {
+    umappp::NeighborList<int, double> neighbors(1);
+    umappp::internal::neighbor_similarities(neighbors);
+    EXPECT_TRUE(neighbors.front().empty());
+}
+
+TEST(NeighborSimilarities, AllZeroDistance) {
+    umappp::NeighborList<int, double> neighbors(3);
+    for (int i = 0; i < 3; ++i) {
+        neighbors[i].resize(20);
+    }
+
+    umappp::internal::neighbor_similarities(neighbors);
+    for (int i = 0; i < 3; ++i) {
+        for (auto s : neighbors[i]) {
+            EXPECT_EQ(s.second, 1);
+        }
+    }
+}
+
+TEST(NeighborSimilarities, NoAboveRho) {
+    // We add tied distances to force everything to be <= rho.
+    umappp::NeighborList<int, double> neighbors(3);
+    for (int i = 0; i < 3; ++i) {
+        neighbors[i].resize(20);
+        for (auto& x : neighbors[i]) {
+            x.second = 10.0;
+        }
+    }
+
+    umappp::internal::neighbor_similarities(neighbors);
+    for (int i = 0; i < 3; ++i) {
+        for (auto s : neighbors[i]) {
+            EXPECT_EQ(s.second, 1);
+        }
+    }
+}
+
+TEST(NeighborSimilarities, TooHighConnectivity) {
+    // Forcing the fallback when local_connectivity is too high.
+    umappp::NeighborList<int, double> neighbors(3);
+    for (int i = 0; i < 3; ++i) {
+        neighbors[i].resize(20);
+        for (size_t j = 0; j < neighbors[i].size(); ++j) {
+            neighbors[i][j].second = j * 0.1;
+        }
+    }
+
+    umappp::internal::neighbor_similarities(neighbors, 100.0);
+    for (int i = 0; i < 3; ++i) {
+        for (auto s : neighbors[i]) {
+            EXPECT_EQ(s.second, 1);
+        }
+    }
+}
+
+TEST(NeighborSimilarities, ConvergenceFailure) {
+    // Setting the bandwidth to be zero so that it's impossible to get there.
+    // The aim is then to perform enough iterations so we end up with an
+    // infinite 'invsigma', which causes a different type of convergence.
+    // Note that this requires single-precision floats to properly overflow.
+    umappp::NeighborList<int, float> neighbors(3);
+    for (int i = 0; i < 3; ++i) {
+        neighbors[i].resize(20);
+        for (size_t j = 0; j < neighbors[i].size(); ++j) {
+            neighbors[i][j].second = j * 0.1;
+        }
+    }
+
+    umappp::internal::neighbor_similarities<false, int, float>(neighbors, 1.0, 0.0, /* max_iter = */ 200);
+    for (int i = 0; i < 3; ++i) {
+        for (auto s : neighbors[i]) {
+            EXPECT_LE(s.second, 1);
+        }
+        EXPECT_GT(neighbors[i].front().second, neighbors[i].back().second); 
+    }
+}
+

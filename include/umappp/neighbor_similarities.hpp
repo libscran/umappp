@@ -14,7 +14,35 @@ namespace umappp {
 
 namespace internal {
 
-template<typename Index_, typename Float_>
+/**
+ * The aim of this function is to convert distances into probability-like
+ * similarities using a Gaussian kernel. Our aim is to find 'sigma' such that:
+ *
+ * sum( exp( - max(0, dist - rho) / sigma ) ) = target
+ *
+ * Where 'rho' and 'target' are constants, and the sum is computed over all
+ * neighbors for each observation.
+ *
+ * Note that we only need to explicitly compute the sum over neighbors where
+ * 'dist > rho'. For closer neighbors, the exp() expression is equal to 1, so
+ * we just add the number of such neighbors to the sum.
+ *
+ * We using Newton's method with a fallback to a binary search if the former
+ * doesn't give sensible steps. We use the inverse sigma instead of the sigma
+ * as it makes the derivative in Newton's method a lot easier to deal with.
+ * 
+ * NOTE: the UMAPPP_R_PACKAGE_TESTING macro recapitulates the gaussian kernel
+ * calculation of the uwot package so that we can get a more precise comparison
+ * to a trusted reference implementation. It should not be used in production. 
+ */
+
+template<bool use_newton_ = 
+#ifndef UMAPPP_R_PACKAGE_TESTING
+true
+#else
+false
+#endif
+, typename Index_, typename Float_>
 void neighbor_similarities(
     NeighborList<Index_, Float_>& x, 
     Float_ local_connectivity = 1.0,
@@ -24,23 +52,31 @@ void neighbor_similarities(
     Float_ min_k_dist_scale = 1e-3,
     int num_threads = 1
 ) {
-    constexpr Float_ max_val = std::numeric_limits<Float_>::max();
     size_t npoints = x.size();
-
     parallelize(num_threads, npoints, [&](int, size_t start, size_t length) {
-        std::vector<Float_> non_zero_distances;
+        std::vector<Float_> active_delta;
+
         for (size_t i = start, end = start + length; i < end; ++i) {
             auto& all_neighbors = x[i];
             const int n_neighbors = all_neighbors.size();
-
-            non_zero_distances.clear();
-            for (const auto& f : all_neighbors) {
-                if (f.second) {
-                    non_zero_distances.push_back(f.second);
-                }
+            if (n_neighbors == 0) {
+                continue;
             }
 
-            if (non_zero_distances.size() <= local_connectivity) {
+            int num_zero = 0;
+            for (const auto& f : all_neighbors) {
+                if (f.second) {
+                    break;
+                }
+                ++num_zero;
+            }
+
+            // Find rho, the distance to the nearest non-identical neighbor at 'local_connectivity', possibly with interpolation.
+            int raw_connect_index = std::floor(local_connectivity);
+            const Float_ interpolation = local_connectivity - raw_connect_index;
+            int connect_index = num_zero + raw_connect_index;
+
+            if (n_neighbors <= connect_index) {
                 // When this happens, 'rho' is just theoretically set to the
                 // maximum distance. In such cases, the weights are always just
                 // set to 1 in the remaining code, because no distance can be
@@ -52,76 +88,112 @@ void neighbor_similarities(
                 continue;
             }
 
-            // Find rho, the distance to the nearest (non-identical) neighbor,
-            // possibly with interpolation.
-            int index = std::floor(local_connectivity);
-            const Float_ interpolation = local_connectivity - index;
-            const Float_ lower = (index > 0 ? non_zero_distances[index - 1] : 0); // 'index' is 1-based, so -1.
-            const Float_ upper = non_zero_distances[index];
+            const Float_ lower = (connect_index > 0 ? all_neighbors[connect_index - 1].second : 0); // 'connect_index' is 1-based, so we need to -1.
+            const Float_ upper = all_neighbors[connect_index].second;
             const Float_ rho = lower + interpolation * (upper - lower);
 
-            // Iterating to find a good sigma, just like how t-SNE does so for beta.
-            Float_ sigma = 1.0;
-            Float_ lo = 0.0;
-            Float_ hi = max_val;
-            Float_ sigma_best = sigma;
-            Float_ adiff_min = max_val;
-            const Float_ target = std::log2(all_neighbors.size() + 1); // +1 to include self. Dunno why, but uwot does it.
+            // Pre-computing the difference between each distance and rho to reduce work in the inner iterations.
+            active_delta.clear();
+            Float_ num_le_rho = num_zero;
+            for (int k = num_zero; k < n_neighbors; ++k) {
+                auto curdist = all_neighbors[k].second;
+                if (curdist > rho) {
+                    active_delta.push_back(curdist - rho);
+                } else {
+                    ++num_le_rho;
+                }
+            }
 
-            bool converged = false;
+            if (active_delta.empty()) {
+                // Same logic as above.
+                for (int k = 0; k < n_neighbors; ++k) {
+                    all_neighbors[k].second = 1;
+                }
+                continue;
+            }
+
+            // Our initial inverse sigma is chosen to match the scale of the largest delta so that we start in the right ballpark.
+            Float_ invsigma = 
+#ifndef UMAPPP_R_PACKAGE_TESTING
+                1.0 / active_delta.back();
+#else
+                1.0
+#endif
+            ;
+
+            Float_ lo = 0.0;
+            constexpr Float_ max_val = std::numeric_limits<Float_>::max();
+            Float_ hi = max_val;
+
+            const Float_ target = std::log2(all_neighbors.size() + 1) * bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
+
             for (int iter = 0; iter < max_iter; ++iter) {
-                // If distance = 0, then max(distance - rho, 0) = 0 as rho >=
-                // 0. In which case, exp(-dist / sigma) is just 1 for each
-                // distance of zero, allowing us to just add these directly.
-                Float_ val = n_neighbors - non_zero_distances.size();
-                
-                for (auto d : non_zero_distances) {
-                    if (d > rho) {
-                        val += std::exp(-(d - rho)/ sigma);
-                    } else {
-                        val += 1;
-                    }
+                Float_ observed = num_le_rho;
+                Float_ deriv = 0; // Also computing the derivative with respect to 'invsigma'.
+                for (auto d : active_delta) {
+                    Float_ current = std::exp(- d * invsigma);
+                    observed += current;
+                    deriv += -d * current;
                 }
 
-                Float_ adiff = std::abs(val - target);
-                if (adiff < tol) {
-                    converged = true;
+                Float_ diff = observed - target;
+                if (std::abs(diff) < tol) {
                     break;
                 }
 
-                // store best sigma in case binary search fails (usually in the presence
-                // of multiple degenerate distances)
-                if (adiff < adiff_min) {
-                    adiff_min = adiff;
-                    sigma_best = sigma;
+                // Refining the search interval for a (potential) binary search
+                // later. We know that this function is decreasing with respect
+                // to increasing 'invsigma', so if the diff is positive, the
+                // current 'invsigma' must be on the left of the root.
+                if (diff > 0) {
+                    lo = invsigma;
+                } else {
+                    hi = invsigma;
                 }
 
-                if (val > target) {
-                    hi = sigma;
-                    sigma += (lo - sigma) / 2; // overflow-safe midpoint with the lower boundary.
-                } else {
-                    lo = sigma;
-                    if (hi == max_val) {
-                        sigma *= 2;
-                    } else {
-                        sigma += (hi - sigma) / 2; // overflow-safe midpoint with the upper boundary.
+                bool nr_ok = false;
+                if constexpr(use_newton_) {
+                    // Attempt a Newton-Raphson search first.
+                    if (deriv) {
+                        const Float_ alt_invsigma = invsigma - (diff / deriv); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.
+                        if (alt_invsigma > lo && alt_invsigma < hi) {
+                            invsigma = alt_invsigma;
+                            nr_ok = true;
+                        }
                     }
                 }
+
+                if (!nr_ok) {
+                    // Falling back to a binary search, if Newton's method failed or was not requested.
+                    if (diff > 0) {
+                        if (hi == max_val) {
+                            invsigma *= 2;
+                        } else {
+                            invsigma += (hi - invsigma) / 2; // overflow-safe midpoint with the upper boundary.
+                        }
+                    } else {
+                        invsigma += (lo - invsigma) / 2; // overflow-safe midpoint with the lower boundary.
+                    }
+                }
+
+                if (std::isinf(invsigma)) {
+                    break;
+                }
             }
 
-            if (!converged) {
-                sigma = sigma_best;
+            // Protect against an overly large invsigma, i.e., sigma = std::max(min_k_dist_scale * mean_dist, sigma).
+            Float_ mean_dist = 0;
+            for (const auto& x : all_neighbors) {
+                mean_dist += x.second;
             }
-
-            // Quickly summing over the non-zero distances, then dividing
-            // by the total number of neighbors to obtain the mean.
-            Float_ mean_dist = std::accumulate(non_zero_distances.begin(), non_zero_distances.end(), 0.0)/n_neighbors;
-            sigma = std::max(min_k_dist_scale * mean_dist, sigma);
+            mean_dist /= n_neighbors;
+            Float_ threshold = 1.0 / (min_k_dist_scale * mean_dist);
+            invsigma = std::min(threshold, invsigma);
 
             for (int k = 0; k < n_neighbors; ++k) {
                 Float_& dist = all_neighbors[k].second;
                 if (dist > rho) {
-                    dist = std::exp(-(dist - rho) / (sigma * bandwidth));
+                    dist = std::exp(-(dist - rho) * invsigma);
                 } else {
                     dist = 1;
                 }

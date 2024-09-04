@@ -69,8 +69,8 @@ inline int choose_num_epochs(int num_epochs, size_t size) {
  */
 template<typename Index_, typename Float_>
 Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, Float_* embedding, Options options) {
-    internal::neighbor_similarities<Index_, Float_>(x, options.local_connectivity, options.bandwidth);
-    internal::combine_neighbor_sets<Index_, Float_>(x, options.mix_ratio);
+    internal::neighbor_similarities(x, static_cast<Float_>(options.local_connectivity), static_cast<Float_>(options.bandwidth));
+    internal::combine_neighbor_sets(x, static_cast<Float_>(options.mix_ratio));
 
     // Choosing the manner of initialization.
     if (options.initialize == InitializeMethod::SPECTRAL || options.initialize == InitializeMethod::SPECTRAL_ONLY) {
