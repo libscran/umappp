@@ -128,14 +128,16 @@ void neighbor_similarities(
 
             for (int iter = 0; iter < max_iter; ++iter) {
                 Float_ observed = num_le_rho;
-                Float_ deriv = 0; // Also computing the derivative with respect to 'sigma'.
-                {
-                    const Float_ invsigma = 1 / sigma, invsigma2 = invsigma * invsigma;
-                    for (auto d : active_delta) {
-                        Float_ current = std::exp(- d * invsigma);
-                        observed += current;
-                        deriv += d * current * invsigma2;
-                    }
+                Float_ deriv = 0;
+
+                // No need to protect against sigma = 0 as it's impossible due
+                // to the bounded nature of the Newton calculation and the
+                // underflow-safe nature of the binary search.
+                const Float_ invsigma = 1 / sigma, invsigma2 = invsigma * invsigma;
+                for (auto d : active_delta) {
+                    Float_ current = std::exp(- d * invsigma);
+                    observed += current;
+                    deriv += d * current * invsigma2;
                 }
 
                 const Float_ diff = observed - target;
@@ -168,7 +170,7 @@ void neighbor_similarities(
                 if (!nr_ok) {
                     // Falling back to a binary search, if Newton's method failed or was not requested.
                     if (diff > 0) {
-                        sigma += (lo - sigma) / 2; // overflow-safe midpoint with the lower boundary.
+                        sigma += (lo - sigma) / 2; // underflow-safe midpoint with the lower boundary.
                     } else {
                         if (hi == max_val) {
                             sigma *= 2;
@@ -176,10 +178,6 @@ void neighbor_similarities(
                             sigma += (hi - sigma) / 2; // overflow-safe midpoint with the upper boundary.
                         }
                     }
-                }
-
-                if (sigma == 0) {
-                    break;
                 }
             }
 

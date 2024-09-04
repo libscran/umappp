@@ -62,7 +62,7 @@ TEST_P(SimilarityTest, Newton) {
             } else {
                 EXPECT_LT(v.second, 1);
             }
-            EXPECT_TRUE(v.second <= prev); // should be decreasing
+            EXPECT_LE(v.second, prev); // should be decreasing
             prev = v.second;
             observed += v.second;
         }
@@ -88,7 +88,7 @@ TEST_P(SimilarityTest, BinarySearch) {
             } else {
                 EXPECT_LT(v.second, 1);
             }
-            EXPECT_TRUE(v.second <= prev); // should be decreasing
+            EXPECT_LE(v.second, prev); // should be decreasing
             prev = v.second;
             observed += v.second;
         }
@@ -167,9 +167,8 @@ TEST(NeighborSimilarities, TooHighConnectivity) {
 
 TEST(NeighborSimilarities, ConvergenceFailure) {
     // Setting the bandwidth to be zero so that it's impossible to get there.
-    // The aim is then to perform enough iterations so we end up with an
-    // infinite 'invsigma', which causes a different type of convergence.
-    // Note that this requires single-precision floats to properly overflow.
+    // The aim is then to perform enough iterations so we end up with 'sigma'
+    // very close to zero, which causes the protection to kick in.
     umappp::NeighborList<int, float> neighbors(3);
     for (int i = 0; i < 3; ++i) {
         neighbors[i].resize(20);
