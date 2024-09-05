@@ -42,7 +42,7 @@ protected:
             }
         }
 
-        umappp::internal::neighbor_similarities(stored);
+        umappp::internal::neighbor_similarities(stored, umappp::internal::NeighborSimilaritiesOptions<double>());
         umappp::internal::combine_neighbor_sets(stored, 1.0);
         return;
     }

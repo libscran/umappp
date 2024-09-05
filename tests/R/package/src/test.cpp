@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#define UMAPPP_R_PACKAGE_TESTING
 #include "umappp/umappp.hpp"
 
 //[[Rcpp::export(rng=false)]]
