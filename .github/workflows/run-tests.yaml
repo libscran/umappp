@@ -43,7 +43,7 @@ jobs:
     - name: Run the tests
       run: |
         cd build
-        ctest --output-on-failure
+        ctest
 
     - name: Generate code coverage
       if: ${{ matrix.config.os == 'ubuntu-latest' }}
