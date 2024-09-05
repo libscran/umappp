@@ -53,7 +53,7 @@ TEST_P(SimilarityTest, Newton) {
 
     umappp::internal::NeighborSimilaritiesOptions<double> opts;
     opts.local_connectivity = connectivity;
-    opts.min_k_dist_scale = 0; // turn off protection for the time being.
+    opts.min_k_dist_scale = 1e-8; // turn off protection for the time being.
     umappp::internal::neighbor_similarities(neighbors, opts);
 
     for (const auto& s : neighbors) {
@@ -90,7 +90,7 @@ TEST_P(SimilarityTest, BinarySearch) {
 
     umappp::internal::NeighborSimilaritiesOptions<double> opts;
     opts.local_connectivity = connectivity;
-    opts.min_k_dist_scale = 0; // turn off protection for the time being.
+    opts.min_k_dist_scale = 1e-8; // turn off protection for the time being.
     umappp::internal::neighbor_similarities<false>(neighbors, opts); 
 
     for (const auto& s : neighbors) {
@@ -187,7 +187,7 @@ TEST(NeighborSimilarities, TooHighConnectivity) {
     }
 }
 
-TEST(NeighborSimilarities, ZeroSigma) {
+TEST(NeighborSimilarities, BoundedSigma) {
     // Setting the bandwidth to be zero so that it's impossible to get there.
     // The aim is then to perform enough iterations so we end up with 'sigma'
     // very close to zero, which causes the protection to kick in.
@@ -195,18 +195,32 @@ TEST(NeighborSimilarities, ZeroSigma) {
     for (int i = 0; i < 3; ++i) {
         neighbors[i].resize(20);
         for (size_t j = 0; j < neighbors[i].size(); ++j) {
-            neighbors[i][j].second = j * 0.1;
+            neighbors[i][j].second = j * 0.1 + 0.01;
         }
     }
+    auto copy = neighbors;
 
     umappp::internal::NeighborSimilaritiesOptions<float> opts;
     opts.bandwidth = 0;
-    opts.max_iter = 200;
+    opts.min_k_dist_scale = 0.1;
     umappp::internal::neighbor_similarities<false, int, float>(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_LE(s.second, 1);
+            EXPECT_GT(s.second, 0); // protection ensures that we don't end up with exp(-BIG_NUMBER).
         }
-        EXPECT_GT(neighbors[i].front().second, neighbors[i].back().second); 
+    }
+
+    // If the protection is disabled, all values but the first are equal to 0 as sigma is too small.
+    opts.min_k_dist_scale = 0;
+    umappp::internal::neighbor_similarities<false, int, float>(copy, opts);
+    for (int i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < copy[i].size(); ++j) {
+            if (j == 0) {
+                EXPECT_EQ(copy[i][j].second, 1);
+            } else {
+                EXPECT_EQ(copy[i][j].second, 0);
+            }
+        }
     }
 }

@@ -39,9 +39,7 @@ template<typename Float_>
 struct NeighborSimilaritiesOptions {
     Float_ local_connectivity = 1.0;
     Float_ bandwidth = 1.0;
-    int max_iter = 64;
-    Float_ tol = 1e-5;
-    Float_ min_k_dist_scale = 1e-3;
+    Float_ min_k_dist_scale = 1e-3; // this is only exposed for easier unit testing.
     int num_threads = 1;
 };
 
@@ -128,7 +126,8 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
 
             const Float_ target = std::log2(num_neighbors + 1) * options.bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
 
-            for (int iter = 0; iter < options.max_iter; ++iter) {
+            constexpr int max_iter = 64;
+            for (int iter = 0; iter < max_iter; ++iter) {
                 Float_ observed = num_le_rho;
                 Float_ deriv = 0;
 
@@ -143,7 +142,8 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
                 }
 
                 const Float_ diff = observed - target;
-                if (std::abs(diff) < options.tol) {
+                constexpr Float_ tol = 1e-5;
+                if (std::abs(diff) < tol) {
                     break;
                 }
 
