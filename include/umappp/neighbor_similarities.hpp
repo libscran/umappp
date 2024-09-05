@@ -35,6 +35,16 @@ namespace internal {
  * to a trusted reference implementation. It should not be used in production. 
  */
 
+template<typename Float_>
+struct NeighborSimilaritiesOptions {
+    Float_ local_connectivity = 1.0;
+    Float_ bandwidth = 1.0;
+    int max_iter = 64;
+    Float_ tol = 1e-5;
+    Float_ min_k_dist_scale = 1e-3;
+    int num_threads = 1;
+};
+
 template<bool use_newton_ = 
 #ifndef UMAPPP_R_PACKAGE_TESTING
 true
@@ -42,17 +52,12 @@ true
 false
 #endif
 , typename Index_, typename Float_>
-void neighbor_similarities(
-    NeighborList<Index_, Float_>& x, 
-    Float_ local_connectivity = 1.0,
-    Float_ bandwidth = 1.0, 
-    int max_iter = 64, 
-    Float_ tol = 1e-5, 
-    Float_ min_k_dist_scale = 1e-3,
-    int num_threads = 1
-) {
+void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimilaritiesOptions<Float_>& options) {
     size_t npoints = x.size();
-    parallelize(num_threads, npoints, [&](int, size_t start, size_t length) {
+    const int raw_connect_index = std::floor(options.local_connectivity);
+    const Float_ interpolation = options.local_connectivity - raw_connect_index;
+
+    parallelize(options.num_threads, npoints, [&](int, size_t start, size_t length) {
         std::vector<Float_> active_delta;
 
         for (size_t i = start, end = start + length; i < end; ++i) {
@@ -71,10 +76,7 @@ void neighbor_similarities(
                 ++num_zero;
             }
 
-            const int raw_connect_index = std::floor(local_connectivity);
-            const Float_ interpolation = local_connectivity - raw_connect_index;
             const int connect_index = num_zero + raw_connect_index;
-
             if (num_neighbors <= connect_index) {
                 // When this happens, 'rho' is just theoretically set to the
                 // maximum distance. In such cases, the weights are always just
@@ -124,9 +126,9 @@ void neighbor_similarities(
             constexpr Float_ max_val = std::numeric_limits<Float_>::max();
             Float_ hi = max_val;
 
-            const Float_ target = std::log2(num_neighbors + 1) * bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
+            const Float_ target = std::log2(num_neighbors + 1) * options.bandwidth; // Based on code in uwot:::smooth_knn_matrix(). Adding 1 to include self.
 
-            for (int iter = 0; iter < max_iter; ++iter) {
+            for (int iter = 0; iter < options.max_iter; ++iter) {
                 Float_ observed = num_le_rho;
                 Float_ deriv = 0;
 
@@ -141,7 +143,7 @@ void neighbor_similarities(
                 }
 
                 const Float_ diff = observed - target;
-                if (std::abs(diff) < tol) {
+                if (std::abs(diff) < options.tol) {
                     break;
                 }
 
@@ -187,7 +189,7 @@ void neighbor_similarities(
                 mean_dist += x.second;
             }
             mean_dist /= num_neighbors;
-            sigma = std::max(min_k_dist_scale * mean_dist, sigma);
+            sigma = std::max(options.min_k_dist_scale * mean_dist, sigma);
 
             const Float_ invsigma = 1 / sigma;
             for (int k = 0; k < num_neighbors; ++k) {

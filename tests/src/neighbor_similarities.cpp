@@ -13,7 +13,7 @@ protected:
         k = std::get<1>(p);
         connectivity = std::get<2>(p);
 
-        std::mt19937_64 rng(nobs * k); // for some variety
+        std::mt19937_64 rng(nobs * k + connectivity * 10); // for some variety
         std::normal_distribution<> dist(0, 1);
 
         data.resize(nobs * ndim);
@@ -49,7 +49,12 @@ protected:
 
 TEST_P(SimilarityTest, Newton) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
-    umappp::internal::neighbor_similarities(neighbors, connectivity);
+    auto copy = neighbors;
+
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    opts.local_connectivity = connectivity;
+    opts.min_k_dist_scale = 0; // turn off protection for the time being.
+    umappp::internal::neighbor_similarities(neighbors, opts);
 
     for (const auto& s : neighbors) {
         double prev = 1;
@@ -71,11 +76,22 @@ TEST_P(SimilarityTest, Newton) {
         double expected = std::log2(s.size() + 1);
         EXPECT_LT(std::abs(observed - expected), 1e-5);
     }
+
+    // Same results in parallel.
+    opts.num_threads = 3;
+    umappp::internal::neighbor_similarities(copy, opts);
+    for (int i = 0; i < nobs; ++i) {
+        EXPECT_EQ(copy[i], neighbors[i]);
+    }
 }
 
 TEST_P(SimilarityTest, BinarySearch) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
-    umappp::internal::neighbor_similarities<false>(neighbors, connectivity); 
+
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    opts.local_connectivity = connectivity;
+    opts.min_k_dist_scale = 0; // turn off protection for the time being.
+    umappp::internal::neighbor_similarities<false>(neighbors, opts); 
 
     for (const auto& s : neighbors) {
         double prev = 1;
@@ -104,24 +120,27 @@ INSTANTIATE_TEST_SUITE_P(
     SimilarityTest,
     ::testing::Combine(
         ::testing::Values(50, 100, 200), // number of observations
-        ::testing::Values(5, 10, 15), // number of neighbors 
+        ::testing::Values(5, 10, 20), // number of neighbors 
         ::testing::Values(0.4, 1, 1.3, 2, 2.5) // local connectivity.
     )
 );
 
 TEST(NeighborSimilarities, Empty) {
     umappp::NeighborList<int, double> neighbors(1);
-    umappp::internal::neighbor_similarities(neighbors);
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::internal::neighbor_similarities(neighbors, opts);
     EXPECT_TRUE(neighbors.front().empty());
 }
 
 TEST(NeighborSimilarities, AllZeroDistance) {
+    // Forcing an early quit via the all-zero condition.
     umappp::NeighborList<int, double> neighbors(3);
     for (int i = 0; i < 3; ++i) {
         neighbors[i].resize(20);
     }
 
-    umappp::internal::neighbor_similarities(neighbors);
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::internal::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -130,7 +149,7 @@ TEST(NeighborSimilarities, AllZeroDistance) {
 }
 
 TEST(NeighborSimilarities, NoAboveRho) {
-    // We add tied distances to force everything to be <= rho.
+    // Forcing an early quit by adding ties so that all distances <= rho.
     umappp::NeighborList<int, double> neighbors(3);
     for (int i = 0; i < 3; ++i) {
         neighbors[i].resize(20);
@@ -139,7 +158,8 @@ TEST(NeighborSimilarities, NoAboveRho) {
         }
     }
 
-    umappp::internal::neighbor_similarities(neighbors);
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::internal::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -148,7 +168,7 @@ TEST(NeighborSimilarities, NoAboveRho) {
 }
 
 TEST(NeighborSimilarities, TooHighConnectivity) {
-    // Forcing the fallback when local_connectivity is too high.
+    // Forcing an early quit when local_connectivity is too high.
     umappp::NeighborList<int, double> neighbors(3);
     for (int i = 0; i < 3; ++i) {
         neighbors[i].resize(20);
@@ -157,7 +177,9 @@ TEST(NeighborSimilarities, TooHighConnectivity) {
         }
     }
 
-    umappp::internal::neighbor_similarities(neighbors, 100.0);
+    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    opts.local_connectivity = 100.0;
+    umappp::internal::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -165,7 +187,7 @@ TEST(NeighborSimilarities, TooHighConnectivity) {
     }
 }
 
-TEST(NeighborSimilarities, ConvergenceFailure) {
+TEST(NeighborSimilarities, ZeroSigma) {
     // Setting the bandwidth to be zero so that it's impossible to get there.
     // The aim is then to perform enough iterations so we end up with 'sigma'
     // very close to zero, which causes the protection to kick in.
@@ -177,7 +199,10 @@ TEST(NeighborSimilarities, ConvergenceFailure) {
         }
     }
 
-    umappp::internal::neighbor_similarities<false, int, float>(neighbors, 1.0, 0.0, /* max_iter = */ 200);
+    umappp::internal::NeighborSimilaritiesOptions<float> opts;
+    opts.bandwidth = 0;
+    opts.max_iter = 200;
+    umappp::internal::neighbor_similarities<false, int, float>(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_LE(s.second, 1);
@@ -185,4 +210,3 @@ TEST(NeighborSimilarities, ConvergenceFailure) {
         EXPECT_GT(neighbors[i].front().second, neighbors[i].back().second); 
     }
 }
-
