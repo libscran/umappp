@@ -12,7 +12,7 @@ namespace umappp {
 namespace internal {
 
 template<typename Index_, typename Float_>
-void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio = 1) {
+void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
     std::vector<size_t> last(x.size());
     std::vector<size_t> original(x.size());
 
