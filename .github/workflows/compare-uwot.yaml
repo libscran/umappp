@@ -43,7 +43,7 @@ jobs:
         setwd("tests/R/package/tests")
         source("testthat.R")
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         name: demo-file 
         path: tests/R/package/tests/testthat/demo.png 

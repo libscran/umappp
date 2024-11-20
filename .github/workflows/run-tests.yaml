@@ -53,7 +53,7 @@ jobs:
 
     - name: Upload to Codecov
       if: ${{ matrix.config.os == 'ubuntu-latest' }}
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
         directory: build/tests/CMakeFiles/libtest.dir/src/
       env:
