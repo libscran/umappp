@@ -58,8 +58,10 @@ inline int choose_num_epochs(int num_epochs, size_t size) {
  * @param x Indices and distances to the nearest neighbors for each observation.
  * Note the expectations in the `NeighborList` documentation.
  * @param num_dim Number of dimensions of the embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  * Note that `Options::num_neighbors` is ignored here.
@@ -111,8 +113,10 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
  *
  * @param prebuilt A `knncolle::Prebuilt` instance constructed from the input dataset.
  * @param num_dim Number of dimensions of the UMAP embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *
@@ -136,8 +140,10 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>
  * Each row corresponds to a dimension (`data_dim`) and each column corresponds to an observation (`num_obs`).
  * @param builder Algorithm to use for the neighbor search.
  * @param num_dim Number of dimensions of the embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding, where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * This is only used as input if `Options::init == InitializeMethod::NONE`, otherwise it is only used as output.
+ * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
+ * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *

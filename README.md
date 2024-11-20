@@ -37,8 +37,8 @@ auto status = umappp::initialize(
     opt
 );
 
-// Run UMAP algorithm to completion. This modifies the
-// values in the output 'embedding' vector.
+// Run UMAP algorithm to completion. This updates the contents
+// of the 'embedding' vector supplied to initialize().
 status.run();
 ```
 
@@ -66,7 +66,8 @@ auto status2 = umappp::initialize(
 
 for (int iter = 10; iter < 200; iter += 10) {
     status2.run(iter);
-    // do something with the current embedding, e.g., create an animation
+    // do something with the current contents of 'embedding',
+    // e.g., create an animation over iterations.
 }
 ```
 
@@ -81,7 +82,7 @@ auto status_annoy = umappp::initialize(*annoy_idx, 2, embedding.data(), opt);
 status_annoy.run();
 ```
 
-See the [reference documentation](https://ltla.github.io/umappp) for more details.
+See the [reference documentation](https://libscran.github.io/umappp) for more details.
 
 ## Building projects
 
