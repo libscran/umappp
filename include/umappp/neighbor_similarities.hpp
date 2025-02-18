@@ -55,7 +55,7 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
     const int raw_connect_index = std::floor(options.local_connectivity);
     const Float_ interpolation = options.local_connectivity - raw_connect_index;
 
-    parallelize(options.num_threads, npoints, [&](int, size_t start, size_t length) {
+    parallelize(options.num_threads, npoints, [&](int, size_t start, size_t length) -> void {
         std::vector<Float_> active_delta;
 
         for (size_t i = start, end = start + length; i < end; ++i) {
