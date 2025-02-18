@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<tagfile doxygen_version="1.9.8">
+<tagfile doxygen_version="1.12.0">
   <compound kind="file">
     <name>initialize.hpp</name>
     <path>umappp/</path>
@@ -218,7 +218,7 @@
       <type>knncolle::NeighborList&lt; Index_, Float_ &gt;</type>
       <name>NeighborList</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>a4af858f5d08e350616f7324c2714722c</anchor>
+      <anchor>abef8d351328ea79485008055c3730dcc</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumeration">

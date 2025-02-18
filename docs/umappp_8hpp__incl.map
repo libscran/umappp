@@ -1,9 +1,9 @@
 <map id="umappp/umappp.hpp" name="umappp/umappp.hpp">
-<area shape="rect" id="Node000001" title="Overall header for the umappp library." alt="" coords="167,5,308,31"/>
+<area shape="rect" id="Node000001" title="Overall header for the umappp library." alt="" coords="166,5,308,31"/>
 <area shape="rect" id="Node000002" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="5,226,96,252"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="229,33,72,216,68,213,225,30"/>
 <area shape="rect" id="Node000004" href="$Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="196,153,279,178"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="240,31,240,137,235,137,235,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="240,31,240,137,234,137,234,31"/>
 <area shape="rect" id="Node000007" href="$initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="530,79,622,105"/>
 <area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="296,29,516,75,514,80,294,34"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="103,300,163,326"/>
@@ -11,7 +11,7 @@
 <area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="206,181,97,223,96,218,205,176"/>
 <area shape="poly" id="edge7_Node000004_Node000003" title=" " alt="" coords="215,181,187,201,161,228,147,256,139,285,134,284,142,254,156,225,183,197,212,177"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="170,226,304,252"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="240,179,240,211,235,211,235,179"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="240,179,240,211,234,211,234,179"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="329,226,393,252"/>
 <area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="260,177,329,216,326,221,257,181"/>
 <area shape="poly" id="edge20_Node000007_Node000003" title=" " alt="" coords="538,108,497,126,458,155,441,180,435,205,427,230,419,242,407,254,366,273,305,289,179,309,179,304,304,283,364,268,404,250,415,239,422,228,429,203,436,178,454,151,494,122,536,103"/>
@@ -19,7 +19,7 @@
 <area shape="poly" id="edge19_Node000007_Node000006" title=" " alt="" coords="530,104,471,122,441,136,414,155,390,183,373,213,369,211,385,180,410,151,438,132,469,117,529,99"/>
 <area shape="rect" id="Node000008" href="$NeighborList_8hpp.html" title="Defines the NeighborList alias." alt="" coords="468,153,588,178"/>
 <area shape="poly" id="edge9_Node000007_Node000008" title=" " alt="" coords="570,106,547,141,542,138,566,103"/>
-<area shape="rect" id="Node000011" href="/github/workspace/docs/knncolle.tag$knncolle_8hpp.html" title=" " alt="" coords="625,226,770,252"/>
+<area shape="rect" id="Node000011" href="/github/workspace/docs/knncolle.tag$knncolle_8hpp.html" title=" " alt="" coords="624,226,770,252"/>
 <area shape="poly" id="edge18_Node000007_Node000011" title=" " alt="" coords="588,103,680,213,675,216,584,107"/>
 <area shape="rect" id="Node000012" title=" " alt="" coords="662,153,844,178"/>
 <area shape="poly" id="edge13_Node000007_Node000012" title=" " alt="" coords="607,103,710,144,708,149,605,108"/>
@@ -31,7 +31,7 @@
 <area shape="poly" id="edge16_Node000007_Node000015" title=" " alt="" coords="622,94,846,115,1152,150,1152,155,846,120,622,100"/>
 <area shape="rect" id="Node000009" title=" " alt="" coords="468,226,519,252"/>
 <area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="525,180,508,213,503,211,520,177"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="543,226,601,252"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="543,226,600,252"/>
 <area shape="poly" id="edge11_Node000008_Node000010" title=" " alt="" coords="537,177,559,211,554,214,533,180"/>
 <area shape="poly" id="edge12_Node000008_Node000011" title=" " alt="" coords="558,176,655,217,653,222,556,181"/>
 </map>
