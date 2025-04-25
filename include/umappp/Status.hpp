@@ -5,7 +5,7 @@
 #include "optimize_layout.hpp"
 
 #include <random>
-#include <cstdint>
+#include <cstddef>
 
 /**
  * @file Status.hpp
@@ -27,7 +27,7 @@ public:
     /**
      * @cond
      */
-    Status(internal::EpochData<Index_, Float_> epochs, Options options, int num_dim, Float_* embedding) : 
+    Status(internal::EpochData<Index_, Float_> epochs, Options options, std::size_t num_dim, Float_* embedding) : 
         my_epochs(std::move(epochs)),
         my_options(std::move(options)),
         my_engine(my_options.seed),
@@ -42,7 +42,7 @@ private:
     internal::EpochData<Index_, Float_> my_epochs;
     Options my_options;
     std::mt19937_64 my_engine;
-    int my_num_dim;
+    std::size_t my_num_dim;
     Float_* my_embedding;
 
 public:
@@ -61,7 +61,7 @@ public:
     /**
      * @return Number of dimensions of the embedding.
      */
-    int num_dimensions() const {
+    std::size_t num_dimensions() const {
         return my_num_dim;
     }
 
@@ -86,7 +86,7 @@ public:
      */
     void set_embedding(Float_* ptr, bool copy = true) {
         if (copy) {
-            size_t n = static_cast<size_t>(num_dimensions()) * num_observations(); // cast to avoid overflow.
+            std::size_t n = num_dimensions() * static_cast<std::size_t>(num_observations()); // cast to avoid overflow.
             std::copy_n(my_embedding, n, ptr);
         }
         my_embedding = ptr;
@@ -110,7 +110,7 @@ public:
     /**
      * @return The number of observations in the dataset.
      */
-    size_t num_observations() const {
+    Index_ num_observations() const {
         return my_epochs.head.size();
     }
 

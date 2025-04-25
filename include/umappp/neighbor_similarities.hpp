@@ -51,14 +51,14 @@ false
 #endif
 , typename Index_, typename Float_>
 void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimilaritiesOptions<Float_>& options) {
-    size_t npoints = x.size();
+    Index_ npoints = x.size();
     const int raw_connect_index = std::floor(options.local_connectivity);
     const Float_ interpolation = options.local_connectivity - raw_connect_index;
 
-    parallelize(options.num_threads, npoints, [&](int, size_t start, size_t length) -> void {
+    parallelize(options.num_threads, npoints, [&](int, Index_ start, Index_ length) -> void {
         std::vector<Float_> active_delta;
 
-        for (size_t i = start, end = start + length; i < end; ++i) {
+        for (Index_ i = start, end = start + length; i < end; ++i) {
             auto& all_neighbors = x[i];
             const int num_neighbors = all_neighbors.size();
             if (num_neighbors == 0) {

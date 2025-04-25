@@ -13,18 +13,17 @@ namespace internal {
 
 template<typename Index_, typename Float_>
 void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
-    std::vector<size_t> last(x.size());
-    std::vector<size_t> original(x.size());
+    Index_ num_obs = x.size();
+    std::vector<decltype(x[0].size())> last(num_obs), original(num_obs);
 
-    for (size_t i = 0; i < x.size(); ++i) {
+    for (Index_ i = 0; i < num_obs; ++i) {
         auto& current = x[i];
         std::sort(current.begin(), current.end()); // sorting by ID, see below.
         original[i] = x[i].size();
     }
 
-    for (size_t first = 0; first < x.size(); ++first) {
-        auto& current = x[first];
-        const int desired = first;
+    for (Index_ i = 0; i < num_obs; ++i ){
+        auto& current = x[i];
 
         // Looping through the neighbors and searching for self in each
         // neighbor's neighbors. As each inner vector in 'x' is sorted,
@@ -34,12 +33,15 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
             auto& target = x[y.first];
             auto& curlast = last[y.first];
             const auto& limits = original[y.first];
-            while (curlast < limits && target[curlast].first < desired) {
+            while (curlast < limits && target[curlast].first < i) {
                 ++curlast;
             }
 
-            if (curlast < limits && target[curlast].first == desired) {
-                if (desired < y.first) { // don't average it twice.
+            if (curlast < limits && target[curlast].first == i) {
+                // If i > y.first, then this would have already been done in a
+                // previous iteration of the outermost loop where i and y.first
+                // swap values. So we skip this to avoid adding it twice.
+                if (i < y.first) { 
                     Float_ product = y.second * target[curlast].second;
                     Float_ prob_final;
 
@@ -56,12 +58,12 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
                 }
             } else {
                 if (mix_ratio == 1) {
-                    target.emplace_back(desired, y.second);
+                    target.emplace_back(i, y.second);
                 } else if (mix_ratio == 0) {
                     y.second = 0; // mark for deletion.
                 } else {
                     y.second *= mix_ratio;
-                    target.emplace_back(desired, y.second);
+                    target.emplace_back(i, y.second);
                 }
             }
         }

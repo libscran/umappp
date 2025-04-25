@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <cstddef>
 
 #include "NeighborList.hpp"
 #include "aarand/aarand.hpp"
@@ -21,13 +22,13 @@ namespace internal {
  * It is assumed that 'edges' has already been symmetrized.
  */
 template<typename Index_, typename Float_>
-bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, Float_* Y, int nthreads) {
+bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, std::size_t num_dim, Float_* Y, int nthreads) {
     Index_ nobs = edges.size();
     std::vector<double> sums(nobs); // we deliberately use double-precision to avoid difficult problems from overflow/underflow inside IRLBA.
-    std::vector<size_t> pointers;
+    std::vector<std::size_t> pointers;
     pointers.reserve(nobs + 1);
     pointers.push_back(0);
-    size_t reservable = 0;
+    std::size_t reservable = 0;
 
     for (Index_ c = 0; c < nobs; ++c) {
         const auto& current = edges[c];
@@ -104,8 +105,8 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
     irlba::EigenThreadScope tscope(nthreads);
 
     irlba::Options opt;
-    auto actual = irlba::compute(mat, ndim + 1, opt);
-    auto ev = actual.U.rightCols(ndim); 
+    auto actual = irlba::compute(mat, num_dim + 1, opt);
+    auto ev = actual.U.rightCols(num_dim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
     // otherwise this entire thing is futile.
@@ -113,7 +114,7 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, int ndim, F
     const double expansion = (max_val > 0 ? 10 / max_val : 1);
 
     for (Index_ c = 0; c < nobs; ++c) {
-        for (int d = 0; d < ndim; ++d, ++Y) {
+        for (std::size_t d = 0; d < num_dim; ++d, ++Y) {
             *Y = ev.coeff(c, d) * expansion; // TODO: put back the jitter step.
         }
     }
@@ -126,7 +127,8 @@ bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
         return false;
     }
 
-    size_t in_component = 1;
+    // We assume that 'edges' is symmetric so we can use a simple recursive algorithm.
+    decltype(edges.size()) in_component = 1;
     std::vector<Index_> remaining(1, 0);
     std::vector<unsigned char> traversed(edges.size(), 0);
     traversed[0] = 1;
@@ -148,20 +150,20 @@ bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
 }
 
 template<typename Index_, typename Float_>
-bool spectral_init(const NeighborList<Index_, Float_>& edges, int ndim, Float_* vals, int nthreads) {
+bool spectral_init(const NeighborList<Index_, Float_>& edges, std::size_t num_dim, Float_* vals, int nthreads) {
     if (!has_multiple_components(edges)) {
-        if (normalized_laplacian(edges, ndim, vals, nthreads)) {
+        if (normalized_laplacian(edges, num_dim, vals, nthreads)) {
             return true;
         }
     }
     return false;
 }
 
-template<typename Float_>
-void random_init(size_t nobs, int ndim, Float_ * vals) {
-    size_t num = nobs * static_cast<size_t>(ndim); // cast to avoid overflow.
+template<typename Index_, typename Float_>
+void random_init(Index_ num_obs, std::size_t num_dim, Float_ * vals) {
+    std::size_t num = static_cast<std::size_t>(num_obs) * num_dim; // cast to avoid overflow.
     std::mt19937_64 rng(num); // for a bit of deterministic variety.
-    for (size_t i = 0; i < num; ++i) {
+    for (std::size_t i = 0; i < num; ++i) {
         vals[i] = aarand::standard_uniform<Float_>(rng) * static_cast<Float_>(20) - static_cast<Float_>(10); // values from (-10, 10).
     }
     return;

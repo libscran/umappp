@@ -125,10 +125,27 @@ TEST_P(OptimizeTest, ParallelRun) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    Optimize,
+    OptimizeLayout,
     OptimizeTest,
     ::testing::Combine(
         ::testing::Values(50, 100, 200), // number of observations
         ::testing::Values(5, 10, 15) // number of neighbors
     )
 );
+
+TEST(OptimizeLayout, ChooseNumNegSamplesFailsafe) {
+    umappp::internal::EpochData<int, double> setup(1);
+    setup.epochs_per_sample.push_back(0);
+    setup.epoch_of_next_negative_sample.push_back(0);
+    setup.negative_sample_rate = 5;
+
+    auto num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // division by zero for epochs_per_sample.
+    EXPECT_EQ(num_neg, std::numeric_limits<unsigned long long>::max());
+
+    num_neg = umappp::internal::compute_num_neg_samples(0, 0.0, setup); // still works if the initial calculation yields an NaN.
+    EXPECT_EQ(num_neg, std::numeric_limits<unsigned long long>::max());
+
+    setup.epochs_per_sample.back() = 1;
+    num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // as a control, checking that we don't hit the cap.
+    EXPECT_EQ(num_neg, 5);
+}

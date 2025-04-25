@@ -11,7 +11,7 @@
 #include "knncolle/knncolle.hpp"
 
 #include <random>
-#include <cstdint>
+#include <cstddef>
 
 /**
  * @file initialize.hpp
@@ -25,7 +25,8 @@ namespace umappp {
  */
 namespace internal {
 
-inline int choose_num_epochs(int num_epochs, size_t size) {
+template<typename Index_>
+int choose_num_epochs(int num_epochs, Index_ size) {
     if (num_epochs < 0) {
         // Choosing the number of epochs. We use a simple formula to decrease
         // the number of epochs with increasing size, with the aim being that
@@ -35,11 +36,12 @@ inline int choose_num_epochs(int num_epochs, size_t size) {
         // the lower bound, so we simply choose a number of epochs that
         // equalizes the number of calculations for any number of observations.
         if (num_epochs < 0) {
-            constexpr int limit = 10000, minimal = 200, maximal = 300;
+            constexpr Index_ limit = 10000;
+            const int minimal = 200, maximal = 300;
             if (size <= limit) {
                 num_epochs = minimal + maximal;
             } else {
-                num_epochs = minimal + static_cast<int>(std::ceil(maximal * limit / static_cast<double>(size)));
+                num_epochs = minimal + static_cast<int>(std::ceil(maximal * static_cast<double>(limit) / static_cast<double>(size)));
             }
         }
     }
@@ -70,7 +72,7 @@ inline int choose_num_epochs(int num_epochs, size_t size) {
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Float_>
-Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, Float_* embedding, Options options) {
+Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, std::size_t num_dim, Float_* embedding, Options options) {
     internal::NeighborSimilaritiesOptions<Float_> nsopt;
     nsopt.local_connectivity = options.local_connectivity;
     nsopt.bandwidth = options.bandwidth;
@@ -83,10 +85,10 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
     if (options.initialize == InitializeMethod::SPECTRAL || options.initialize == InitializeMethod::SPECTRAL_ONLY) {
         bool attempt = internal::spectral_init(x, num_dim, embedding, options.num_threads);
         if (!attempt && options.initialize == InitializeMethod::SPECTRAL) {
-            internal::random_init(x.size(), num_dim, embedding);
+            internal::random_init<Index_>(x.size(), num_dim, embedding);
         }
     } else if (options.initialize == InitializeMethod::RANDOM) {
-        internal::random_init(x.size(), num_dim, embedding);
+        internal::random_init<Index_>(x.size(), num_dim, embedding);
     }
 
     // Finding a good a/b pair.
@@ -96,7 +98,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
         options.b = found.second;
     }
 
-    options.num_epochs = internal::choose_num_epochs(options.num_epochs, x.size());
+    options.num_epochs = internal::choose_num_epochs<Index_>(options.num_epochs, x.size());
 
     return Status<Index_, Float_>(
         internal::similarities_to_epochs<Index_, Float_>(x, options.num_epochs, options.negative_sample_rate),
@@ -125,7 +127,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Input_, typename Float_>
-Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
+Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, std::size_t num_dim, Float_* embedding, Options options) { 
     auto output = knncolle::find_nearest_neighbors(prebuilt, options.num_neighbors, options.num_threads);
     return initialize(std::move(output), num_dim, embedding, std::move(options));
 }
@@ -158,7 +160,7 @@ Status<Index_, Float_> initialize(
     std::size_t num_obs,
     const Float_* data,
     const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
-    int num_dim,
+    std::size_t num_dim,
     Float_* embedding,
     Options options)
 { 
