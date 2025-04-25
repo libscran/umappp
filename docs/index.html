@@ -104,6 +104,18 @@ $(function(){ initResizable(false); });
 <p>Given a pointer to a column-major input array with <code>ndim</code> rows and <code>nobs</code> columns, we use <code>initialize()</code> to start the UMAP algorithm and <code>run()</code> to run it across epochs:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="umappp_8hpp.html">umappp/umappp.hpp</a>&quot;</span></div>
 <div class="line"> </div>
+<div class="line"><span class="comment">// Assuming `data` contains high-dimensional data in column-major format,</span></div>
+<div class="line"><span class="comment">// i.e., each column is a observation and each row is a dimension.</span></div>
+<div class="line"><span class="keywordtype">int</span> nrow = 10;</div>
+<div class="line"><span class="keywordtype">int</span> ncol = 2000;</div>
+<div class="line">std::vector&lt;double&gt; data(nrow * ncol);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Configuring the neighbor search algorithm; here, we&#39;ll be using an exact</span></div>
+<div class="line"><span class="comment">// search based on VP trees with a Euclidean distance metric.</span></div>
+<div class="line"><a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder&lt;int, double, double&gt;</a> vp_builder(</div>
+<div class="line">    std::make_shared&lt;<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html">knncolle::EuclideanDistance&lt;double, double&gt;</a> &gt;()</div>
+<div class="line">);</div>
+<div class="line"> </div>
 <div class="line"><span class="comment">// Set number of dimensions in the output embedding.</span></div>
 <div class="line"><span class="keywordtype">size_t</span> out_dim = 2;</div>
 <div class="line">std::vector&lt;double&gt; embedding(npts * out_dim);</div>
@@ -114,7 +126,7 @@ $(function(){ initResizable(false); });
 <div class="line">    ndim,</div>
 <div class="line">    nobs,</div>
 <div class="line">    data.data(),</div>
-<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), <span class="comment">// algorithm to find neighbors</span></div>
+<div class="line">    vp_builder, </div>
 <div class="line">    out_dim,</div>
 <div class="line">    embedding.data(),</div>
 <div class="line">    opt</div>
@@ -123,6 +135,7 @@ $(function(){ initResizable(false); });
 <div class="line"><span class="comment">// Run UMAP algorithm to completion. This updates the contents</span></div>
 <div class="line"><span class="comment">// of the &#39;embedding&#39; vector supplied to initialize().</span></div>
 <div class="line">status.run();</div>
+<div class="ttc" id="aclassknncolle_1_1EuclideanDistance_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html">knncolle::EuclideanDistance</a></div></div>
 <div class="ttc" id="aclassknncolle_1_1VptreeBuilder_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a></div></div>
 <div class="ttc" id="anamespaceumappp_html_af1dd7a21c6a6cbea17af256b3095b662"><div class="ttname"><a href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, int num_dim, Float_ *embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:73</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:28</div></div>
@@ -139,7 +152,7 @@ $(function(){ initResizable(false); });
 <div class="line">    ndim,</div>
 <div class="line">    nobs,</div>
 <div class="line">    data.data(),</div>
-<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), <span class="comment">// algorithm to find neighbors</span></div>
+<div class="line">    vp_builder,</div>
 <div class="line">    out_dim,</div>
 <div class="line">    embedding.data(),</div>
 <div class="line">    opt</div>
@@ -151,9 +164,8 @@ $(function(){ initResizable(false); });
 <div class="line">    <span class="comment">// e.g., create an animation over iterations.</span></div>
 <div class="line">}</div>
 </div><!-- fragment --><p>Advanced users can control the neighbor search by either providing the search results directly (as a vector of vectors of index-distance pairs) or by providing an appropriate <a href="https://github.com/knncolle/knncolle"><b>knncolle</b></a> subclass to the <code>initialize()</code> function:</p>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> annoy_idx = knncolle::AnnoyBuilder().build_unique(</div>
-<div class="line">    <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a>(ndim, nobs, data.data())</div>
-<div class="line">);</div>
+<div class="fragment"><div class="line">knncolle_annoy::AnnoyBuilder&lt;int, double, double, Annoy::Euclidean&gt; annoy_builder;</div>
+<div class="line"><span class="keyword">auto</span> annoy_idx = annoy_builder.build_unique(<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a>(ndim, nobs, data.data()));</div>
 <div class="line"><span class="keyword">auto</span> status_annoy = <a class="code hl_function" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">umappp::initialize</a>(*annoy_idx, 2, embedding.data(), opt);</div>
 <div class="line">status_annoy.run();</div>
 <div class="ttc" id="aclassknncolle_1_1SimpleMatrix_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></div></div>
