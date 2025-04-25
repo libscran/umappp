@@ -160,10 +160,10 @@
     <templarg>typename Index_</templarg>
     <templarg>typename Float_</templarg>
     <member kind="function">
-      <type>int</type>
+      <type>std::size_t</type>
       <name>num_dimensions</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>adee7c0c16fd8ddf5fa19a7e6e7e44d4d</anchor>
+      <anchor>a9306a1a34e3e5bd1290f121d7475098b</anchor>
       <arglist>() const</arglist>
     </member>
     <member kind="function">
@@ -195,10 +195,10 @@
       <arglist>() const</arglist>
     </member>
     <member kind="function">
-      <type>size_t</type>
+      <type>Index_</type>
       <name>num_observations</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>a44365f9e414f75354b4d9b7533013454</anchor>
+      <anchor>a9e26e13bb55ddec29f22a61a8347aa62</anchor>
       <arglist>() const</arglist>
     </member>
     <member kind="function">
@@ -232,22 +232,22 @@
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>af1dd7a21c6a6cbea17af256b3095b662</anchor>
-      <arglist>(NeighborList&lt; Index_, Float_ &gt; x, int num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>a4cfa12c04be6408c52c9cb38810cd61f</anchor>
+      <arglist>(NeighborList&lt; Index_, Float_ &gt; x, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>a66823271b07988507638ea7a31becca4</anchor>
-      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, int num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>ada8f221d7b5262835fd1401175f93dbf</anchor>
+      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>aec7244d714e75fd4703e3a3b9e9b53e5</anchor>
-      <arglist>(std::size_t data_dim, std::size_t num_obs, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, int num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>acb48fddcd4ef5b8810a6e11fd2c4e001</anchor>
+      <arglist>(std::size_t data_dim, std::size_t num_obs, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
     </member>
   </compound>
   <compound kind="page">

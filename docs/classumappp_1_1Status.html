@@ -111,8 +111,8 @@ $(function(){ initResizable(false); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:adee7c0c16fd8ddf5fa19a7e6e7e44d4d" id="r_adee7c0c16fd8ddf5fa19a7e6e7e44d4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adee7c0c16fd8ddf5fa19a7e6e7e44d4d">num_dimensions</a> () const</td></tr>
-<tr class="separator:adee7c0c16fd8ddf5fa19a7e6e7e44d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9306a1a34e3e5bd1290f121d7475098b" id="r_a9306a1a34e3e5bd1290f121d7475098b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9306a1a34e3e5bd1290f121d7475098b">num_dimensions</a> () const</td></tr>
+<tr class="separator:a9306a1a34e3e5bd1290f121d7475098b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b3cdb3bfb439021b4342f60c395a6cf" id="r_a3b3cdb3bfb439021b4342f60c395a6cf"><td class="memItemLeft" align="right" valign="top">const Float_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b3cdb3bfb439021b4342f60c395a6cf">embedding</a> () const</td></tr>
 <tr class="separator:a3b3cdb3bfb439021b4342f60c395a6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6048a8bc7155826c4fc16bee4c00005" id="r_aa6048a8bc7155826c4fc16bee4c00005"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6048a8bc7155826c4fc16bee4c00005">set_embedding</a> (Float_ *ptr, bool copy=true)</td></tr>
@@ -121,8 +121,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7b6b70dce24aa2f446f786df2140ed67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac03b32aa0acd6f912afdc589c5fea105" id="r_ac03b32aa0acd6f912afdc589c5fea105"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs</a> () const</td></tr>
 <tr class="separator:ac03b32aa0acd6f912afdc589c5fea105"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44365f9e414f75354b4d9b7533013454" id="r_a44365f9e414f75354b4d9b7533013454"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44365f9e414f75354b4d9b7533013454">num_observations</a> () const</td></tr>
-<tr class="separator:a44365f9e414f75354b4d9b7533013454"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e26e13bb55ddec29f22a61a8347aa62" id="r_a9e26e13bb55ddec29f22a61a8347aa62"><td class="memItemLeft" align="right" valign="top">Index_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e26e13bb55ddec29f22a61a8347aa62">num_observations</a> () const</td></tr>
+<tr class="separator:a9e26e13bb55ddec29f22a61a8347aa62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0ce400ada7d45bd5b72ecca3fd0535a" id="r_ae0ce400ada7d45bd5b72ecca3fd0535a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0ce400ada7d45bd5b72ecca3fd0535a">run</a> (int epoch_limit=0)</td></tr>
 <tr class="separator:ae0ce400ada7d45bd5b72ecca3fd0535a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -136,7 +136,7 @@ class umappp::Status&lt; Index_, Float_ &gt;</div><p><a class="el" href="classum
   </table>
   </dd>
 </dl>
-<p>Instances of this class should not be constructed directly, but instead returned by <code><a class="el" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">initialize()</a></code>. </p>
+<p>Instances of this class should not be constructed directly, but instead returned by <code><a class="el" href="namespaceumappp.html#a4cfa12c04be6408c52c9cb38810cd61f">initialize()</a></code>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3b3cdb3bfb439021b4342f60c395a6cf" name="a3b3cdb3bfb439021b4342f60c395a6cf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b3cdb3bfb439021b4342f60c395a6cf">&#9670;&#160;</a></span>embedding()</h2>
@@ -162,7 +162,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Pointer to an array containing the embeddings after the specified number of epochs. This is a column-major matrix where rows are dimensions (<code><a class="el" href="#adee7c0c16fd8ddf5fa19a7e6e7e44d4d">num_dimensions()</a></code>) and columns are observations (<code><a class="el" href="#a44365f9e414f75354b4d9b7533013454">num_observations()</a></code>). </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Pointer to an array containing the embeddings after the specified number of epochs. This is a column-major matrix where rows are dimensions (<code><a class="el" href="#a9306a1a34e3e5bd1290f121d7475098b">num_dimensions()</a></code>) and columns are observations (<code><a class="el" href="#a9e26e13bb55ddec29f22a61a8347aa62">num_observations()</a></code>). </dd></dl>
 
 </div>
 </div>
@@ -194,8 +194,8 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="adee7c0c16fd8ddf5fa19a7e6e7e44d4d" name="adee7c0c16fd8ddf5fa19a7e6e7e44d4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adee7c0c16fd8ddf5fa19a7e6e7e44d4d">&#9670;&#160;</a></span>num_dimensions()</h2>
+<a id="a9306a1a34e3e5bd1290f121d7475098b" name="a9306a1a34e3e5bd1290f121d7475098b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9306a1a34e3e5bd1290f121d7475098b">&#9670;&#160;</a></span>num_dimensions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,7 +206,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::num_dimensions </td>
+          <td class="memname">std::size_t <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::num_dimensions </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -246,12 +246,12 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Total number of epochs. This is typically determined by the value of <code>Options::max_epochs</code> used in <code><a class="el" href="namespaceumappp.html#af1dd7a21c6a6cbea17af256b3095b662">initialize()</a></code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Total number of epochs. This is typically determined by the value of <code>Options::max_epochs</code> used in <code><a class="el" href="namespaceumappp.html#a4cfa12c04be6408c52c9cb38810cd61f">initialize()</a></code>. </dd></dl>
 
 </div>
 </div>
-<a id="a44365f9e414f75354b4d9b7533013454" name="a44365f9e414f75354b4d9b7533013454"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44365f9e414f75354b4d9b7533013454">&#9670;&#160;</a></span>num_observations()</h2>
+<a id="a9e26e13bb55ddec29f22a61a8347aa62" name="a9e26e13bb55ddec29f22a61a8347aa62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e26e13bb55ddec29f22a61a8347aa62">&#9670;&#160;</a></span>num_observations()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -262,7 +262,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::num_observations </td>
+          <td class="memname">Index_ <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::num_observations </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
