@@ -239,15 +239,15 @@
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>aac090c4d4b10690c6f4983da41a5b5e5</anchor>
-      <arglist>(const knncolle::Prebuilt&lt; Dim_, Index_, Float_ &gt; &amp;prebuilt, int num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>a66823271b07988507638ea7a31becca4</anchor>
+      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, int num_dim, Float_ *embedding, Options options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>a37bde72b9500683cbf21a6c3afecfc0b</anchor>
-      <arglist>(Dim_ data_dim, Index_ num_obs, const Float_ *data, const knncolle::Builder&lt; knncolle::SimpleMatrix&lt; Dim_, Index_, Float_ &gt;, Float_ &gt; &amp;builder, int num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>aec7244d714e75fd4703e3a3b9e9b53e5</anchor>
+      <arglist>(std::size_t data_dim, std::size_t num_obs, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, int num_dim, Float_ *embedding, Options options)</arglist>
     </member>
   </compound>
   <compound kind="page">

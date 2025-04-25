@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['get_5fobservation_0',['get_observation',['https://knncolle.github.io/knncolle/classknncolle_1_1MockMatrix.html#a4c8aeb3684c8163c9ed3bbfcb688e400',1,'knncolle::MockMatrix']]],
-  ['get_5foptions_1',['get_options',['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnBuilder.html#af6dc5c628478732fb4b5d0f027f1d7a8',1,'knncolle::KmknnBuilder']]]
+  ['find_5fnearest_5fneighbors_0',['find_nearest_neighbors',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a2c6d8b116464bab254bda34216338c3c',1,'knncolle']]],
+  ['find_5fnearest_5fneighbors_5findex_5fonly_1',['find_nearest_neighbors_index_only',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a8406dfe7aac78dee986262a5f6bceee7',1,'knncolle']]]
 ];

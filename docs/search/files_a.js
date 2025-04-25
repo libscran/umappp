@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['searcher_2ehpp_0',['Searcher.hpp',['https://knncolle.github.io/knncolle/Searcher_8hpp.html',1,'']]],
-  ['status_2ehpp_1',['Status.hpp',['../Status_8hpp.html',1,'']]]
+  ['report_5fall_5fneighbors_2ehpp_0',['report_all_neighbors.hpp',['https://knncolle.github.io/knncolle/report__all__neighbors_8hpp.html',1,'']]]
 ];

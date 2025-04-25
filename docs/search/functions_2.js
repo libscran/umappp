@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['denormalize_0',['denormalize',['https://knncolle.github.io/knncolle/structknncolle_1_1EuclideanDistance.html#a1bb3cf480fc39ebb740c9f840626a6a5',1,'knncolle::EuclideanDistance::denormalize()'],['https://knncolle.github.io/knncolle/structknncolle_1_1ManhattanDistance.html#a4cae134de658e4b96433db80b62a549e',1,'knncolle::ManhattanDistance::denormalize()'],['https://knncolle.github.io/knncolle/structknncolle_1_1MockDistance.html#ae3456039934506172efe9d6bde895d96',1,'knncolle::MockDistance::denormalize()']]]
+  ['can_5fsearch_5fall_0',['can_search_all',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceSearcher.html#a7ae415a6fa177b498359371211c007a1',1,'knncolle::BruteforceSearcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Searcher.html#a175ab05c339e3aa39b974f1ceebc21a3',1,'knncolle::Searcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeSearcher.html#a8df5ca5cd6c2f305da615f7839ba7894',1,'knncolle::VptreeSearcher::can_search_all()']]],
+  ['cap_5fk_1',['cap_k',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a926c81cd626de7081b073a891d352543',1,'knncolle']]],
+  ['count_5fall_5fneighbors_5fwithout_5fself_2',['count_all_neighbors_without_self',['https://knncolle.github.io/knncolle/namespaceknncolle.html#ab636bced615a3a669ef0e207b5d848cc',1,'knncolle']]]
 ];

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['searcher_0',['Searcher',['https://knncolle.github.io/knncolle/classknncolle_1_1Searcher.html',1,'knncolle']]],
-  ['simplematrix_1',['SimpleMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html',1,'knncolle']]],
-  ['status_2',['Status',['../classumappp_1_1Status.html',1,'umappp']]]
+  ['prebuilt_0',['Prebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html',1,'knncolle']]],
+  ['prebuilt_3c_20index_5f_2c_20data_5f_2c_20distance_5f_20_3e_1',['Prebuilt&lt; Index_, Data_, Distance_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html',1,'knncolle']]]
 ];

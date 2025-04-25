@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['options_0',['Options',['../structumappp_1_1Options.html',1,'umappp']]]
+  ['neighborqueue_0',['NeighborQueue',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html',1,'knncolle']]]
 ];

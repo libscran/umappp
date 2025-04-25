@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['kmknn_2ehpp_0',['Kmknn.hpp',['https://knncolle.github.io/knncolle/Kmknn_8hpp.html',1,'']]],
-  ['kmknnbuilder_1',['KmknnBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnBuilder.html',1,'knncolle::KmknnBuilder&lt; class Distance_, class Matrix_, typename Float_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnBuilder.html#ae8338140eae1984a667f226475401491',1,'knncolle::KmknnBuilder::KmknnBuilder(Options options)'],['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnBuilder.html#ac9a0a6e9e591b23b7bed3c16ab786ea3',1,'knncolle::KmknnBuilder::KmknnBuilder()=default']]],
-  ['kmknnoptions_2',['KmknnOptions',['https://knncolle.github.io/knncolle/structknncolle_1_1KmknnOptions.html',1,'knncolle']]],
-  ['kmknnprebuilt_3',['KmknnPrebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnPrebuilt.html',1,'knncolle::KmknnPrebuilt&lt; class Distance_, typename Dim_, typename Index_, typename Store_, typename Float_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnPrebuilt.html#aa45f08f940ab256706b3c27d00d2992a',1,'knncolle::KmknnPrebuilt::KmknnPrebuilt()']]],
-  ['kmknnsearcher_4',['KmknnSearcher',['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnSearcher.html',1,'knncolle']]],
-  ['knncolle_5',['knncolle',['https://knncolle.github.io/knncolle/namespaceknncolle.html',1,'']]],
-  ['knncolle_2ehpp_6',['knncolle.hpp',['https://knncolle.github.io/knncolle/knncolle_8hpp.html',1,'']]]
+  ['l2normalized_2ehpp_0',['L2Normalized.hpp',['https://knncolle.github.io/knncolle/L2Normalized_8hpp.html',1,'']]],
+  ['l2normalizedbuilder_1',['L2NormalizedBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html',1,'knncolle::L2NormalizedBuilder&lt; typename Index_, typename Data_, typename Distance_, typename Normalized_, class Matrix_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html#a387250ea0ae7654b186545814cd51da3',1,'knncolle::L2NormalizedBuilder::L2NormalizedBuilder()']]],
+  ['l2normalizedmatrix_2',['L2NormalizedMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedMatrix.html',1,'knncolle']]],
+  ['l2normalizedmatrixextractor_3',['L2NormalizedMatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedMatrixExtractor.html',1,'knncolle']]],
+  ['l2normalizedprebuilt_4',['L2NormalizedPrebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedPrebuilt.html',1,'knncolle::L2NormalizedPrebuilt&lt; typename Index_, typename Data_, typename Distance_, typename Normalized_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedPrebuilt.html#a8e358a3bffddb15ea58428af9e475db0',1,'knncolle::L2NormalizedPrebuilt::L2NormalizedPrebuilt()']]],
+  ['l2normalizedsearcher_5',['L2NormalizedSearcher',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedSearcher.html',1,'knncolle::L2NormalizedSearcher&lt; typename Index_, typename Data_, typename Distance_, typename Normalized_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedSearcher.html#a5904180535cf1b42a6e986080d633355',1,'knncolle::L2NormalizedSearcher::L2NormalizedSearcher()']]],
+  ['learning_5frate_6',['learning_rate',['../structumappp_1_1Options.html#a78185619fc269be49c58faa802b1c0cf',1,'umappp::Options']]],
+  ['library_20for_20umap_7',['A C++ library for UMAP',['../index.html',1,'']]],
+  ['limit_8',['limit',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ade4febddacc0e5725caa3c683486dcb0',1,'knncolle::NeighborQueue']]],
+  ['local_5fconnectivity_9',['local_connectivity',['../structumappp_1_1Options.html#ae78c4c99731aa85ed8b6496c23c8ada0',1,'umappp::Options']]]
 ];
