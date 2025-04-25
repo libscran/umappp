@@ -28,7 +28,8 @@ protected:
             data[r] = dist(rng);
         }
 
-        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
+        builder.reset(new knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >()));
+        auto index = builder->build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, data.data()));
         auto searcher = index->initialize();
         std::vector<int> indices;
         std::vector<double> distances;
@@ -47,6 +48,7 @@ protected:
     int nobs, k;
     int ndim = 5;
     std::vector<double> data;
+    std::shared_ptr<knncolle::Builder<int, double, double> > builder;
     umappp::NeighborList<int, double> neighbors;
 };
 
@@ -68,7 +70,7 @@ TEST_P(UmapTest, Basic) {
     // Same results if we ran it from the top.
     {
         std::vector<double> copy(nobs * ndim);
-        auto status2 = umappp::initialize(ndim, nobs, data.data(), knncolle::VptreeBuilder(), ndim, copy.data(), [&]{
+        auto status2 = umappp::initialize(ndim, nobs, data.data(), *builder, ndim, copy.data(), [&]{
             umappp::Options opt;
             opt.num_neighbors = k;
             return opt;
@@ -100,7 +102,7 @@ TEST_P(UmapTest, Basic) {
 
         {
             std::vector<double> copy(nobs * ndim);
-            auto status = umappp::initialize(ndim, nobs, data.data(), knncolle::VptreeBuilder(), ndim, copy.data(), opt);
+            auto status = umappp::initialize(ndim, nobs, data.data(), *builder, ndim, copy.data(), opt);
             status.run();
             EXPECT_EQ(copy, output);
         }
@@ -139,7 +141,7 @@ TEST(UmapTest, SinglePrecision) {
     }
 
     std::vector<float> output(nobs * 2);
-    knncolle::VptreeBuilder<knncolle::EuclideanDistance, knncolle::SimpleMatrix<int, int, float>, float> float_builder;
+    auto float_builder = knncolle::VptreeBuilder<int, float, float>(std::make_shared<knncolle::EuclideanDistance<float, float> >());
     auto status = umappp::initialize(ndim, nobs, data.data(), float_builder, 2, output.data(), umappp::Options());
 
     status.run();

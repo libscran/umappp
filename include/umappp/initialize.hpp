@@ -107,11 +107,12 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
 }
 
 /**
- * @tparam Dim_ Integer type for the dimensions of the input dataset.
- * @tparam Index_ Integer type of the neighbor indices.
- * @tparam Float_ Floating-point type for the distances.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Input_ Floating-point type of the input data for the neighbor search.
+ * This is not used other than to define the `knncolle::Prebuilt` type.
+ * @tparam Float_ Floating-point type of the input data, neighbor distances and output embedding.
  *
- * @param prebuilt A `knncolle::Prebuilt` instance constructed from the input dataset.
+ * @param prebuilt A neighbor search index built on the dataset of interest.
  * @param num_dim Number of dimensions of the UMAP embedding.
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
@@ -123,16 +124,17 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, int num_dim, F
  * @return A `Status` object containing the initial state of the UMAP algorithm.
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
-template<typename Dim_, typename Index_, typename Float_>
-Status<Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
+template<typename Index_, typename Input_, typename Float_>
+Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, int num_dim, Float_* embedding, Options options) { 
     auto output = knncolle::find_nearest_neighbors(prebuilt, options.num_neighbors, options.num_threads);
     return initialize(std::move(output), num_dim, embedding, std::move(options));
 }
 
 /**
- * @tparam Dim_ Integer type for the dimensions of the input dataset.
- * @tparam Index_ Integer type of the neighbor indices.
- * @tparam Float_ Floating-point type for the distances.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Float_ Floating-point type of the input data, neighbor distances and output embedding.
+ * @tparam Matrix_ Class of the input matrix for the neighbor search.
+ * This should be a `knncolle::SimpleMatrix` or its base class (i.e., `knncolle::Matrix`).
  * 
  * @param data_dim Number of dimensions of the input dataset.
  * @param num_obs Number of observations in the input dataset.
@@ -150,17 +152,17 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>
  * @return A `Status` object containing the initial state of the UMAP algorithm.
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
-template<typename Dim_, typename Index_, typename Float_>
+template<typename Index_, typename Float_, class Matrix_ = knncolle::Matrix<Index_, Float_> >
 Status<Index_, Float_> initialize(
-    Dim_ data_dim,
-    Index_ num_obs,
+    std::size_t data_dim,
+    std::size_t num_obs,
     const Float_* data,
-    const knncolle::Builder<knncolle::SimpleMatrix<Dim_, Index_, Float_>, Float_>& builder,
+    const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
     int num_dim,
     Float_* embedding,
     Options options)
 { 
-    auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(data_dim, num_obs, data));
+    auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Index_, Float_>(data_dim, num_obs, data));
     return initialize(*prebuilt, num_dim, embedding, std::move(options));
 }
 

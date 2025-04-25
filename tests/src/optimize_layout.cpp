@@ -28,8 +28,10 @@ protected:
             data[r] = dist(rng);
         }
 
-        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
+        auto builder = knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+        auto index = builder.build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, data.data()));
         auto searcher = index->initialize();
+
         std::vector<int> indices;
         std::vector<double> distances;
 

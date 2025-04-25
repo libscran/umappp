@@ -21,6 +21,18 @@ Given a pointer to a column-major input array with `ndim` rows and `nobs` column
 ```cpp
 #include "umappp/umappp.hpp"
 
+// Assuming `data` contains high-dimensional data in column-major format,
+// i.e., each column is a observation and each row is a dimension.
+int nrow = 10;
+int ncol = 2000;
+std::vector<double> data(nrow * ncol);
+
+// Configuring the neighbor search algorithm; here, we'll be using an exact
+// search based on VP trees with a Euclidean distance metric.
+knncolle::VptreeBuilder<int, double, double> vp_builder(
+    std::make_shared<knncolle::EuclideanDistance<double, double> >()
+);
+
 // Set number of dimensions in the output embedding.
 size_t out_dim = 2;
 std::vector<double> embedding(npts * out_dim);
@@ -31,7 +43,7 @@ auto status = umappp::initialize(
     ndim,
     nobs,
     data.data(),
-    knncolle::VptreeBuilder(), // algorithm to find neighbors
+    vp_builder, 
     out_dim,
     embedding.data(),
     opt
@@ -58,7 +70,7 @@ auto status2 = umappp::initialize(
     ndim,
     nobs,
     data.data(),
-    knncolle::VptreeBuilder(), // algorithm to find neighbors
+    vp_builder,
     out_dim,
     embedding.data(),
     opt
@@ -75,9 +87,8 @@ Advanced users can control the neighbor search by either providing the search re
 or by providing an appropriate [**knncolle**](https://github.com/knncolle/knncolle) subclass to the `initialize()` function:
 
 ```cpp
-auto annoy_idx = knncolle::AnnoyBuilder().build_unique(
-    knncolle::SimpleMatrix(ndim, nobs, data.data())
-);
+knncolle_annoy::AnnoyBuilder<int, double, double, Annoy::Euclidean> annoy_builder;
+auto annoy_idx = annoy_builder.build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
 auto status_annoy = umappp::initialize(*annoy_idx, 2, embedding.data(), opt);
 status_annoy.run();
 ```

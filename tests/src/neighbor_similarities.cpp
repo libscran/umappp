@@ -29,9 +29,11 @@ protected:
 
 protected:
     static auto generate_neighbors(int ndim, int nobs, const std::vector<double>& data, int k) {
-        std::vector<std::vector<std::pair<int, double> > > neighbors(nobs);
-        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
+        auto builder = knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+        auto index = builder.build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, data.data()));
         auto searcher = index->initialize();
+
+        std::vector<std::vector<std::pair<int, double> > > neighbors(nobs);
         std::vector<int> indices;
         std::vector<double> distances;
 

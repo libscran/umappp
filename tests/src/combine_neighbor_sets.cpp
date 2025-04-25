@@ -25,10 +25,11 @@ protected:
             data[r] = dist(rng);
         }
 
-        neighbors.resize(nobs);
-
-        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix<int, int, double>(ndim, nobs, data.data()));
+        auto builder = knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+        auto index = builder.build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, data.data()));
         auto searcher = index->initialize();
+
+        neighbors.resize(nobs);
         std::vector<int> indices;
         std::vector<double> distances;
         for (size_t i = 0; i < nobs; ++i) {
