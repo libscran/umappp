@@ -8,9 +8,11 @@
 #include "umappp/initialize.hpp"
 #include "knncolle/knncolle.hpp"
 
-#include <map>
 #include <random>
 #include <cmath>
+#include <limits>
+#include <numeric>
+#include <vector>
 
 class UmapTest : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
@@ -20,12 +22,14 @@ protected:
         k = std::get<1>(p);
 
         std::mt19937_64 rng(nobs * k); // for some variety
-        std::normal_distribution<> dist(0, 1);
+        std::uniform_real_distribution<> dist(0, 1);
 
-        size_t total = nobs* ndim;
-        data.resize(total);
-        for (size_t r = 0; r < total; ++r) {
-            data[r] = dist(rng);
+        data.resize(nobs * ndim);
+        for (int o = 0; o < nobs; ++o) {
+            double offset = (o % 2 == 1 ? 10 : 0); // creating two populations that are shifted on the first dimension.
+            for (int d = 0; d < ndim; ++d) {
+                data[d + o * ndim] = dist(rng) + (d == 0 ? offset : 0);
+            }
         }
 
         builder.reset(new knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >()));
@@ -53,8 +57,9 @@ protected:
 };
 
 TEST_P(UmapTest, Basic) {
-    std::vector<double> output(nobs * ndim);
-    auto status = umappp::initialize(neighbors, ndim, output.data(), umappp::Options());
+    int outdim = 2;
+    std::vector<double> output(nobs * outdim);
+    auto status = umappp::initialize(neighbors, outdim, output.data(), umappp::Options());
 
     EXPECT_EQ(status.epoch(), 0);
     EXPECT_EQ(status.num_epochs(), 500);
@@ -67,10 +72,26 @@ TEST_P(UmapTest, Basic) {
         EXPECT_FALSE(std::isnan(o));
     }
 
+    // Sanity check for separation between the two groups of observations on at least one dimension.
+    std::vector<double> min_odd(outdim, std::numeric_limits<double>::infinity());
+    std::vector<double> max_odd(outdim, -std::numeric_limits<double>::infinity());
+    auto min_even = min_odd;
+    auto max_even = max_odd;
+    for (int i = 0; i < nobs; ++i) {
+        auto& min = (i % 2 == 0 ? min_even : min_odd);
+        auto& max = (i % 2 == 0 ? max_even : max_odd);
+        for (int d = 0; d < outdim; ++d) {
+            auto val = output[outdim * i + d];
+            min[d] = std::min(min[d], val);
+            max[d] = std::max(max[d], val);
+        }
+    }
+    EXPECT_TRUE(max_even[0] < min_odd[0] || max_odd[0] < min_even[0] || max_even[1] < min_odd[1] || max_odd[1] < min_even[1]);
+
     // Same results if we ran it from the top.
     {
-        std::vector<double> copy(nobs * ndim);
-        auto status2 = umappp::initialize(ndim, nobs, data.data(), *builder, ndim, copy.data(), [&]{
+        std::vector<double> copy(nobs * outdim);
+        auto status2 = umappp::initialize(ndim, nobs, data.data(), *builder, outdim, copy.data(), [&]{
             umappp::Options opt;
             opt.num_neighbors = k;
             return opt;
@@ -81,8 +102,8 @@ TEST_P(UmapTest, Basic) {
 
     // Same results if we started a little, and then ran the rest.
     {
-        std::vector<double> copy(nobs * ndim);
-        auto status_partial = umappp::initialize(neighbors, ndim, copy.data(), umappp::Options());
+        std::vector<double> copy(nobs * outdim);
+        auto status_partial = umappp::initialize(neighbors, outdim, copy.data(), umappp::Options());
         status_partial.run(200);
         EXPECT_EQ(status_partial.epoch(), 200);
         EXPECT_NE(copy, output);
@@ -101,8 +122,8 @@ TEST_P(UmapTest, Basic) {
         opt.num_threads = 3;
 
         {
-            std::vector<double> copy(nobs * ndim);
-            auto status = umappp::initialize(ndim, nobs, data.data(), *builder, ndim, copy.data(), opt);
+            std::vector<double> copy(nobs * outdim);
+            auto status = umappp::initialize(ndim, nobs, data.data(), *builder, outdim, copy.data(), opt);
             status.run();
             EXPECT_EQ(copy, output);
         }
@@ -110,8 +131,8 @@ TEST_P(UmapTest, Basic) {
         // Same results with multiple threads and parallel optimization enabled.
         opt.parallel_optimization = true;
         {
-            std::vector<double> copy(nobs * ndim);
-            auto status = umappp::initialize(neighbors, ndim, copy.data(), opt);
+            std::vector<double> copy(nobs * outdim);
+            auto status = umappp::initialize(neighbors, outdim, copy.data(), opt);
             status.run();
             EXPECT_EQ(copy, output);
         }
