@@ -178,7 +178,7 @@ $(function(){ initResizable(false); });
 <div class="line">FetchContent_Declare(</div>
 <div class="line">  umappp </div>
 <div class="line">  GIT_REPOSITORY https://github.com/libscran/umappp</div>
-<div class="line">  GIT_TAG master # or any version of interest</div>
+<div class="line">  GIT_TAG master # replace with a pinned release</div>
 <div class="line">)</div>
 <div class="line"> </div>
 <div class="line">FetchContent_MakeAvailable(umappp)</div>
@@ -188,16 +188,17 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE libscran::umappp)</div>
-</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. Applications are advised to pin the versions of all dependencies for stability - see <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> for suggested versions. If you want to install them manually, use <code>-DUMAPPP_FETCH_EXTERN=OFF</code>.</p>
+<h2>CMake with <code>find_package()</code></h2>
 <div class="fragment"><div class="line">find_package(libscran_umappp CONFIG REQUIRED)</div>
 <div class="line">target_link_libraries(mylib INTERFACE libscran::umappp)</div>
 </div><!-- fragment --><p>To install the library, use:</p>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake .. -DUMAPPP_TESTS=OFF</div>
 <div class="line">cmake --build . --target install</div>
-</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DUMAPPP_FETCH_EXTERN=OFF</code>. See <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
+</div><!-- fragment --><p>Again, this will use <code>FetchContent</code> to fetch dependencies, see recommendations above.</p>
 <h2>Manual</h2>
-<p>If you're not using CMake, the simple approach is to just copy the files in <code>include/</code> - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This requires the external dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>, which also need to be made available during compilation.</p>
+<p>If you're not using CMake, the simple approach is to just copy the files in <code>include/</code> - either directly or with Git submodules - and include their path during compilation with, e.g., GCC's <code>-I</code>. This also requires the external dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>.</p>
 <h1>References</h1>
 <p>McInnes L, Healy J, Melville J (2020). UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction. <em>arXiv</em>, <a href="https://arxiv.org/abs/1802.03426">https://arxiv.org/abs/1802.03426</a> </p>
 </div></div><!-- PageDoc -->
