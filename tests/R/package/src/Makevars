@@ -3,8 +3,7 @@
 # are available.
 BUILD_DIR=../../../../build/_deps
 PKG_CPPFLAGS=-I${BUILD_DIR}/aarand-src/include \
-    -I${BUILD_DIR}/kmeans-src/include \
-    -I${BUILD_DIR}/powerit-src/include \
+    -I${BUILD_DIR}/sanisizer-src/include \
     -I${BUILD_DIR}/knncolle-src/include \
     -I${BUILD_DIR}/irlba-src/include \
     -I${BUILD_DIR}/subpar-src/include \

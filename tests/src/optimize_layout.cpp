@@ -138,6 +138,6 @@ TEST(OptimizeLayout, ChooseNumNegSamplesFailsafe) {
     setup.epochs_per_sample.push_back(1);
     setup.epoch_of_next_negative_sample.push_back(0);
     setup.negative_sample_rate = 5;
-    num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // as a control, checking that we don't hit the cap.
+    auto num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // as a control, checking that we don't hit the cap.
     EXPECT_EQ(num_neg, 5);
 }
