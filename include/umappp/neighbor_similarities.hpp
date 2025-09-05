@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "sanisizer/sanisizer.hpp"
+
 #include "NeighborList.hpp"
 #include "parallelize.hpp"
 
@@ -51,22 +53,25 @@ false
 #endif
 , typename Index_, typename Float_>
 void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimilaritiesOptions<Float_>& options) {
-    Index_ npoints = x.size();
-    const int raw_connect_index = std::floor(options.local_connectivity);
+    // 'raw_connect_index' is the 1-based index of the first non-identical neighbor that is assumed to always be connected.
+    // This can also be fractional in which case the threshold distance is defined by interpolation.
+    const Index_ raw_connect_index = sanisizer::from_float<Index_>(options.local_connectivity);
     const Float_ interpolation = options.local_connectivity - raw_connect_index;
 
-    parallelize(options.num_threads, npoints, [&](int, Index_ start, Index_ length) -> void {
+    const Index_ npoints = x.size();
+    parallelize(options.num_threads, npoints, [&](const int, const Index_ start, const Index_ length) -> void {
         std::vector<Float_> active_delta;
 
         for (Index_ i = start, end = start + length; i < end; ++i) {
             auto& all_neighbors = x[i];
-            const int num_neighbors = all_neighbors.size();
+            const Index_ num_neighbors = all_neighbors.size();
             if (num_neighbors == 0) {
                 continue;
             }
 
-            // Define rho as the distance to the nearest (non-identical) neighbor at 'local_connectivity', possibly with interpolation.
-            int num_zero = 0;
+            // Define 'rho' as the distance to the 'raw_connect_index'-th non-identical neighbor.
+            // In other words, the actual index in the array is 'num_zero + raw_connect_index - 1' (bacause it's 1-based).
+            Index_ num_zero = 0;
             for (const auto& f : all_neighbors) {
                 if (f.second) {
                     break;
@@ -74,28 +79,25 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
                 ++num_zero;
             }
 
-            const int connect_index = num_zero + raw_connect_index;
-            if (num_neighbors <= connect_index) {
-                // When this happens, 'rho' is just theoretically set to the
-                // maximum distance. In such cases, the weights are always just
-                // set to 1 in the remaining code, because no distance can be
-                // greater than 'rho'. If that's the case, we might as well
-                // save some time and compute it here.
-                for (int k = 0; k < num_neighbors; ++k) {
+            if (sanisizer::is_less_than_or_equal(num_neighbors - num_zero, raw_connect_index)) {
+                // When this happens, we set 'rho' to the maximum distance, because we can't define it within range.
+                // In such cases, the weights are always just set to 1 in the remaining code, because no distance can be
+                // greater than 'rho'. If that's the case, we might as well save some time and compute it here.
+                for (Index_ k = 0; k < num_neighbors; ++k) {
                     all_neighbors[k].second = 1;
                 }
                 continue;
             }
-
-            const Float_ lower = (connect_index > 0 ? all_neighbors[connect_index - 1].second : 0); // 'local_connectivity' (and thus 'connect_index') is 1-based, hence the -1.
+            const Index_ connect_index = num_zero + raw_connect_index; // guaranteed to fit in an Index_, as this should be less than 'num_neighbors'.
+            const Float_ lower = (connect_index > 0 ? all_neighbors[connect_index - 1].second : static_cast<Float_>(0)); // 'connect_index' is 1-based, hence the subtraction.
             const Float_ upper = all_neighbors[connect_index].second;
             const Float_ rho = lower + interpolation * (upper - lower);
 
             // Pre-computing the difference between each distance and rho to reduce work in the inner iterations.
             active_delta.clear();
             Float_ num_le_rho = num_zero;
-            for (int k = num_zero; k < num_neighbors; ++k) {
-                auto curdist = all_neighbors[k].second;
+            for (Index_ k = num_zero; k < num_neighbors; ++k) {
+                const auto curdist = all_neighbors[k].second;
                 if (curdist > rho) {
                     active_delta.push_back(curdist - rho);
                 } else {
@@ -105,7 +107,7 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
 
             if (active_delta.empty()) {
                 // Same early-return logic as above.
-                for (int k = 0; k < num_neighbors; ++k) {
+                for (Index_ k = 0; k < num_neighbors; ++k) {
                     all_neighbors[k].second = 1;
                 }
                 continue;
@@ -135,8 +137,8 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
                 // to the bounded nature of the Newton calculation and the
                 // underflow-safe nature of the binary search.
                 const Float_ invsigma = 1 / sigma, invsigma2 = invsigma * invsigma;
-                for (auto d : active_delta) {
-                    Float_ current = std::exp(- d * invsigma);
+                for (const auto d : active_delta) {
+                    const Float_ current = std::exp(- d * invsigma);
                     observed += current;
                     deriv += d * current * invsigma2;
                 }
@@ -192,7 +194,7 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
             sigma = std::max(options.min_k_dist_scale * mean_dist, sigma);
 
             const Float_ invsigma = 1 / sigma;
-            for (int k = 0; k < num_neighbors; ++k) {
+            for (Index_ k = 0; k < num_neighbors; ++k) {
                 Float_& dist = all_neighbors[k].second;
                 if (dist > rho) {
                     dist = std::exp(-(dist - rho) * invsigma);

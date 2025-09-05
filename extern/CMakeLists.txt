@@ -13,6 +13,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+  sanisizer
+  GIT_REPOSITORY https://github.com/LTLA/sanisizer
+  GIT_TAG master # ^0.1.3
+)
+
+FetchContent_Declare(
   knncolle
   GIT_REPOSITORY https://github.com/knncolle/knncolle
   GIT_TAG master # ^3.0.0
@@ -26,5 +32,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(aarand)
 FetchContent_MakeAvailable(subpar)
+FetchContent_MakeAvailable(sanisizer)
 FetchContent_MakeAvailable(knncolle)
 FetchContent_MakeAvailable(irlba)

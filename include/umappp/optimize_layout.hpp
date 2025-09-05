@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <limits>
+#include <type_traits>
 
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 #include <thread>
@@ -17,16 +17,23 @@
 #include <stdexcept>
 #endif
 
-#include "NeighborList.hpp"
 #include "aarand/aarand.hpp"
+#include "sanisizer/sanisizer.hpp"
+
+#include "NeighborList.hpp"
 
 namespace umappp {
 
 namespace internal {
 
+template<typename Input_>
+std::remove_cv_t<std::remove_reference_t<Input_> > I(const Input_ x) {
+    return x;
+}
+
 template<typename Index_, typename Float_>
 struct EpochData {
-    EpochData(Index_ nobs) : head(nobs) {}
+    EpochData(const Index_ nobs) : head(sanisizer::sum<decltype(I(head.size()))>(nobs, 1)) {}
 
     int total_epochs;
     int current_epoch = 0;
@@ -41,33 +48,32 @@ struct EpochData {
 };
 
 template<typename Index_, typename Float_>
-EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Float_>& p, int num_epochs, Float_ negative_sample_rate) {
+EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Float_>& p, const int num_epochs, const Float_ negative_sample_rate) {
     Float_ maxed = 0;
     std::size_t count = 0;
     for (const auto& x : p) {
-        count += x.size();
+        count = sanisizer::sum<std::size_t>(count, x.size());
         for (const auto& y : x) {
             maxed = std::max(maxed, y.second);
         }
     }
 
-    EpochData<Index_, Float_> output(p.size());
+    const Index_ num_obs = p.size(); // Index_ should be able to hold the number of observations.
+    EpochData<Index_, Float_> output(num_obs);
     output.total_epochs = num_epochs;
     output.tail.reserve(count);
     output.epochs_per_sample.reserve(count);
     const Float_ limit = maxed / num_epochs;
 
-    std::size_t last = 0;
-    for (Index_ i = 0, num_obs = p.size(); i < num_obs; ++i) {
+    for (Index_ i = 0; i < num_obs; ++i) {
         const auto& x = p[i];
         for (const auto& y : x) {
             if (y.second >= limit) {
                 output.tail.push_back(y.first);
                 output.epochs_per_sample.push_back(maxed / y.second);
-                ++last;
             }
         }
-        output.head[i] = last;
+        output.head[i + 1] = output.tail.size();
     }
 
     // Filling in some epoch-related running statistics.
@@ -78,11 +84,14 @@ EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Floa
     }
     output.negative_sample_rate = negative_sample_rate;
 
+    // See comments in compute_num_neg_samples().
+    sanisizer::from_float<int>(static_cast<Float_>(num_epochs) * negative_sample_rate);
+
     return output;       
 }
 
 template<typename Float_>
-Float_ quick_squared_distance(const Float_* left, const Float_* right, std::size_t num_dim) {
+Float_ quick_squared_distance(const Float_* const left, const Float_* const right, const std::size_t num_dim) {
     Float_ dist2 = 0;
     for (std::size_t d = 0; d < num_dim; ++d) {
         Float_ delta = (left[d] - right[d]);
@@ -93,27 +102,24 @@ Float_ quick_squared_distance(const Float_* left, const Float_* right, std::size
 }
 
 template<typename Float_>
-Float_ clamp(Float_ input) {
+Float_ clamp(const Float_ input) {
     constexpr Float_ min_gradient = -4;
     constexpr Float_ max_gradient = 4;
     return std::min(std::max(input, min_gradient), max_gradient);
 }
 
 template<typename Index_, typename Float_>
-unsigned long long compute_num_neg_samples(std::size_t j, Float_ epoch, const EpochData<Index_, Float_>& setup) {
+int compute_num_neg_samples(const std::size_t j, const Float_ epoch, const EpochData<Index_, Float_>& setup) {
     // Remember that 'epochs_per_negative_sample' is defined as 'epochs_per_sample[j] / negative_sample_rate'.
     // We just use it inline below rather than defining a new variable and suffering floating-point round-off.
-    Float_ num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
+    const Float_ num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
         setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
 
-    // Avoiding problems with overflow. We return an unsigned long long to guarantee at least 64 bits,
-    // which should be more than enough to hold whatever num_neg_samples is.
-    constexpr auto max_value = std::numeric_limits<unsigned long long>::max();
-    if (num_neg_samples <= static_cast<Float_>(max_value)) {
-        return num_neg_samples;
-    } else {
-        return max_value;
-    }
+    // Maximum value of 'num_neg_samples' should be 'num_epochs * negative_sample_rate', because:
+    // - '(epoch - setup.epoch_of_next_negative_sample[j])' has a maximum value of 'num_epochs'.
+    // - 'setup.epochs_per_sample' has a minimum value of 1, when 'y.second == maxed'.
+    // So we just have to check that the cast is safe for the maximum value in initialize(). 
+    return num_neg_samples;
 }
 
 /*****************************************************
@@ -133,50 +139,47 @@ void optimize_layout(
     int epoch_limit
 ) {
     auto& n = setup.current_epoch;
-    auto num_epochs = setup.total_epochs;
-    auto limit_epochs = num_epochs;
-    if (epoch_limit> 0) {
-        limit_epochs = std::min(epoch_limit, num_epochs);
-    }
+    const auto num_epochs = setup.total_epochs;
+    const auto limit_epochs = (epoch_limit > 0 ? std::min(epoch_limit, num_epochs) : num_epochs);
 
     for (; n < limit_epochs; ++n) {
         const Float_ epoch = n;
         const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
-        Index_ num_obs = setup.head.size(); 
+        const Index_ num_obs = setup.head.size() - 1; 
         for (Index_ i = 0; i < num_obs; ++i) {
-            std::size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-            Float_* left = embedding + static_cast<std::size_t>(i) * num_dim; // cast to size_t to avoid overflow.
+            const auto start = setup.head[i], end = setup.head[i + 1];
+            const auto left = embedding + sanisizer::product_unsafe<std::size_t>(i, num_dim);
 
-            for (std::size_t j = start; j < end; ++j) {
+            for (auto j = start; j < end; ++j) {
                 if (setup.epoch_of_next_sample[j] > epoch) {
                     continue;
                 }
 
                 {
-                    Float_* right = embedding + static_cast<std::size_t>(setup.tail[j]) * num_dim; // again, casting to avoid overflow.
-                    Float_ dist2 = quick_squared_distance(left, right, num_dim);
+                    const auto right = embedding + sanisizer::product_unsafe<std::size_t>(setup.tail[j], num_dim);
+                    const Float_ dist2 = quick_squared_distance(left, right, num_dim);
                     const Float_ pd2b = std::pow(dist2, b);
                     const Float_ grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
 
                     for (std::size_t d = 0; d < num_dim; ++d) {
                         auto& l = left[d];
                         auto& r = right[d];
-                        Float_ gradient = alpha * clamp(grad_coef * (l - r));
+                        const Float_ gradient = alpha * clamp(grad_coef * (l - r));
                         l += gradient;
                         r -= gradient;
                     }
                 }
 
-                auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
-                for (decltype(num_neg_samples) p = 0; p < num_neg_samples; ++p) {
-                    auto sampled = aarand::discrete_uniform(rng, num_obs);
+                const auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
+                for (decltype(I(num_neg_samples)) p = 0; p < num_neg_samples; ++p) {
+                    const auto sampled = aarand::discrete_uniform(rng, num_obs);
                     if (sampled == i) {
                         continue;
                     }
 
-                    const Float_* right = embedding + static_cast<std::size_t>(sampled) * num_dim; // again, casting to avoid overflow.
-                    Float_ dist2 = quick_squared_distance(left, right, num_dim);
+                    const auto right = embedding + sanisizer::product_unsafe<std::size_t>(sampled, num_dim);
+                    const Float_ dist2 = quick_squared_distance(left, right, num_dim);
                     const Float_ grad_coef = 2 * gamma * b / ((0.001 + dist2) * (a * std::pow(dist2, b) + 1.0));
 
                     for (std::size_t d = 0; d < num_dim; ++d) {
@@ -202,13 +205,14 @@ void optimize_layout(
  *****************************************************/
 
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
-constexpr unsigned long long skip_ns_sentinel = static_cast<unsigned long long>(-1);
+constexpr int skip_ns_sentinel = -1;
 
 template<typename Index_, typename Float_>
 struct BusyWaiterInput {
     std::vector<Index_> negative_sample_selections;
-    std::vector<unsigned long long> negative_sample_count;
+    std::vector<int> negative_sample_count;
     Index_ observation;
+    std::size_t tail_offset;
     Float_ alpha;
 };
 
@@ -229,45 +233,42 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
     // We don't bother doing this for the neighbors, though, as it's 
     // tedious to make sure that the modified values are available during negative sampling.
     // (This isn't a problem for the self, as the self cannot be its own negative sample.)
-    {
-        const Float_* left = state.embedding + static_cast<std::size_t>(input.observation) * state.num_dim; // cast to avoid overflow.
-        std::copy_n(left, state.num_dim, state.self_modified.data());
-    }
+    const auto source = state.embedding + sanisizer::product_unsafe<std::size_t>(input.observation, state.num_dim);
+    std::copy_n(source, state.num_dim, state.self_modified.data());
 
-    unsigned long long position = 0;
-    auto nsIt = input.negative_sample_count.begin();
-    std::size_t start = (input.observation == 0 ? 0 : state.setup->head[input.observation-1]), end = state.setup->head[input.observation];
-
-    for (std::size_t j = start; j < end; ++j, ++nsIt) {
-        auto number = *nsIt;
+    decltype(I(input.negative_sample_selections.size())) position = 0;
+    const auto num_neighbors = input.negative_sample_count.size();
+    for (decltype(I(num_neighbors)) n = 0; n < num_neighbors; ++n) {
+        const auto number = input.negative_sample_count[n];
         if (number == skip_ns_sentinel) {
             continue;
         }
 
         {
-            Float_* left = state.self_modified.data();
-            Float_* right = state.embedding + static_cast<std::size_t>(state.setup->tail[j]) * state.num_dim; // cast to avoid overflow.
+            const auto left = state.self_modified.data();
+            const auto j = sanisizer::sum_unsafe<std::size_t>(n, input.tail_offset);
+            const auto right = state.embedding + sanisizer::product_unsafe<std::size_t>(state.setup->tail[j], state.num_dim);
 
-            Float_ dist2 = quick_squared_distance(left, right, state.num_dim);
+            const Float_ dist2 = quick_squared_distance(left, right, state.num_dim);
             const Float_ pd2b = std::pow(dist2, state.b);
             const Float_ grad_coef = (-2 * state.a * state.b * pd2b) / (dist2 * (state.a * pd2b + 1.0));
 
             for (std::size_t d = 0; d < state.num_dim; ++d) {
                 auto& l = left[d];
                 auto& r = right[d];
-                Float_ gradient = input.alpha * clamp(grad_coef * (l - r));
+                const Float_ gradient = input.alpha * clamp(grad_coef * (l - r));
                 l += gradient;
                 r -= gradient;
             }
         }
 
-        auto original = position;
+        auto s = position;
         position += number;
-        for (decltype(position) s = original; s < position; ++s) {
-            Float_* left = state.self_modified.data();
-            const Float_* right = state.embedding + static_cast<std::size_t>(input.negative_sample_selections[s]) * state.num_dim; // cast to avoid overflow.
+        for (; s < position; ++s) {
+            const auto left = state.self_modified.data();
+            const auto right = state.embedding + sanisizer::product_unsafe<std::size_t>(input.negative_sample_selections[s], state.num_dim);
 
-            Float_ dist2 = quick_squared_distance(left, right, state.num_dim);
+            const Float_ dist2 = quick_squared_distance(left, right, state.num_dim);
             const Float_ grad_coef = 2 * state.gamma * state.b / ((0.001 + dist2) * (state.a * std::pow(dist2, state.b) + 1.0));
 
             for (std::size_t d = 0; d < state.num_dim; ++d) {
@@ -277,10 +278,7 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
     }
 
     // Copying it back to the embedding once we're done.
-    {
-        std::size_t offset = static_cast<std::size_t>(input.observation) * state.num_dim; // cast to avoid overflow.
-        std::copy(state.self_modified.begin(), state.self_modified.end(), state.embedding + offset);
-    }
+    std::copy(state.self_modified.begin(), state.self_modified.end(), source);
 }
 
 template<typename Index_, typename Float_>
@@ -362,24 +360,21 @@ public:
 
 template<typename Index_, typename Float_, class Rng_>
 void optimize_layout_parallel(
-    std::size_t num_dim,
-    Float_* embedding, 
+    const std::size_t num_dim,
+    Float_* const embedding, 
     EpochData<Index_, Float_>& setup,
-    Float_ a, 
-    Float_ b, 
-    Float_ gamma,
-    Float_ initial_alpha,
+    const Float_ a, 
+    const Float_ b, 
+    const Float_ gamma,
+    const Float_ initial_alpha,
     Rng_& rng,
-    int epoch_limit,
-    int nthreads
+    const int epoch_limit,
+    const int nthreads
 ) {
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
     auto& n = setup.current_epoch;
-    auto num_epochs = setup.total_epochs;
-    auto limit_epochs = num_epochs;
-    if (epoch_limit> 0) {
-        limit_epochs = std::min(epoch_limit, num_epochs);
-    }
+    const auto num_epochs = setup.total_epochs;
+    const auto limit_epochs = (epoch_limit > 0 ? std::min(epoch_limit, num_epochs) : num_epochs);
 
     BusyWaiterState<Index_, Float_> state;
     state.num_dim = num_dim;
@@ -400,7 +395,7 @@ void optimize_layout_parallel(
         pool.emplace_back(state);
     }
 
-    std::vector<BusyWaiterInput<Index_, Float_> > raw_inputs(nthreads);
+    auto raw_inputs = sanisizer::create<std::vector<BusyWaiterInput<Index_, Float_> > >(nthreads);
     BusyWaiterInput<Index_, Float_>* main_input = &(raw_inputs.back());
     std::vector<BusyWaiterInput<Index_, Float_>*> pool_inputs;
     pool_inputs.reserve(nthreads - 1);
@@ -408,7 +403,7 @@ void optimize_layout_parallel(
         pool_inputs.push_back(&(raw_inputs[t]));
     }
 
-    const Index_ num_obs = setup.head.size(); 
+    const Index_ num_obs = setup.head.size() - 1; 
     std::vector<Index_> last_touched_iteration(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
 
@@ -456,15 +451,16 @@ void optimize_layout_parallel(
                     ttype = WRITE;
                 }
 
-                const std::size_t start = (i == 0 ? 0 : setup.head[i-1]), end = setup.head[i];
-                for (std::size_t j = start; j < end; ++j) {
+                const auto start = setup.head[i], end = setup.head[i + 1];
+                input.tail_offset = start;
+                for (auto j = start; j < end; ++j) {
                     if (setup.epoch_of_next_sample[j] > epoch) {
                         ns_count.push_back(skip_ns_sentinel);
                         continue;
                     }
 
                     {
-                        auto neighbor = setup.tail[j];
+                        const auto neighbor = setup.tail[j];
                         auto& touched = last_touched_iteration[neighbor];
                         auto& ttype = touch_type[neighbor];
 //                        if (PRINT) { std::cout << "\tNEIGHBOR: " << neighbor << ": " << touched << " (" << ttype << ")" << std::endl; }
@@ -478,10 +474,10 @@ void optimize_layout_parallel(
                         ttype = WRITE;
                     }
 
-                    auto prior_size = ns_selections.size();
-                    auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
-                    for (decltype(num_neg_samples) p = 0; p < num_neg_samples; ++p) {
-                        Index_ sampled = aarand::discrete_uniform(rng, num_obs);
+                    const auto prior_size = ns_selections.size();
+                    const auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
+                    for (decltype(I(num_neg_samples)) p = 0; p < num_neg_samples; ++p) {
+                        const Index_ sampled = aarand::discrete_uniform(rng, num_obs);
                         if (sampled == i) {
                             continue;
                         }

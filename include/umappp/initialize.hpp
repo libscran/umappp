@@ -26,26 +26,25 @@ namespace umappp {
 namespace internal {
 
 template<typename Index_>
-int choose_num_epochs(int num_epochs, Index_ size) {
-    if (num_epochs < 0) {
-        // Choosing the number of epochs. We use a simple formula to decrease
-        // the number of epochs with increasing size, with the aim being that
-        // the 'extra work' beyond the minimal 200 epochs should be the same
-        // regardless of the numbe of observations. Given one calculation per
-        // observation per epoch, this amounts to 300 * 10000 calculations at
-        // the lower bound, so we simply choose a number of epochs that
-        // equalizes the number of calculations for any number of observations.
-        if (num_epochs < 0) {
-            constexpr Index_ limit = 10000;
-            const int minimal = 200, maximal = 300;
-            if (size <= limit) {
-                num_epochs = minimal + maximal;
-            } else {
-                num_epochs = minimal + static_cast<int>(std::ceil(maximal * static_cast<double>(limit) / static_cast<double>(size)));
-            }
-        }
+int choose_num_epochs(const int num_epochs, const Index_ size) {
+    if (num_epochs >= 0) {
+        return num_epochs;
     }
-    return num_epochs;
+
+    // Choosing the number of epochs. We use a simple formula to decrease
+    // the number of epochs with increasing size, with the aim being that
+    // the 'extra work' beyond the minimal 200 epochs should be the same
+    // regardless of the number of observations. Given one calculation per
+    // observation per epoch, this amounts to 300 * 10000 calculations at
+    // the lower bound, so we simply choose a number of epochs that
+    // equalizes the number of calculations for any number of observations.
+    constexpr Index_ limit = 10000;
+    const int minimal = 200, maximal = 300;
+    if (size <= limit) {
+        return minimal + maximal;
+    } else {
+        return minimal + static_cast<int>(std::ceil(maximal * static_cast<double>(limit) / static_cast<double>(size)));
+    }
 }
 
 }
@@ -72,7 +71,7 @@ int choose_num_epochs(int num_epochs, Index_ size) {
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Float_>
-Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, std::size_t num_dim, Float_* embedding, Options options) {
+Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::size_t num_dim, Float_* const embedding, Options options) {
     internal::NeighborSimilaritiesOptions<Float_> nsopt;
     nsopt.local_connectivity = options.local_connectivity;
     nsopt.bandwidth = options.bandwidth;
@@ -83,7 +82,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, std::size_t nu
 
     // Choosing the manner of initialization.
     if (options.initialize == InitializeMethod::SPECTRAL || options.initialize == InitializeMethod::SPECTRAL_ONLY) {
-        bool attempt = internal::spectral_init(x, num_dim, embedding, options.num_threads);
+        const bool attempt = internal::spectral_init(x, num_dim, embedding, options.num_threads);
         if (!attempt && options.initialize == InitializeMethod::SPECTRAL) {
             internal::random_init<Index_>(x.size(), num_dim, embedding);
         }
@@ -93,7 +92,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, std::size_t nu
 
     // Finding a good a/b pair.
     if (options.a <= 0 || options.b <= 0) {
-        auto found = internal::find_ab(options.spread, options.min_dist);
+        const auto found = internal::find_ab(options.spread, options.min_dist);
         options.a = found.first;
         options.b = found.second;
     }
@@ -127,7 +126,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, std::size_t nu
  * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Input_, typename Float_>
-Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, std::size_t num_dim, Float_* embedding, Options options) { 
+Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, const std::size_t num_dim, Float_* const embedding, Options options) { 
     auto output = knncolle::find_nearest_neighbors(prebuilt, options.num_neighbors, options.num_threads);
     return initialize(std::move(output), num_dim, embedding, std::move(options));
 }
@@ -156,15 +155,15 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float
  */
 template<typename Index_, typename Float_, class Matrix_ = knncolle::Matrix<Index_, Float_> >
 Status<Index_, Float_> initialize(
-    std::size_t data_dim,
-    std::size_t num_obs,
-    const Float_* data,
+    const std::size_t data_dim,
+    const Index_ num_obs,
+    const Float_* const data,
     const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
-    std::size_t num_dim,
-    Float_* embedding,
+    const std::size_t num_dim,
+    Float_* const embedding,
     Options options)
 { 
-    auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Index_, Float_>(data_dim, num_obs, data));
+    const auto prebuilt = builder.build_unique(knncolle::SimpleMatrix<Index_, Float_>(data_dim, num_obs, data));
     return initialize(*prebuilt, num_dim, embedding, std::move(options));
 }
 

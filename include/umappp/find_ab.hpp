@@ -4,6 +4,8 @@
 #include <cmath>
 #include <vector>
 
+#include "sanisizer/sanisizer.hpp"
+
 namespace umappp {
 
 namespace internal {
@@ -42,13 +44,15 @@ namespace internal {
  */
  
 template<typename Float_>
-std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist) {
-    constexpr Float_ grid = 300;
+std::pair<Float_, Float_> find_ab(const Float_ spread, const Float_ min_dist) {
+    constexpr std::size_t grid = 300;
+    auto grid_x = sanisizer::create<std::vector<Float_> >(grid);
+    auto grid_y = sanisizer::create<std::vector<Float_> >(grid);
+    auto log_x = sanisizer::create<std::vector<Float_> >(grid);
 
     // Compute the x and y coordinates of the expected distance curve.
-    std::vector<Float_> grid_x(grid), grid_y(grid), log_x(grid);
     const Float_ delta = spread * 3 / grid;
-    for (int g = 0; g < grid; ++g) {
+    for (std::size_t g = 0; g < grid; ++g) {
         grid_x[g] = (g + 1) * delta; // +1 to avoid meaningless least squares result at x = 0, where both curves have y = 1 (and also the derivative w.r.t. b is not defined).
         log_x[g] = std::log(grid_x[g]);
         grid_y[g] = (grid_x[g] <= min_dist ? 1 : std::exp(- (grid_x[g] - min_dist) / spread));
@@ -59,25 +63,23 @@ std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist) {
     // We use 'limit = 0.5' because that's where most interesting stuff
     // happens, given that the curve is bounded between 0 and 1 on the y-axis.
     constexpr Float_ limit = 0.5;
-    Float_ x_half = std::log(limit) * -spread + min_dist; // guaranteed > 0, as log(limit) is negative.
-    Float_ d_half = limit / -spread; // first derivative at x_half.
+    const Float_ x_half = std::log(limit) * -spread + min_dist; // guaranteed > 0, as log(limit) is negative.
+    const Float_ d_half = limit / -spread; // first derivative at x_half.
     Float_ b = - d_half * x_half / (1 / limit - 1) / (2 * limit * limit);
     Float_ a = (1 / limit - 1) / std::pow(x_half, 2 * b);
 
-    std::vector<Float_> fit_y(grid), xpow(grid), grid_resid(grid);
-    auto compute_ss = [&](Float_ A, Float_ B) -> Float_ {
-        for (int g = 0; g < grid; ++g) {
+    auto fit_y = sanisizer::create<std::vector<Float_> >(grid);
+    auto xpow = sanisizer::create<std::vector<Float_> >(grid);
+    auto grid_resid = sanisizer::create<std::vector<Float_> >(grid);
+
+    auto compute_ss = [&](const Float_ A, const Float_ B) -> Float_ {
+        Float_ ss = 0;
+        for (std::size_t g = 0; g < grid; ++g) {
             xpow[g] = std::pow(grid_x[g], 2 * B);
             fit_y[g] = 1 / (1 + A * xpow[g]);
             grid_resid[g] = grid_y[g] - fit_y[g];
+            ss += grid_resid[g] * grid_resid[g];
         }
-
-        Float_ ss = 0;
-        for (int g = 0; g < grid; ++g) {
-            auto r = grid_resid[g];
-            ss += r * r;
-        }
-
         return ss;
     };
     Float_ ss = compute_ss(a, b);
@@ -98,7 +100,7 @@ std::pair<Float_, Float_> find_ab(Float_ spread, Float_ min_dist) {
          */
         Float_ da2 = 0, db2 = 0, dadb = 0, da_resid = 0, db_resid = 0;
 
-        for (int g = 0; g < grid; ++g) {
+        for (std::size_t g = 0; g < grid; ++g) {
             const Float_ x2b = xpow[g]; // set by the last compute_ss() call.
             const Float_ oy = fit_y[g]; // ditto
             const Float_ resid = grid_resid[g]; // ditto

@@ -1,11 +1,13 @@
 #ifndef UMAPPP_STATUS_HPP
 #define UMAPPP_STATUS_HPP
 
-#include "Options.hpp"
-#include "optimize_layout.hpp"
-
 #include <random>
 #include <cstddef>
+
+#include "sanisizer/sanisizer.hpp"
+
+#include "Options.hpp"
+#include "optimize_layout.hpp"
 
 /**
  * @file Status.hpp
@@ -27,7 +29,7 @@ public:
     /**
      * @cond
      */
-    Status(internal::EpochData<Index_, Float_> epochs, Options options, std::size_t num_dim, Float_* embedding) : 
+    Status(internal::EpochData<Index_, Float_> epochs, Options options, const std::size_t num_dim, Float_* const embedding) : 
         my_epochs(std::move(epochs)),
         my_options(std::move(options)),
         my_engine(my_options.seed),
@@ -84,9 +86,9 @@ public:
      * The contents of the new array in `ptr` should be the same as the array that it replaces, as `run()` will continue the iteration from the coordinates inside the array.
      * This is enforced by default when `copy = true`, but if the supplied `ptr` already contains a copy, the caller may set `copy = false` to avoid extra work
      */
-    void set_embedding(Float_* ptr, bool copy = true) {
+    void set_embedding(Float_* const ptr, const bool copy = true) {
         if (copy) {
-            std::size_t n = num_dimensions() * static_cast<std::size_t>(num_observations()); // cast to avoid overflow.
+            const std::size_t n = sanisizer::product_unsafe<std::size_t>(num_dimensions(), num_observations());
             std::copy_n(my_embedding, n, ptr);
         }
         my_embedding = ptr;
@@ -111,7 +113,7 @@ public:
      * @return The number of observations in the dataset.
      */
     Index_ num_observations() const {
-        return my_epochs.head.size();
+        return my_epochs.head.size() - 1;
     }
 
 public:

@@ -59,7 +59,7 @@ TEST_P(OptimizeTest, Epochs) {
     stored[0][0].second = 1e-8; // check for correct removal.
 
     auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
-    EXPECT_EQ(epoch.head.size(), nobs);
+    EXPECT_EQ(epoch.head.size(), nobs + 1);
     EXPECT_EQ(epoch.tail.size(), epoch.epochs_per_sample.size());
     EXPECT_EQ(epoch.tail.size(), epoch.head.back());
 
@@ -135,17 +135,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(OptimizeLayout, ChooseNumNegSamplesFailsafe) {
     umappp::internal::EpochData<int, double> setup(1);
-    setup.epochs_per_sample.push_back(0);
+    setup.epochs_per_sample.push_back(1);
     setup.epoch_of_next_negative_sample.push_back(0);
     setup.negative_sample_rate = 5;
-
-    auto num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // division by zero for epochs_per_sample.
-    EXPECT_EQ(num_neg, std::numeric_limits<unsigned long long>::max());
-
-    num_neg = umappp::internal::compute_num_neg_samples(0, 0.0, setup); // still works if the initial calculation yields an NaN.
-    EXPECT_EQ(num_neg, std::numeric_limits<unsigned long long>::max());
-
-    setup.epochs_per_sample.back() = 1;
-    num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // as a control, checking that we don't hit the cap.
+    auto num_neg = umappp::internal::compute_num_neg_samples(0, 1.0, setup); // as a control, checking that we don't hit the cap.
     EXPECT_EQ(num_neg, 5);
 }

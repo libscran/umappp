@@ -25,10 +25,11 @@ else()
     find_package(ltla_aarand CONFIG REQUIRED)
     find_package(ltla_irlba CONFIG REQUIRED)
     find_package(ltla_subpar 0.4.0 CONFIG REQUIRED)
+    find_package(ltla_sanisizer 0.1.3 CONFIG REQUIRED)
     find_package(knncolle_knncolle 3.0.0 CONFIG REQUIRED)
 endif()
 
-target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba ltla::subpar knncolle::knncolle)
+target_link_libraries(umappp INTERFACE ltla::aarand ltla::irlba ltla::subpar ltla::sanisizer knncolle::knncolle)
 
 # Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
