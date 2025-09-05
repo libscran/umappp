@@ -112,7 +112,7 @@ template<typename Index_, typename Float_>
 int compute_num_neg_samples(const std::size_t j, const Float_ epoch, const EpochData<Index_, Float_>& setup) {
     // Remember that 'epochs_per_negative_sample' is defined as 'epochs_per_sample[j] / negative_sample_rate'.
     // We just use it inline below rather than defining a new variable and suffering floating-point round-off.
-    Float_ num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
+    const Float_ num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
         setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
 
     // Maximum value of 'num_neg_samples' should be 'num_epochs * negative_sample_rate', because:
@@ -233,8 +233,8 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
     // We don't bother doing this for the neighbors, though, as it's 
     // tedious to make sure that the modified values are available during negative sampling.
     // (This isn't a problem for the self, as the self cannot be its own negative sample.)
-    const auto left = state.embedding + sanisizer::product_unsafe<std::size_t>(input.observation, state.num_dim);
-    std::copy_n(left, state.num_dim, state.self_modified.data());
+    const auto source = state.embedding + sanisizer::product_unsafe<std::size_t>(input.observation, state.num_dim);
+    std::copy_n(source, state.num_dim, state.self_modified.data());
 
     decltype(I(input.negative_sample_selections.size())) position = 0;
     const auto num_neighbors = input.negative_sample_count.size();
@@ -278,7 +278,7 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
     }
 
     // Copying it back to the embedding once we're done.
-    std::copy(state.self_modified.begin(), state.self_modified.end(), left);
+    std::copy(state.self_modified.begin(), state.self_modified.end(), source);
 }
 
 template<typename Index_, typename Float_>
