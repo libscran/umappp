@@ -140,9 +140,8 @@ void optimize_layout(
 ) {
     auto& n = setup.current_epoch;
     const auto num_epochs = setup.total_epochs;
-    const auto limit_epochs = (epoch_limit > 0 ? std::min(epoch_limit, num_epochs) : num_epochs);
 
-    for (; n < limit_epochs; ++n) {
+    for (; n < epoch_limit; ++n) {
         const Float_ epoch = n;
         const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
@@ -374,7 +373,6 @@ void optimize_layout_parallel(
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
     auto& n = setup.current_epoch;
     const auto num_epochs = setup.total_epochs;
-    const auto limit_epochs = (epoch_limit > 0 ? std::min(epoch_limit, num_epochs) : num_epochs);
 
     BusyWaiterState<Index_, Float_> state;
     state.num_dim = num_dim;
@@ -407,7 +405,7 @@ void optimize_layout_parallel(
     std::vector<Index_> last_touched_iteration(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
 
-    for (; n < limit_epochs; ++n) {
+    for (; n < epoch_limit; ++n) {
         const Float_ epoch = n;
         const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 

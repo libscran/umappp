@@ -81,7 +81,7 @@ TEST_P(OptimizeTest, BasicRun) {
 
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
-    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
+    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     EXPECT_NE(embedding, data); // some kind of change happened!
 }
@@ -92,13 +92,13 @@ TEST_P(OptimizeTest, RestartedRun) {
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
     umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 100);
-    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 500);
+    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     // Same results from a full single run.
     std::vector<double> embedding2(data);
     rng.seed(10);
     epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
-    umappp::internal::optimize_layout<>(5, embedding2.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
+    umappp::internal::optimize_layout<>(5, embedding2.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     EXPECT_EQ(embedding, embedding2);
 }
@@ -110,14 +110,14 @@ TEST_P(OptimizeTest, ParallelRun) {
     std::vector<double> embedding(data);
     {
         std::mt19937_64 rng(100);
-        umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 0);
+        umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
     }
 
     // Trying with more threads.
     std::vector<double> embedding2(data);
     {
         std::mt19937_64 rng(100);
-        umappp::internal::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, 0, 3);
+        umappp::internal::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, epoch2.total_epochs, 3);
     }
 
     EXPECT_NE(data, embedding); // some kind of change happened!

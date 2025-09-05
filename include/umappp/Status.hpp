@@ -123,13 +123,8 @@ public:
      * @param epoch_limit Number of epochs to run to.
      * The actual number of epochs performed is equal to the difference between `epoch_limit` and the current number of epochs in `epoch()`.
      * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `max_epochs()`.
-     * If zero, defaults to the maximum number of epochs. 
      */
-    void run(int epoch_limit = 0) {
-        if (epoch_limit == 0) {
-            epoch_limit = my_epochs.total_epochs;
-        }
-
+    void run(int epoch_limit) {
         if (my_options.num_threads == 1 || !my_options.parallel_optimization) {
             internal::optimize_layout<Index_, Float_>(
                 my_num_dim,
@@ -157,6 +152,13 @@ public:
             );
         }
         return;
+    }
+
+    /** 
+     * The status of the algorithm and the coordinates in `embedding()` are updated after completing `max_epochs()`.
+     */
+    void run() {
+        run(my_epochs.total_epochs);
     }
 };
 
