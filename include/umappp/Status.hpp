@@ -113,7 +113,7 @@ public:
      * @return The number of observations in the dataset.
      */
     Index_ num_observations() const {
-        return my_epochs.head.size();
+        return my_epochs.head.size() - 1;
     }
 
 public:
