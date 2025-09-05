@@ -33,16 +33,20 @@ std::remove_cv_t<std::remove_reference_t<Input_> > I(const Input_ x) {
 
 template<typename Index_, typename Float_>
 struct EpochData {
-    EpochData(const Index_ nobs) : head(sanisizer::sum<decltype(I(head.size()))>(nobs, 1)) {}
+    EpochData(const Index_ nobs) : cumulative_num_edges(sanisizer::sum<decltype(I(cumulative_num_edges.size()))>(nobs, 1)) {}
 
     int total_epochs;
     int current_epoch = 0;
 
-    std::vector<std::size_t> head;
-    std::vector<Index_> tail;
-    std::vector<Float_> epochs_per_sample;
+    // Store the graph as a (symmetric) compressed sparse matrix.
+    // Cumulative_num_edges is the equivalent to indptrs while edge_targets are the indices.
+    // The various 'epochs_per_*' and 'epoch_of_*' vectors are the values/edge weights.
+    std::vector<std::size_t> cumulative_num_edges;
+    std::vector<Index_> edge_targets;
 
+    std::vector<Float_> epochs_per_sample;
     std::vector<Float_> epoch_of_next_sample;
+
     std::vector<Float_> epoch_of_next_negative_sample;
     Float_ negative_sample_rate;
 };
@@ -61,7 +65,7 @@ EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Floa
     const Index_ num_obs = p.size(); // Index_ should be able to hold the number of observations.
     EpochData<Index_, Float_> output(num_obs);
     output.total_epochs = num_epochs;
-    output.tail.reserve(count);
+    output.edge_targets.reserve(count);
     output.epochs_per_sample.reserve(count);
     const Float_ limit = maxed / num_epochs;
 
@@ -69,11 +73,11 @@ EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Floa
         const auto& x = p[i];
         for (const auto& y : x) {
             if (y.second >= limit) {
-                output.tail.push_back(y.first);
+                output.edge_targets.push_back(y.first);
                 output.epochs_per_sample.push_back(maxed / y.second);
             }
         }
-        output.head[i + 1] = output.tail.size();
+        output.cumulative_num_edges[i + 1] = output.edge_targets.size();
     }
 
     // Filling in some epoch-related running statistics.
@@ -145,9 +149,9 @@ void optimize_layout(
         const Float_ epoch = n;
         const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
-        const Index_ num_obs = setup.head.size() - 1; 
+        const Index_ num_obs = setup.cumulative_num_edges.size() - 1; 
         for (Index_ i = 0; i < num_obs; ++i) {
-            const auto start = setup.head[i], end = setup.head[i + 1];
+            const auto start = setup.cumulative_num_edges[i], end = setup.cumulative_num_edges[i + 1];
             const auto left = embedding + sanisizer::product_unsafe<std::size_t>(i, num_dim);
 
             for (auto j = start; j < end; ++j) {
@@ -156,7 +160,7 @@ void optimize_layout(
                 }
 
                 {
-                    const auto right = embedding + sanisizer::product_unsafe<std::size_t>(setup.tail[j], num_dim);
+                    const auto right = embedding + sanisizer::product_unsafe<std::size_t>(setup.edge_targets[j], num_dim);
                     const Float_ dist2 = quick_squared_distance(left, right, num_dim);
                     const Float_ pd2b = std::pow(dist2, b);
                     const Float_ grad_coef = (-2 * a * b * pd2b) / (dist2 * (a * pd2b + 1.0));
@@ -211,7 +215,7 @@ struct BusyWaiterInput {
     std::vector<Index_> negative_sample_selections;
     std::vector<int> negative_sample_count;
     Index_ observation;
-    std::size_t tail_offset;
+    std::size_t edge_target_index_start;
     Float_ alpha;
 };
 
@@ -245,8 +249,8 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
 
         {
             const auto left = state.self_modified.data();
-            const auto j = sanisizer::sum_unsafe<std::size_t>(n, input.tail_offset);
-            const auto right = state.embedding + sanisizer::product_unsafe<std::size_t>(state.setup->tail[j], state.num_dim);
+            const auto j = sanisizer::sum_unsafe<std::size_t>(n, input.edge_target_index_start);
+            const auto right = state.embedding + sanisizer::product_unsafe<std::size_t>(state.setup->edge_targets[j], state.num_dim);
 
             const Float_ dist2 = quick_squared_distance(left, right, state.num_dim);
             const Float_ pd2b = std::pow(dist2, state.b);
@@ -401,7 +405,7 @@ void optimize_layout_parallel(
         pool_inputs.push_back(&(raw_inputs[t]));
     }
 
-    const Index_ num_obs = setup.head.size() - 1; 
+    const Index_ num_obs = setup.cumulative_num_edges.size() - 1; 
     std::vector<Index_> last_touched_iteration(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
 
@@ -449,8 +453,8 @@ void optimize_layout_parallel(
                     ttype = WRITE;
                 }
 
-                const auto start = setup.head[i], end = setup.head[i + 1];
-                input.tail_offset = start;
+                const auto start = setup.cumulative_num_edges[i], end = setup.cumulative_num_edges[i + 1];
+                input.edge_target_index_start = start;
                 for (auto j = start; j < end; ++j) {
                     if (setup.epoch_of_next_sample[j] > epoch) {
                         ns_count.push_back(skip_ns_sentinel);
@@ -458,7 +462,7 @@ void optimize_layout_parallel(
                     }
 
                     {
-                        const auto neighbor = setup.tail[j];
+                        const auto neighbor = setup.edge_targets[j];
                         auto& touched = last_touched_iteration[neighbor];
                         auto& ttype = touch_type[neighbor];
 //                        if (PRINT) { std::cout << "\tNEIGHBOR: " << neighbor << ": " << touched << " (" << ttype << ")" << std::endl; }

@@ -59,9 +59,9 @@ TEST_P(OptimizeTest, Epochs) {
     stored[0][0].second = 1e-8; // check for correct removal.
 
     auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
-    EXPECT_EQ(epoch.head.size(), nobs + 1);
-    EXPECT_EQ(epoch.tail.size(), epoch.epochs_per_sample.size());
-    EXPECT_EQ(epoch.tail.size(), epoch.head.back());
+    EXPECT_EQ(epoch.cumulative_num_edges.size(), nobs + 1);
+    EXPECT_EQ(epoch.edge_targets.size(), epoch.epochs_per_sample.size());
+    EXPECT_EQ(epoch.edge_targets.size(), epoch.cumulative_num_edges.back());
 
     // Make sure that we lost something.
     size_t total_n = 0;

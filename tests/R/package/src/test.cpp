@@ -24,8 +24,8 @@ Rcpp::List initialize_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix dist
     return Rcpp::List::create(
         Rcpp::transpose(output),
         Rcpp::List::create(
-            Rcpp::IntegerVector(edata.head.begin(), edata.head.end()),
-            Rcpp::IntegerVector(edata.tail.begin(), edata.tail.end()),
+            Rcpp::IntegerVector(edata.cumulative_num_edges.begin() + 1, edata.cumulative_num_edges.end()),
+            Rcpp::IntegerVector(edata.edge_targets.begin(), edata.edge_targets.end()),
             Rcpp::NumericVector(edata.epochs_per_sample.begin(), edata.epochs_per_sample.end())
         )
     );
