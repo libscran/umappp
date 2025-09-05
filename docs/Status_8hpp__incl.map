@@ -1,13 +1,15 @@
 <map id="umappp/Status.hpp" name="umappp/Status.hpp">
-<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="181,5,314,31"/>
-<area shape="rect" id="Node000002" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="5,79,96,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="215,34,99,76,97,71,213,29"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="119,79,254,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="240,33,209,69,205,65,236,29"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="278,79,343,105"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="260,29,292,65,288,69,256,33"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="366,79,431,105"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="275,29,360,70,358,74,272,34"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="20,153,81,178"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="53,105,53,137,48,137,48,105"/>
+<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="191,5,324,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,79,70,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="221,34,85,78,84,73,219,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="93,79,158,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="236,34,162,74,160,69,234,29"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="182,79,333,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="260,31,260,63,255,63,255,31"/>
+<area shape="rect" id="Node000005" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="358,79,448,105"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="283,29,366,69,363,74,281,34"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="472,79,606,105"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="306,29,477,72,476,77,305,34"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="373,153,433,178"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="406,105,406,137,400,137,400,105"/>
 </map>

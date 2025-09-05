@@ -6,7 +6,7 @@ var searchData=
   ['searcher_2ehpp_3',['Searcher.hpp',['https://knncolle.github.io/knncolle/Searcher_8hpp.html',1,'']]],
   ['searcher_3c_20index_5f_2c_20data_5f_2c_20distance_5f_20_3e_4',['Searcher&lt; Index_, Data_, Distance_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Searcher.html',1,'knncolle']]],
   ['seed_5',['seed',['../structumappp_1_1Options.html#a19508f83dfa6631ada2377a7cb171842',1,'umappp::Options']]],
-  ['set_5fembedding_6',['set_embedding',['../classumappp_1_1Status.html#aa6048a8bc7155826c4fc16bee4c00005',1,'umappp::Status']]],
+  ['set_5fembedding_6',['set_embedding',['../classumappp_1_1Status.html#acc56139c0ad3eef470cd1304070524b3',1,'umappp::Status']]],
   ['simplematrix_7',['SimpleMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html',1,'knncolle::SimpleMatrix&lt; typename Index_, typename Data_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html#afe415d2e6adc07aecffab4e8b75ca9e5',1,'knncolle::SimpleMatrix::SimpleMatrix()']]],
   ['simplematrixextractor_8',['SimpleMatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrixExtractor.html',1,'knncolle']]],
   ['spread_9',['spread',['../structumappp_1_1Options.html#ac0cfcd94c28783773138d3a98aec4ab5',1,'umappp::Options']]],

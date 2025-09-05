@@ -177,8 +177,8 @@
       <type>void</type>
       <name>set_embedding</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>aa6048a8bc7155826c4fc16bee4c00005</anchor>
-      <arglist>(Float_ *ptr, bool copy=true)</arglist>
+      <anchor>acc56139c0ad3eef470cd1304070524b3</anchor>
+      <arglist>(Float_ *const ptr, const bool copy=true)</arglist>
     </member>
     <member kind="function">
       <type>int</type>
@@ -232,22 +232,22 @@
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>a4cfa12c04be6408c52c9cb38810cd61f</anchor>
-      <arglist>(NeighborList&lt; Index_, Float_ &gt; x, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>afcfe5559148af79e84c1eca05b15c515</anchor>
+      <arglist>(NeighborList&lt; Index_, Float_ &gt; x, const std::size_t num_dim, Float_ *const embedding, Options options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>ada8f221d7b5262835fd1401175f93dbf</anchor>
-      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>a632e1639cfdffd6d24d9f5a6a1b63501</anchor>
+      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const std::size_t num_dim, Float_ *const embedding, Options options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>acb48fddcd4ef5b8810a6e11fd2c4e001</anchor>
-      <arglist>(std::size_t data_dim, std::size_t num_obs, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, std::size_t num_dim, Float_ *embedding, Options options)</arglist>
+      <anchor>aac099e1d61d98c0e03b65775bdd42669</anchor>
+      <arglist>(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const std::size_t num_dim, Float_ *const embedding, Options options)</arglist>
     </member>
   </compound>
   <compound kind="page">
