@@ -146,7 +146,7 @@ void optimize_layout(
         const Float_ epoch = n;
         const Float_ alpha = initial_alpha * (1.0 - epoch / num_epochs);
 
-        const Index_ num_obs = setup.head.size(); 
+        const Index_ num_obs = setup.head.size() - 1; 
         for (Index_ i = 0; i < num_obs; ++i) {
             const auto start = setup.head[i], end = setup.head[i + 1];
             const auto left = embedding + sanisizer::product_unsafe<std::size_t>(i, num_dim);
@@ -403,7 +403,7 @@ void optimize_layout_parallel(
         pool_inputs.push_back(&(raw_inputs[t]));
     }
 
-    const Index_ num_obs = setup.head.size(); 
+    const Index_ num_obs = setup.head.size() - 1; 
     std::vector<Index_> last_touched_iteration(num_obs);
     std::vector<unsigned char> touch_type(num_obs);
 
