@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "sanisizer/sanisizer.hpp"
+
 #include "NeighborList.hpp"
 
 namespace umappp {
@@ -12,9 +14,10 @@ namespace umappp {
 namespace internal {
 
 template<typename Index_, typename Float_>
-void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
-    Index_ num_obs = x.size();
-    std::vector<decltype(x[0].size())> last(num_obs), original(num_obs);
+void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_ratio) {
+    const Index_ num_obs = x.size(); // assume that Index_ is large enough to store the number of observations.
+    auto last = sanisizer::create<std::vector<Index_> >(num_obs);
+    auto original = sanisizer::create<std::vector<Index_> >(num_obs);
 
     for (Index_ i = 0; i < num_obs; ++i) {
         auto& current = x[i];
@@ -22,7 +25,7 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
         original[i] = x[i].size();
     }
 
-    for (Index_ i = 0; i < num_obs; ++i ){
+    for (Index_ i = 0; i < num_obs; ++i) {
         auto& current = x[i];
 
         // Looping through the neighbors and searching for self in each
@@ -42,7 +45,7 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, Float_ mix_ratio) {
                 // previous iteration of the outermost loop where i and y.first
                 // swap values. So we skip this to avoid adding it twice.
                 if (i < y.first) { 
-                    Float_ product = y.second * target[curlast].second;
+                    const Float_ product = y.second * target[curlast].second;
                     Float_ prob_final;
 
                     if (mix_ratio == 1) {
