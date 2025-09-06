@@ -126,10 +126,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>bool</type>
+      <type>double</type>
       <name>initialize_spectral_jitter_sd</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>ab04e7663323c4f62f97ad33820f95745</anchor>
+      <anchor>a909d3b00da81949bb405ce07ce8e41cd</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
