@@ -100,6 +100,7 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">Options.hpp File Reference</div></div>
 </div><!--header-->
@@ -107,15 +108,18 @@ $(function(){ initResizable(false); });
 
 <p>Options for the UMAP algorithm.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<div class="textblock"><code>#include &lt;random&gt;</code><br />
+<code>#include &quot;sanisizer/sanisizer.hpp&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Options.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="Options_8hpp__incl.png" border="0" usemap="#aumappp_2Options_8hpp" alt=""/></div>
 <map name="aumappp_2Options_8hpp" id="aumappp_2Options_8hpp">
-<area shape="rect" title="Options for the UMAP algorithm." alt="" coords="5,5,146,31"/>
-<area shape="rect" title=" " alt="" coords="45,79,106,105"/>
-<area shape="poly" title=" " alt="" coords="78,31,78,63,73,63,73,31"/>
+<area shape="rect" title="Options for the UMAP algorithm." alt="" coords="33,5,173,31"/>
+<area shape="rect" title=" " alt="" coords="5,79,70,105"/>
+<area shape="poly" title=" " alt="" coords="94,33,61,69,57,66,90,29"/>
+<area shape="rect" title=" " alt="" coords="94,79,245,105"/>
+<area shape="poly" title=" " alt="" coords="116,29,150,66,146,69,112,33"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -140,7 +144,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structumappp_1_1Options.html">umappp::Options</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">initialize()</a></code>.  <a href="structumappp_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>.  <a href="structumappp_1_1Options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -149,10 +153,14 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespaceumappp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Methods for UMAP. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ab1662c248bcdf57584da2c3bacf72e13" id="r_ab1662c248bcdf57584da2c3bacf72e13"><td class="memItemLeft" align="right" valign="top">typedef std::mt19937_64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceumappp.html#ab1662c248bcdf57584da2c3bacf72e13">umappp::RngEngine</a></td></tr>
+<tr class="separator:ab1662c248bcdf57584da2c3bacf72e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:aaa5af620ed59b3a603d5b9eacf510d69" id="r_aaa5af620ed59b3a603d5b9eacf510d69"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceumappp.html#aaa5af620ed59b3a603d5b9eacf510d69">umappp::InitializeMethod</a> : char { <b>SPECTRAL</b>
-, <b>SPECTRAL_ONLY</b>
 , <b>RANDOM</b>
 , <b>NONE</b>
  }</td></tr>

@@ -108,7 +108,7 @@ $(function(){ initResizable(false); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structumappp_1_1Options.html">Options</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">initialize()</a></code>.  <a href="structumappp_1_1Options.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>.  <a href="structumappp_1_1Options.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classumappp_1_1Status.html">Status</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a> of the UMAP optimization iterations.  <a href="classumappp_1_1Status.html#details">More...</a><br /></td></tr>
@@ -120,11 +120,12 @@ Typedefs</h2></td></tr>
 <tr class="memitem:abef8d351328ea79485008055c3730dcc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abef8d351328ea79485008055c3730dcc">NeighborList</a> = <a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList</a>&lt;Index_, Float_&gt;</td></tr>
 <tr class="memdesc:abef8d351328ea79485008055c3730dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <br /></td></tr>
 <tr class="separator:abef8d351328ea79485008055c3730dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1662c248bcdf57584da2c3bacf72e13" id="r_ab1662c248bcdf57584da2c3bacf72e13"><td class="memItemLeft" align="right" valign="top">typedef std::mt19937_64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1662c248bcdf57584da2c3bacf72e13">RngEngine</a></td></tr>
+<tr class="separator:ab1662c248bcdf57584da2c3bacf72e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:aaa5af620ed59b3a603d5b9eacf510d69" id="r_aaa5af620ed59b3a603d5b9eacf510d69"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa5af620ed59b3a603d5b9eacf510d69">InitializeMethod</a> : char { <b>SPECTRAL</b>
-, <b>SPECTRAL_ONLY</b>
 , <b>RANDOM</b>
 , <b>NONE</b>
  }</td></tr>
@@ -171,6 +172,21 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
+<a id="ab1662c248bcdf57584da2c3bacf72e13" name="ab1662c248bcdf57584da2c3bacf72e13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1662c248bcdf57584da2c3bacf72e13">&#9670;&#160;</a></span>RngEngine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::mt19937_64 <a class="el" href="#ab1662c248bcdf57584da2c3bacf72e13">umappp::RngEngine</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Class of the random number generator used in <b>umappp</b>. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="aaa5af620ed59b3a603d5b9eacf510d69" name="aaa5af620ed59b3a603d5b9eacf510d69"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaa5af620ed59b3a603d5b9eacf510d69">&#9670;&#160;</a></span>InitializeMethod</h2>
@@ -185,8 +201,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 </div><div class="memdoc">
 <p>How should the initial coordinates of the embedding be obtained?</p>
 <ul>
-<li><code>SPECTRAL</code>: attempts initialization based on spectral decomposition of the graph Laplacian. If that fails, we fall back to random draws from a normal distribution.</li>
-<li><code>SPECTRAL_ONLY</code>: attempts spectral initialization as before, but if that fails, we use the existing values in the supplied embedding array.</li>
+<li><code>SPECTRAL</code>: attempts initialization based on spectral decomposition of the graph Laplacian.</li>
 <li><code>RANDOM</code>: fills the embedding with random draws from a normal distribution.</li>
 <li><code>NONE</code>: uses the existing values in the supplied embedding array. </li>
 </ul>
@@ -236,7 +251,7 @@ template&lt;typename Index_ , typename Input_ , typename Float_ &gt; </div>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">prebuilt</td><td>A neighbor search index built on the dataset of interest. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the UMAP embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::SPECTRAL_ONLY</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
   </dd>
@@ -305,7 +320,7 @@ template&lt;typename Index_ , typename Float_ , class Matrix_  = knncolle::Matri
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing the input high-dimensional data as a column-major matrix. Each row corresponds to a dimension (<code>data_dim</code>) and each column corresponds to an observation (<code>num_obs</code>). </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">builder</td><td>Algorithm to use for the neighbor search. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::SPECTRAL_ONLY</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
   </dd>
@@ -355,7 +370,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. Note the expectations in the <code>NeighborList</code> documentation. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a92e2fed16162b376f8f648b6e047ddcf">Options::initialize</a> = InitializeMethod::SPECTRAL_ONLY</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. The lifetime of the array should be no shorter than the final call to <code><a class="el" href="classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">Status::run()</a></code>. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options. Note that <code><a class="el" href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">Options::num_neighbors</a></code> is ignored here.</td></tr>
   </table>
   </dd>

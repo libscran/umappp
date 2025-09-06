@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['parallel_5foptimization_0',['parallel_optimization',['../structumappp_1_1Options.html#a491527e816984728af1c161fd6dddea0',1,'umappp::Options']]]
+  ['optimize_5fseed_0',['optimize_seed',['../structumappp_1_1Options.html#a4503b993486aa9d764050410a3c0e591',1,'umappp::Options']]]
 ];

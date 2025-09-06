@@ -99,9 +99,51 @@
     </member>
     <member kind="variable">
       <type>InitializeMethod</type>
-      <name>initialize</name>
+      <name>initialize_method</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>a92e2fed16162b376f8f648b6e047ddcf</anchor>
+      <anchor>a53dbb1c346dfdbbc10a3c33763e456d6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>initialize_random_on_spectral_fail</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>ae56c083ae1f66e42ab645ac9efc59823</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>initialize_spectral_scale</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>aeb724cdb1153c9f2fb43fe64249376f3</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>initialize_spectral_jitter</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>a4ed2af4df0eda07e9f2b0ec295a0bb81</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>bool</type>
+      <name>initialize_spectral_jitter_sd</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>ab04e7663323c4f62f97ad33820f95745</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>double</type>
+      <name>initialize_random_scale</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>a02172c61fd15add0e37737b825578fe8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>RngEngine::result_type</type>
+      <name>initialize_seed</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>ad5473595a4570204c024ef89d065e236</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -133,10 +175,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>uint64_t</type>
-      <name>seed</name>
+      <type>RngEngine::result_type</type>
+      <name>optimize_seed</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>a19508f83dfa6631ada2377a7cb171842</anchor>
+      <anchor>a4503b993486aa9d764050410a3c0e591</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -226,6 +268,13 @@
       <name>NeighborList</name>
       <anchorfile>namespaceumappp.html</anchorfile>
       <anchor>abef8d351328ea79485008055c3730dcc</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="typedef">
+      <type>std::mt19937_64</type>
+      <name>RngEngine</name>
+      <anchorfile>namespaceumappp.html</anchorfile>
+      <anchor>ab1662c248bcdf57584da2c3bacf72e13</anchor>
       <arglist></arglist>
     </member>
     <member kind="enumeration">
