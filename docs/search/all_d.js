@@ -7,5 +7,5 @@ var searchData=
   ['repulsion_5fstrength_4',['repulsion_strength',['../structumappp_1_1Options.html#a29ce6d5b81d7c0652e24cac1aabeec10',1,'umappp::Options']]],
   ['reset_5',['reset',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae75692355310f09d163bf20b19b3ef36',1,'knncolle::NeighborQueue']]],
   ['rngengine_6',['RngEngine',['../namespaceumappp.html#ab1662c248bcdf57584da2c3bacf72e13',1,'umappp']]],
-  ['run_7',['run',['../classumappp_1_1Status.html#a3c22114b2c42b3f190cd44dc3fd26982',1,'umappp::Status::run(int epoch_limit)'],['../classumappp_1_1Status.html#ae5da17a88dbf56e7c9eb8fc9bd26ef0e',1,'umappp::Status::run()']]]
+  ['run_7',['run',['../classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9',1,'umappp::Status::run(Float_ *const embedding, int epoch_limit)'],['../classumappp_1_1Status.html#a9fc4d4148093646bd043356784e2e1f0',1,'umappp::Status::run(Float_ *const embedding)']]]
 ];

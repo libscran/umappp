@@ -113,20 +113,16 @@ $(function(){ initResizable(false); });
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9306a1a34e3e5bd1290f121d7475098b" id="r_a9306a1a34e3e5bd1290f121d7475098b"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9306a1a34e3e5bd1290f121d7475098b">num_dimensions</a> () const</td></tr>
 <tr class="separator:a9306a1a34e3e5bd1290f121d7475098b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b3cdb3bfb439021b4342f60c395a6cf" id="r_a3b3cdb3bfb439021b4342f60c395a6cf"><td class="memItemLeft" align="right" valign="top">const Float_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b3cdb3bfb439021b4342f60c395a6cf">embedding</a> () const</td></tr>
-<tr class="separator:a3b3cdb3bfb439021b4342f60c395a6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc56139c0ad3eef470cd1304070524b3" id="r_acc56139c0ad3eef470cd1304070524b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc56139c0ad3eef470cd1304070524b3">set_embedding</a> (Float_ *const ptr, const bool copy=true)</td></tr>
-<tr class="separator:acc56139c0ad3eef470cd1304070524b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b6b70dce24aa2f446f786df2140ed67" id="r_a7b6b70dce24aa2f446f786df2140ed67"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch</a> () const</td></tr>
 <tr class="separator:a7b6b70dce24aa2f446f786df2140ed67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac03b32aa0acd6f912afdc589c5fea105" id="r_ac03b32aa0acd6f912afdc589c5fea105"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs</a> () const</td></tr>
 <tr class="separator:ac03b32aa0acd6f912afdc589c5fea105"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e26e13bb55ddec29f22a61a8347aa62" id="r_a9e26e13bb55ddec29f22a61a8347aa62"><td class="memItemLeft" align="right" valign="top">Index_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e26e13bb55ddec29f22a61a8347aa62">num_observations</a> () const</td></tr>
 <tr class="separator:a9e26e13bb55ddec29f22a61a8347aa62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c22114b2c42b3f190cd44dc3fd26982" id="r_a3c22114b2c42b3f190cd44dc3fd26982"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c22114b2c42b3f190cd44dc3fd26982">run</a> (int epoch_limit)</td></tr>
-<tr class="separator:a3c22114b2c42b3f190cd44dc3fd26982"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5da17a88dbf56e7c9eb8fc9bd26ef0e" id="r_ae5da17a88dbf56e7c9eb8fc9bd26ef0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">run</a> ()</td></tr>
-<tr class="separator:ae5da17a88dbf56e7c9eb8fc9bd26ef0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a999431aa1af534b3da39309df0a42aa9" id="r_a999431aa1af534b3da39309df0a42aa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a999431aa1af534b3da39309df0a42aa9">run</a> (Float_ *const embedding, int epoch_limit)</td></tr>
+<tr class="separator:a999431aa1af534b3da39309df0a42aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fc4d4148093646bd043356784e2e1f0" id="r_a9fc4d4148093646bd043356784e2e1f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fc4d4148093646bd043356784e2e1f0">run</a> (Float_ *const embedding)</td></tr>
+<tr class="separator:a9fc4d4148093646bd043356784e2e1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename Index_, typename Float_&gt;<br />
@@ -140,34 +136,6 @@ class umappp::Status&lt; Index_, Float_ &gt;</div><p><a class="el" href="classum
 </dl>
 <p>Instances of this class should not be constructed directly, but instead returned by <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3b3cdb3bfb439021b4342f60c395a6cf" name="a3b3cdb3bfb439021b4342f60c395a6cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b3cdb3bfb439021b4342f60c395a6cf">&#9670;&#160;</a></span>embedding()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Index_ , typename Float_ &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const Float_ * <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::embedding </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Pointer to an array containing the embeddings after the specified number of epochs. This is a column-major matrix where rows are dimensions (<code><a class="el" href="#a9306a1a34e3e5bd1290f121d7475098b">num_dimensions()</a></code>) and columns are observations (<code><a class="el" href="#a9e26e13bb55ddec29f22a61a8347aa62">num_observations()</a></code>). </dd></dl>
-
-</div>
-</div>
 <a id="a7b6b70dce24aa2f446f786df2140ed67" name="a7b6b70dce24aa2f446f786df2140ed67"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7b6b70dce24aa2f446f786df2140ed67">&#9670;&#160;</a></span>epoch()</h2>
 
@@ -280,8 +248,8 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="ae5da17a88dbf56e7c9eb8fc9bd26ef0e" name="ae5da17a88dbf56e7c9eb8fc9bd26ef0e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">&#9670;&#160;</a></span>run() <span class="overload">[1/2]</span></h2>
+<a id="a9fc4d4148093646bd043356784e2e1f0" name="a9fc4d4148093646bd043356784e2e1f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fc4d4148093646bd043356784e2e1f0">&#9670;&#160;</a></span>run() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -294,7 +262,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::run </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">Float_ *const</td>          <td class="paramname"><span class="paramname"><em>embedding</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -304,46 +272,18 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The status of the algorithm and the coordinates in <code><a class="el" href="#a3b3cdb3bfb439021b4342f60c395a6cf">embedding()</a></code> are updated after completing <code>max_epochs()</code>. </p>
-
-</div>
-</div>
-<a id="a3c22114b2c42b3f190cd44dc3fd26982" name="a3c22114b2c42b3f190cd44dc3fd26982"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c22114b2c42b3f190cd44dc3fd26982">&#9670;&#160;</a></span>run() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Index_ , typename Float_ &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::run </td>
-          <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>epoch_limit</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>The status of the algorithm and the coordinates in <code><a class="el" href="#a3b3cdb3bfb439021b4342f60c395a6cf">embedding()</a></code> are updated to the specified number of epochs.</p>
+<p>The status of the algorithm and the coordinates in <code>embedding()</code> are updated after completing <code>max_epochs()</code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">epoch_limit</td><td>Number of epochs to run to. The actual number of epochs performed is equal to the difference between <code>epoch_limit</code> and the current number of epochs in <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>. <code>epoch_limit</code> should be not less than <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code> and be no greater than the maximum number of epochs specified in <code>max_epochs()</code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current number of epochs (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code>max_epochs()</code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="acc56139c0ad3eef470cd1304070524b3" name="acc56139c0ad3eef470cd1304070524b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc56139c0ad3eef470cd1304070524b3">&#9670;&#160;</a></span>set_embedding()</h2>
+<a id="a999431aa1af534b3da39309df0a42aa9" name="a999431aa1af534b3da39309df0a42aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a999431aa1af534b3da39309df0a42aa9">&#9670;&#160;</a></span>run() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -354,14 +294,14 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::set_embedding </td>
+          <td class="memname">void <a class="el" href="classumappp_1_1Status.html">umappp::Status</a>&lt; Index_, Float_ &gt;::run </td>
           <td>(</td>
-          <td class="paramtype">Float_ *const</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span>, </td>
+          <td class="paramtype">Float_ *const</td>          <td class="paramname"><span class="paramname"><em>embedding</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>copy</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>epoch_limit</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -370,15 +310,14 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>The status of the algorithm and the coordinates in <code>embedding()</code> are updated to the specified number of epochs.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ptr</td><td>Pointer to an array as described in <code><a class="el" href="#a3b3cdb3bfb439021b4342f60c395a6cf">embedding()</a></code>. </td></tr>
-    <tr><td class="paramname">copy</td><td>Whether the contents of the previous array should be copied into <code>ptr</code>.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current number of epochs (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code>epoch_limit</code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run to. The actual number of epochs performed is equal to the difference between <code>epoch_limit</code> and the current number of epochs in <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>. <code>epoch_limit</code> should be not less than <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code> and be no greater than the maximum number of epochs specified in <code>max_epochs()</code>. </td></tr>
   </table>
   </dd>
 </dl>
-<p>By default, the <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object will operate on embeddings in an array specified at its own construction time. This method will change the embedding array for an existing <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object, which can be helpful in some situations, e.g., to clone a <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object and to store its embeddings in a different array than the object.</p>
-<p>The contents of the new array in <code>ptr</code> should be the same as the array that it replaces, as <code><a class="el" href="#ae5da17a88dbf56e7c9eb8fc9bd26ef0e">run()</a></code> will continue the iteration from the coordinates inside the array. This is enforced by default when <code>copy = true</code>, but if the supplied <code>ptr</code> already contains a copy, the caller may set <code>copy = false</code> to avoid extra work </p>
 
 </div>
 </div>

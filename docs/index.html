@@ -134,10 +134,10 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"><span class="comment">// Run UMAP algorithm to completion. This updates the contents</span></div>
 <div class="line"><span class="comment">// of the &#39;embedding&#39; vector supplied to initialize().</span></div>
-<div class="line">status.run();</div>
+<div class="line">status.run(embedding.data());</div>
 <div class="ttc" id="aclassknncolle_1_1EuclideanDistance_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html">knncolle::EuclideanDistance</a></div></div>
 <div class="ttc" id="aclassknncolle_1_1VptreeBuilder_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a></div></div>
-<div class="ttc" id="anamespaceumappp_html_afcfe5559148af79e84c1eca05b15c515"><div class="ttname"><a href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, const std::size_t num_dim, Float_ *const embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:75</div></div>
+<div class="ttc" id="anamespaceumappp_html_afcfe5559148af79e84c1eca05b15c515"><div class="ttname"><a href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, const std::size_t num_dim, Float_ *const embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:74</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:32</div></div>
 <div class="ttc" id="aumappp_8hpp_html"><div class="ttname"><a href="umappp_8hpp.html">umappp.hpp</a></div><div class="ttdoc">Overall header for the umappp library.</div></div>
 </div><!-- fragment --><p>We can modify parameters in the <code>Options</code> class that is passed to <code>initialize()</code>:</p>
@@ -159,7 +159,7 @@ $(function(){ initResizable(false); });
 <div class="line">);</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">int</span> iter = 10; iter &lt; 200; iter += 10) {</div>
-<div class="line">    status2.run(iter);</div>
+<div class="line">    status2.run(embedding.data(), iter);</div>
 <div class="line">    <span class="comment">// do something with the current contents of &#39;embedding&#39;,</span></div>
 <div class="line">    <span class="comment">// e.g., create an animation over iterations.</span></div>
 <div class="line">}</div>
@@ -167,7 +167,7 @@ $(function(){ initResizable(false); });
 <div class="fragment"><div class="line">knncolle_annoy::AnnoyBuilder&lt;int, double, double, Annoy::Euclidean&gt; annoy_builder;</div>
 <div class="line"><span class="keyword">auto</span> annoy_idx = annoy_builder.build_unique(<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a>(ndim, nobs, data.data()));</div>
 <div class="line"><span class="keyword">auto</span> status_annoy = <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">umappp::initialize</a>(*annoy_idx, 2, embedding.data(), opt);</div>
-<div class="line">status_annoy.run();</div>
+<div class="line">status_annoy.run(embedding.data());</div>
 <div class="ttc" id="aclassknncolle_1_1SimpleMatrix_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></div></div>
 </div><!-- fragment --><p>See the <a href="https://libscran.github.io/umappp">reference documentation</a> for more details.</p>
 <h1>Building projects</h1>

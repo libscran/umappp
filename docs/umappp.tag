@@ -209,20 +209,6 @@
       <arglist>() const</arglist>
     </member>
     <member kind="function">
-      <type>const Float_ *</type>
-      <name>embedding</name>
-      <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>a3b3cdb3bfb439021b4342f60c395a6cf</anchor>
-      <arglist>() const</arglist>
-    </member>
-    <member kind="function">
-      <type>void</type>
-      <name>set_embedding</name>
-      <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>acc56139c0ad3eef470cd1304070524b3</anchor>
-      <arglist>(Float_ *const ptr, const bool copy=true)</arglist>
-    </member>
-    <member kind="function">
       <type>int</type>
       <name>epoch</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
@@ -247,15 +233,15 @@
       <type>void</type>
       <name>run</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>a3c22114b2c42b3f190cd44dc3fd26982</anchor>
-      <arglist>(int epoch_limit)</arglist>
+      <anchor>a999431aa1af534b3da39309df0a42aa9</anchor>
+      <arglist>(Float_ *const embedding, int epoch_limit)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>run</name>
       <anchorfile>classumappp_1_1Status.html</anchorfile>
-      <anchor>ae5da17a88dbf56e7c9eb8fc9bd26ef0e</anchor>
-      <arglist>()</arglist>
+      <anchor>a9fc4d4148093646bd043356784e2e1f0</anchor>
+      <arglist>(Float_ *const embedding)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
