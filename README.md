@@ -51,7 +51,7 @@ auto status = umappp::initialize(
 
 // Run UMAP algorithm to completion. This updates the contents
 // of the 'embedding' vector supplied to initialize().
-status.run();
+status.run(embedding.data());
 ```
 
 We can modify parameters in the `Options` class that is passed to `initialize()`:
@@ -77,7 +77,7 @@ auto status2 = umappp::initialize(
 );
 
 for (int iter = 10; iter < 200; iter += 10) {
-    status2.run(iter);
+    status2.run(embedding.data(), iter);
     // do something with the current contents of 'embedding',
     // e.g., create an animation over iterations.
 }
@@ -90,7 +90,7 @@ or by providing an appropriate [**knncolle**](https://github.com/knncolle/knncol
 knncolle_annoy::AnnoyBuilder<int, double, double, Annoy::Euclidean> annoy_builder;
 auto annoy_idx = annoy_builder.build_unique(knncolle::SimpleMatrix(ndim, nobs, data.data()));
 auto status_annoy = umappp::initialize(*annoy_idx, 2, embedding.data(), opt);
-status_annoy.run();
+status_annoy.run(embedding.data());
 ```
 
 See the [reference documentation](https://libscran.github.io/umappp) for more details.

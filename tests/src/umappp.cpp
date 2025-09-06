@@ -65,7 +65,7 @@ TEST_P(UmapTest, Basic) {
     EXPECT_EQ(status.num_epochs(), 500);
     EXPECT_EQ(status.num_observations(), nobs);
 
-    status.run();
+    status.run(output.data());
     EXPECT_EQ(status.epoch(), 500);
     for (auto o : output){ 
         // Check that we don't get any weirdness.
@@ -96,7 +96,7 @@ TEST_P(UmapTest, Basic) {
             opt.num_neighbors = k;
             return opt;
         }());
-        status2.run();
+        status2.run(copy.data());
         EXPECT_EQ(copy, output);
     }
 
@@ -104,15 +104,13 @@ TEST_P(UmapTest, Basic) {
     {
         std::vector<double> copy(nobs * outdim);
         auto status_partial = umappp::initialize(neighbors, outdim, copy.data(), umappp::Options());
-        status_partial.run(200);
+        status_partial.run(copy.data(), 200);
         EXPECT_EQ(status_partial.epoch(), 200);
         EXPECT_NE(copy, output);
 
-        std::vector<double> replacement(copy.size());
-        status_partial.set_embedding(replacement.data());
-        status_partial.run();
+        status_partial.run(copy.data());
         EXPECT_EQ(status_partial.epoch(), 500);
-        EXPECT_EQ(replacement, output);
+        EXPECT_EQ(copy, output);
     }
 
     // Same results with multiple threads.
@@ -124,7 +122,7 @@ TEST_P(UmapTest, Basic) {
         {
             std::vector<double> copy(nobs * outdim);
             auto status = umappp::initialize(ndim, nobs, data.data(), *builder, outdim, copy.data(), opt);
-            status.run();
+            status.run(copy.data());
             EXPECT_EQ(copy, output);
         }
 
@@ -133,7 +131,7 @@ TEST_P(UmapTest, Basic) {
         {
             std::vector<double> copy(nobs * outdim);
             auto status = umappp::initialize(neighbors, outdim, copy.data(), opt);
-            status.run();
+            status.run(copy.data());
             EXPECT_EQ(copy, output);
         }
     }
@@ -165,7 +163,7 @@ TEST(UmapTest, SinglePrecision) {
     auto float_builder = knncolle::VptreeBuilder<int, float, float>(std::make_shared<knncolle::EuclideanDistance<float, float> >());
     auto status = umappp::initialize(ndim, nobs, data.data(), float_builder, 2, output.data(), umappp::Options());
 
-    status.run();
+    status.run(output.data());
     EXPECT_EQ(status.epoch(), 500);
     for (auto o : output){ 
         // Check that we don't get any weirdness.

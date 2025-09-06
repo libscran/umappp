@@ -60,8 +60,9 @@ Rcpp::NumericMatrix run_umap(
     opt.num_threads = num_threads;
     opt.parallel_optimization = parallel_optimization;
 
-    auto status = umappp::initialize(std::move(x), ndim, static_cast<double*>(output.begin()), opt);
-    status.run();
+    auto optr = static_cast<double*>(output.begin());
+    auto status = umappp::initialize(std::move(x), ndim, optr, opt);
+    status.run(optr);
 
     return Rcpp::transpose(output);
 }

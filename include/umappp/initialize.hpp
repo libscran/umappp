@@ -64,7 +64,6 @@ int choose_num_epochs(const int num_epochs, const Index_ size) {
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
  * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
  * otherwise it is only used as output.
- * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  * Note that `Options::num_neighbors` is ignored here.
  *
@@ -118,8 +117,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
     return Status<Index_, Float_>(
         internal::similarities_to_epochs<Index_, Float_>(x, options.num_epochs, options.negative_sample_rate),
         options,
-        num_dim,
-        embedding
+        num_dim
     );
 }
 
@@ -136,7 +134,6 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
  * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
  * otherwise it is only used as output.
- * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
@@ -165,7 +162,6 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
  * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
  * otherwise it is only used as output.
- * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
