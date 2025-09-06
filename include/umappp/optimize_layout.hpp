@@ -88,7 +88,11 @@ EpochData<Index_, Float_> similarities_to_epochs(const NeighborList<Index_, Floa
     }
     output.negative_sample_rate = negative_sample_rate;
 
-    // See comments in compute_num_neg_samples().
+    // Maximum value of 'num_neg_samples' should be 'num_epochs * negative_sample_rate', because:
+    // - '(epoch - setup.epoch_of_next_negative_sample[j])' has a maximum value of 'num_epochs'.
+    // - 'epochs_per_negative_sample' has a minimum value of '1/negative_sample_rate', because:
+    // - 'setup.epochs_per_sample[j]' has a minimum value of 1, when 'y.second == maxed'.
+    // So we just have to check that the cast is safe once, for the maximum value.
     sanisizer::from_float<int>(static_cast<Float_>(num_epochs) * negative_sample_rate);
 
     return output;       
@@ -110,20 +114,6 @@ Float_ clamp(const Float_ input) {
     constexpr Float_ min_gradient = -4;
     constexpr Float_ max_gradient = 4;
     return std::min(std::max(input, min_gradient), max_gradient);
-}
-
-template<typename Index_, typename Float_>
-int compute_num_neg_samples(const std::size_t j, const Float_ epoch, const EpochData<Index_, Float_>& setup) {
-    // Remember that 'epochs_per_negative_sample' is defined as 'epochs_per_sample[j] / negative_sample_rate'.
-    // We just use it inline below rather than defining a new variable and suffering floating-point round-off.
-    const Float_ num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) * 
-        setup.negative_sample_rate / setup.epochs_per_sample[j]; // i.e., 1/epochs_per_negative_sample.
-
-    // Maximum value of 'num_neg_samples' should be 'num_epochs * negative_sample_rate', because:
-    // - '(epoch - setup.epoch_of_next_negative_sample[j])' has a maximum value of 'num_epochs'.
-    // - 'setup.epochs_per_sample' has a minimum value of 1, when 'y.second == maxed'.
-    // So we just have to check that the cast is safe for the maximum value in initialize(). 
-    return num_neg_samples;
 }
 
 /*****************************************************
@@ -174,8 +164,10 @@ void optimize_layout(
                     }
                 }
 
-                const auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
-                for (decltype(I(num_neg_samples)) p = 0; p < num_neg_samples; ++p) {
+                const Float_ epochs_per_negative_sample = setup.epochs_per_sample[j] / setup.negative_sample_rate;
+                const int num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) / epochs_per_negative_sample; // cast is known to be safe, see initialize().
+
+                for (int p = 0; p < num_neg_samples; ++p) {
                     const auto sampled = aarand::discrete_uniform(rng, num_obs);
                     if (sampled == i) {
                         continue;
@@ -191,11 +183,7 @@ void optimize_layout(
                 }
 
                 setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
-
-                // The update to 'epoch_of_next_negative_sample' involves adding
-                // 'num_neg_samples * epochs_per_negative_sample', which eventually boils
-                // down to setting epoch_of_next_negative_sample to 'epoch'.
-                setup.epoch_of_next_negative_sample[j] = epoch;
+                setup.epoch_of_next_negative_sample[j] += num_neg_samples * epochs_per_negative_sample;
             }
         }
     }
@@ -477,8 +465,10 @@ void optimize_layout_parallel(
                     }
 
                     const auto prior_size = ns_selections.size();
-                    const auto num_neg_samples = compute_num_neg_samples(j, epoch, setup);
-                    for (decltype(I(num_neg_samples)) p = 0; p < num_neg_samples; ++p) {
+                    const Float_ epochs_per_negative_sample = setup.epochs_per_sample[j] / setup.negative_sample_rate;
+                    const int num_neg_samples = (epoch - setup.epoch_of_next_negative_sample[j]) / epochs_per_negative_sample; // cast is known to be safe, see initialize().
+
+                    for (int p = 0; p < num_neg_samples; ++p) {
                         const Index_ sampled = aarand::discrete_uniform(rng, num_obs);
                         if (sampled == i) {
                             continue;
@@ -505,7 +495,7 @@ void optimize_layout_parallel(
 
                     ns_count.push_back(ns_selections.size() - prior_size);
                     setup.epoch_of_next_sample[j] += setup.epochs_per_sample[j];
-                    setup.epoch_of_next_negative_sample[j] = epoch;
+                    setup.epoch_of_next_negative_sample[j] += num_neg_samples * epochs_per_negative_sample;
                 }
 
                 if (!is_clear) {
