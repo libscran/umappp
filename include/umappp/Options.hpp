@@ -1,7 +1,9 @@
 #ifndef UMAPPP_OPTIONS_HPP
 #define UMAPPP_OPTIONS_HPP
 
-#include <cstdint>
+#include <random>
+
+#include "sanisizer/sanisizer.hpp"
 
 /**
  * @file Options.hpp
@@ -14,13 +16,15 @@ namespace umappp {
  * How should the initial coordinates of the embedding be obtained?
  *
  * - `SPECTRAL`: attempts initialization based on spectral decomposition of the graph Laplacian.
- * If that fails, we fall back to random draws from a normal distribution.
- * - `SPECTRAL_ONLY`: attempts spectral initialization as before,
- * but if that fails, we use the existing values in the supplied embedding array.
  * - `RANDOM`: fills the embedding with random draws from a normal distribution.
  * - `NONE`: uses the existing values in the supplied embedding array.
  */
-enum InitializeMethod : char { SPECTRAL, SPECTRAL_ONLY, RANDOM, NONE };
+enum InitializeMethod : char { SPECTRAL, RANDOM, NONE };
+
+/**
+ * Class of the random number generator used in **umappp**.
+ */
+typedef std::mt19937_64 RngEngine;
 
 /**
  * @brief Options for `initialize()`.
@@ -83,9 +87,49 @@ struct Options {
 
     /** 
      * How to initialize the embedding.
-     * Some choices may use the existing coordinates provided to `initialize()` via the `embedding` argument.
      */
-    InitializeMethod initialize = InitializeMethod::SPECTRAL;
+    InitializeMethod initialize_method = InitializeMethod::SPECTRAL;
+
+    /**
+     * Whether to fall back to random sampling from a normal distribution (i.e., same as `InitializeMethod::RANDOM`) if spectral initialization fails.
+     * If `false`, any existing values in the input array will be used, i.e., same as `InitializeMethod::NONE`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     */
+    bool initialize_random_on_spectral_fail = true;
+
+    /**
+     * Maximum absolute magnitude of the coordinates after spectral initialization.
+     * All coordinates are scaled such that the maximum absolute magnitude is equal to this value.
+     * This ensures that outlier observations will not have large absolute distances that may interfere with optimization.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     */
+    double initialize_spectral_scale = 10;
+
+    /**
+     * Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting).
+     * This is done with normally-distributed noise of mean zero and standard deviation of `Options::initialize_spectral_jitter_sd`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     */
+    bool initialize_spectral_jitter = false;
+
+    /**
+     * Standard deviation of the jitter to apply after spectral initialization.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_spectral_jitter = true`.
+     */
+    double initialize_spectral_jitter_sd = 0.0001;
+
+    /**
+     * Scale of the randomly generated coordinates when `Options::initialize_method = InitializeMethod::RANDOM`.
+     * Coordinates are sampled from a uniform distribution from \f$[-x, x)\f$ where \f$x\f$ is this value.
+     */
+    double initialize_random_scale = 10;
+
+    /**
+     * Seed for the random number generation during initialization.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_spectral_jitter = true`,
+     * or `Options::initialize_method = InitializeMethod::RANDOM`.
+     */
+    typename RngEngine::result_type initialize_seed = sanisizer::cap<typename RngEngine::result_type>(9876543210);
 
     /**
      * Number of epochs for the gradient descent, i.e., optimization iterations. 
@@ -120,9 +164,9 @@ struct Options {
     int num_neighbors = 15;
 
     /**
-     * Seed to use for the Mersenne Twister when sampling negative observations.
+     * Seed for the random number generator when sampling negative observations in the optimization step.
      */
-    uint64_t seed = 1234567890;
+    typename RngEngine::result_type optimize_seed = sanisizer::cap<typename RngEngine::result_type>(1234567890);
 
     /**
      * Number of threads to use.

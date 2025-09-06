@@ -173,6 +173,51 @@ TEST(UmapTest, SinglePrecision) {
     }
 }
 
+TEST(UmapTest, InitializeVariants) {
+    int nobs = 87;
+    int k = 5;
+    int ndim = 7;
+
+    std::mt19937_64 rng(nobs * k + 1); 
+    std::normal_distribution<double> dist(0, 1);
+    size_t total = nobs * ndim;
+    std::vector<double> data(total);
+    for (size_t r = 0; r < total; ++r) {
+        data[r] = dist(rng);
+    }
+
+    const auto double_builder = knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+    std::vector<double> ref(nobs * 2);
+    umappp::initialize(ndim, nobs, data.data(), double_builder, 2, ref.data(), umappp::Options());
+
+    // Trying with randoms.
+    {
+        std::vector<double> output(nobs * 2);
+        auto status = umappp::initialize(ndim, nobs, data.data(), double_builder, 2, output.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_method = umappp::InitializeMethod::RANDOM;
+            return opt;
+        }());
+        for (auto o : output) {
+            EXPECT_NE(o, 0);
+        }
+        EXPECT_NE(ref, output);
+    }
+
+    // Trying with pre-existing inputs.
+    {
+        std::vector<double> output(nobs * 2);
+        auto status = umappp::initialize(ndim, nobs, data.data(), double_builder, 2, output.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_method = umappp::InitializeMethod::NONE;
+            return opt;
+        }());
+        for (auto o : output) {
+            EXPECT_EQ(o, 0);
+        }
+    }
+}
+
 TEST(UmapTest, EpochDecay) {
     EXPECT_EQ(umappp::internal::choose_num_epochs(-1, 1000), 500);
     EXPECT_LT(umappp::internal::choose_num_epochs(-1, 20000), 500);

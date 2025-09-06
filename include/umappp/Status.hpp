@@ -1,7 +1,6 @@
 #ifndef UMAPPP_STATUS_HPP
 #define UMAPPP_STATUS_HPP
 
-#include <random>
 #include <cstddef>
 
 #include "sanisizer/sanisizer.hpp"
@@ -32,7 +31,7 @@ public:
     Status(internal::EpochData<Index_, Float_> epochs, Options options, const std::size_t num_dim, Float_* const embedding) : 
         my_epochs(std::move(epochs)),
         my_options(std::move(options)),
-        my_engine(my_options.seed),
+        my_engine(my_options.optimize_seed),
         my_num_dim(num_dim),
         my_embedding(embedding) 
     {}
@@ -43,7 +42,7 @@ public:
 private:
     internal::EpochData<Index_, Float_> my_epochs;
     Options my_options;
-    std::mt19937_64 my_engine;
+    RngEngine my_engine;
     std::size_t my_num_dim;
     Float_* my_embedding;
 

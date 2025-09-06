@@ -56,7 +56,7 @@ Rcpp::NumericMatrix run_umap(
     umappp::Options opt;
     opt.a = a;
     opt.b = b;
-    opt.seed = seed;
+    opt.optimize_seed = seed;
     opt.num_threads = num_threads;
     opt.parallel_optimization = parallel_optimization;
 

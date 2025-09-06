@@ -62,7 +62,8 @@ int choose_num_epochs(const int num_epochs, const Index_ size) {
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  * Note that `Options::num_neighbors` is ignored here.
@@ -80,14 +81,29 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
 
     internal::combine_neighbor_sets(x, static_cast<Float_>(options.mix_ratio));
 
-    // Choosing the manner of initialization.
-    if (options.initialize == InitializeMethod::SPECTRAL || options.initialize == InitializeMethod::SPECTRAL_ONLY) {
-        const bool attempt = internal::spectral_init(x, num_dim, embedding, options.num_threads);
-        if (!attempt && options.initialize == InitializeMethod::SPECTRAL) {
-            internal::random_init<Index_>(x.size(), num_dim, embedding);
-        }
-    } else if (options.initialize == InitializeMethod::RANDOM) {
-        internal::random_init<Index_>(x.size(), num_dim, embedding);
+    bool use_random = (options.initialize_method == InitializeMethod::RANDOM);
+    if (options.initialize_method == InitializeMethod::SPECTRAL) {
+        const bool spectral_okay = internal::spectral_init(
+            x,
+            num_dim,
+            embedding,
+            options.num_threads,
+            options.initialize_spectral_scale,
+            options.initialize_spectral_jitter,
+            options.initialize_spectral_jitter_sd,
+            options.initialize_seed
+        );
+        use_random = (options.initialize_random_on_spectral_fail && !spectral_okay);
+    }
+
+    if (use_random) {
+        internal::random_init<Index_>(
+            x.size(),
+            num_dim,
+            embedding,
+            options.initialize_seed,
+            options.initialize_random_scale
+        );
     }
 
     // Finding a good a/b pair.
@@ -118,7 +134,8 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *
@@ -146,7 +163,8 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
  * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL_ONLY`; otherwise it is only used as output.
+ * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise it is only used as output.
  * The lifetime of the array should be no shorter than the final call to `Status::run()`.
  * @param options Further options.
  *

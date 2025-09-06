@@ -10,26 +10,30 @@
 #include <random>
 #include <vector>
 
-class SpectralInitTest : public ::testing::TestWithParam<std::tuple<int, int> > {
-protected:
-    static umappp::NeighborList<int, double> mock(int n) {
-        // Creating a mock symmetric matrix.
-        std::mt19937_64 rng(1234567890);
-        std::uniform_real_distribution<> dist(0, 1);
+static umappp::NeighborList<int, double> mock(int n) {
+    // Creating a mock symmetric matrix.
+    std::mt19937_64 rng(1234567890);
+    std::uniform_real_distribution<> dist(0, 1);
 
-        umappp::NeighborList<int, double> edges(n);
-        edges.resize(n);
-        for (int r = 0; r < n; ++r) {
-            for (int c = 0; c < r; ++c) {
-                if (dist(rng) < 0.2) { // sparse symmetric matrix.
-                    double val = dist(rng);
-                    edges[r].emplace_back(c, val);
-                    edges[c].emplace_back(r, val);
-                }
+    umappp::NeighborList<int, double> edges(n);
+    edges.resize(n);
+    for (int r = 0; r < n; ++r) {
+        for (int c = 0; c < r; ++c) {
+            if (dist(rng) < 0.2) { // sparse symmetric matrix.
+                double val = dist(rng);
+                edges[r].emplace_back(c, val);
+                edges[c].emplace_back(r, val);
             }
         }
-        return edges;
     }
+    return edges;
+}
+
+class SpectralInitTest : public ::testing::TestWithParam<std::tuple<int, int> > {
+protected:
+    static constexpr double max_scale = 10;
+    static constexpr int seed = 12345;
+    static constexpr double jitter_sd = 0.0001;
 };
 
 TEST_P(SpectralInitTest, Basic) {
@@ -39,16 +43,23 @@ TEST_P(SpectralInitTest, Basic) {
     std::vector<double> output(ndim * order);
 
     auto edges = mock(order);
-    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), 1));
+    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), 1, max_scale, false, jitter_sd, seed));
 
     for (auto o : output) { // filled with _something_.
         EXPECT_TRUE(o != 0);
     }
+    const double max_val = std::max(*std::max_element(output.begin(), output.end()), -*std::min_element(output.begin(), output.end()));
+    EXPECT_FLOAT_EQ(max_val, max_scale);
 
     // Same result with multiple threads.
     std::vector<double> copy(ndim * order);
-    umappp::internal::spectral_init(edges, ndim, copy.data(), 3);
+    umappp::internal::spectral_init(edges, ndim, copy.data(), 3, max_scale, false, jitter_sd, seed);
     EXPECT_EQ(output, copy);
+
+    // Throwing in some jitter.
+    std::fill(copy.begin(), copy.end(), 0);
+    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, copy.data(), 1, max_scale, true, jitter_sd, seed));
+    EXPECT_NE(output, copy);
 }
 
 TEST_P(SpectralInitTest, MultiComponents) {
@@ -69,7 +80,7 @@ TEST_P(SpectralInitTest, MultiComponents) {
     }
 
     std::vector<double> output(edges1.size() + edges2.size());
-    EXPECT_FALSE(umappp::internal::spectral_init(edges, ndim, output.data(), 1));
+    EXPECT_FALSE(umappp::internal::spectral_init(edges, ndim, output.data(), 1, max_scale, false, jitter_sd, seed));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -144,5 +155,29 @@ TEST(ComponentTest, Simple) {
 
         symmetrize(edges);
         EXPECT_TRUE(umappp::internal::has_multiple_components(edges));
+    }
+}
+
+TEST(SpectralInit, OddJitter) { // test coverage when the number of coordinates is odd.
+    auto edges = mock(51);
+    int ndim = 3;
+    std::vector<double> output(edges.size() * ndim);
+    EXPECT_TRUE(output.size() % 2 == 1);
+
+    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), 1, 10, true, 0.001, 69));
+    for (auto o : output) {
+        EXPECT_NE(o, 0);
+        EXPECT_GE(o, -10);
+        EXPECT_LE(o, 10);
+    }
+}
+
+TEST(RandomInit, Basic) {
+    std::vector<double> output(15);
+    umappp::internal::random_init(5, 3, output.data(), 69, 10);
+    for (auto o : output) {
+        EXPECT_NE(o, 0); // filled with _something_.
+        EXPECT_GE(o, -10);
+        EXPECT_LT(o, 10);
     }
 }

@@ -2,7 +2,6 @@
 #define UMAPPP_SPECTRAL_INIT_HPP
 
 #include <vector>
-#include <random>
 #include <algorithm>
 #include <cstddef>
 
@@ -12,6 +11,7 @@
 #include "sanisizer/sanisizer.hpp"
 
 #include "NeighborList.hpp"
+#include "Options.hpp"
 
 namespace umappp {
 
@@ -23,7 +23,7 @@ namespace internal {
  * It is assumed that 'edges' has already been symmetrized.
  */
 template<typename Index_, typename Float_>
-bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const Y, const int nthreads) {
+bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const Y, const int nthreads, double scale) {
     const Index_ nobs = edges.size();
     auto sums = sanisizer::create<std::vector<double> >(nobs); // we deliberately use double-precision to avoid difficult problems from overflow/underflow inside IRLBA.
     std::vector<std::size_t> pointers(sanisizer::sum<typename std::vector<std::size_t>::size_type>(nobs, 1));
@@ -110,11 +110,11 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::
     // Getting the maximum value; this is assumed to be non-zero,
     // otherwise this entire thing is futile.
     const double max_val = std::max(std::abs(ev.minCoeff()), std::abs(ev.maxCoeff()));
-    const double expansion = (max_val > 0 ? 10 / max_val : 1);
+    const double expansion = (max_val > 0 ? scale / max_val : 1);
 
     for (Index_ c = 0; c < nobs; ++c) {
         for (std::size_t d = 0; d < num_dim; ++d) {
-            Y[sanisizer::nd_offset<std::size_t>(d, num_dim, c)] = ev.coeff(c, d) * expansion; // TODO: put back the jitter step.
+            Y[sanisizer::nd_offset<std::size_t>(d, num_dim, c)] = ev.coeff(c, d) * expansion;
         }
     }
     return true;
@@ -149,21 +149,57 @@ bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
 }
 
 template<typename Index_, typename Float_>
-bool spectral_init(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const vals, const int nthreads) {
-    if (!has_multiple_components(edges)) {
-        if (normalized_laplacian(edges, num_dim, vals, nthreads)) {
-            return true;
+bool spectral_init(
+    const NeighborList<Index_, Float_>& edges,
+    const std::size_t num_dim,
+    Float_* const vals,
+    const int nthreads,
+    const double scale,
+    const bool jitter,
+    const double jitter_sd,
+    const RngEngine::result_type seed)
+{
+    if (has_multiple_components(edges)) {
+        return false;
+    }
+
+    if (!normalized_laplacian(edges, num_dim, vals, nthreads, scale)) {
+        return false;
+    }
+
+    if (jitter) {
+        RngEngine rng(seed);
+        const auto ntotal = sanisizer::product_unsafe<std::size_t>(num_dim, edges.size());
+        const auto half_ntotal = ntotal / 2;
+        for (std::size_t i = 0; i < half_ntotal; ++i) {
+            const auto sampled = aarand::standard_normal(rng);
+            vals[2 * i] += sampled.first * jitter_sd;
+            vals[2 * i + 1] += sampled.second * jitter_sd;
+        }
+
+        if (ntotal % 2 == 1) {
+            const auto sampled = aarand::standard_normal(rng);
+            vals[ntotal - 1] += sampled.first * jitter_sd;
         }
     }
-    return false;
+
+    return true;
 }
 
 template<typename Index_, typename Float_>
-void random_init(const Index_ num_obs, const std::size_t num_dim, Float_ * const vals) {
-    std::size_t num = static_cast<std::size_t>(num_obs) * num_dim; // cast to avoid overflow.
-    std::mt19937_64 rng(num); // for a bit of deterministic variety.
-    for (std::size_t i = 0; i < num; ++i) {
-        vals[i] = aarand::standard_uniform<Float_>(rng) * static_cast<Float_>(20) - static_cast<Float_>(10); // values from (-10, 10).
+void random_init(
+    const Index_ num_obs,
+    const std::size_t num_dim,
+    Float_ * const vals,
+    const RngEngine::result_type seed,
+    const double scale)
+{
+    RngEngine rng(seed);
+    const Float_ mult = scale * 2;
+    const Float_ shift = scale;
+    const auto ntotal = sanisizer::product_unsafe<std::size_t>(num_dim, num_obs);
+    for (std::size_t i = 0; i < ntotal; ++i) {
+        vals[i] = aarand::standard_uniform<Float_>(rng) * mult - shift; ; // values from (-scale, scale).
     }
     return;
 }
