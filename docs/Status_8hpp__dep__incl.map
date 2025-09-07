@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="63,5,196,31"/>
 <area shape="rect" id="Node000002" href="$initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="5,79,147,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,45,87,80,83,77,109,42"/>
-<area shape="rect" id="Node000003" href="$umappp_8hpp.html" title="Overall header for the umappp library." alt="" coords="59,153,200,178"/>
+<area shape="rect" id="Node000003" href="$umappp_8hpp.html" title="Umbrella header for the umappp library." alt="" coords="59,153,200,178"/>
 <area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="147,44,161,78,162,100,157,121,140,153,136,151,152,119,157,99,156,80,142,46"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="96,115,122,151,118,154,92,119"/>
 </map>

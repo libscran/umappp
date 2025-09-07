@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>umappp: umappp/umappp.hpp Source File</title>
+<title>umappp: umappp/parallelize.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -97,23 +97,38 @@ $(function(){ initResizable(false); });
 </div><!-- top -->
 <div id="doc-content">
 <div class="header">
-  <div class="headertitle"><div class="title">umappp.hpp</div></div>
+  <div class="headertitle"><div class="title">parallelize.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="umappp_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UMAPPP_UMAPPP_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UMAPPP_UMAPPP_HPP</span></div>
+<a href="parallelize_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UMAPPP_PARALLELIZE_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UMAPPP_PARALLELIZE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Options_8hpp.html">Options.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Status_8hpp.html">Status.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="initialize_8hpp.html">initialize.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#ifndef UMAPPP_CUSTOM_PARALLEL</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://subpar.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceumappp.html">umappp</a> {}</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aOptions_8hpp_html"><div class="ttname"><a href="Options_8hpp.html">Options.hpp</a></div><div class="ttdoc">Options for the UMAP algorithm.</div></div>
-<div class="ttc" id="aStatus_8hpp_html"><div class="ttname"><a href="Status_8hpp.html">Status.hpp</a></div><div class="ttdoc">Status of the UMAP algorithm.</div></div>
-<div class="ttc" id="ainitialize_8hpp_html"><div class="ttname"><a href="initialize_8hpp.html">initialize.hpp</a></div><div class="ttdoc">Initialize the UMAP algorithm.</div></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceumappp.html">umappp</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Task_, <span class="keyword">class</span> Run_&gt;</div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceumappp.html#a2e721246517db54aba6d210b6cf71033">   28</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceumappp.html#a2e721246517db54aba6d210b6cf71033">parallelize</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> num_workers, <span class="keyword">const</span> Task_ num_tasks, Run_ run_task_range) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#ifndef UMAPPP_CUSTOM_PARALLEL</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// Don&#39;t make this nothrow_ = true, there&#39;s too many allocations and the</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// derived methods for the nearest neighbors search could do anything...</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    subpar::parallelize(num_workers, num_tasks, std::move(run_task_range));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    UMAPPP_CUSTOM_PARALLEL(num_workers, num_tasks, run_task_range);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="ttc" id="anamespaceumappp_html"><div class="ttname"><a href="namespaceumappp.html">umappp</a></div><div class="ttdoc">Functions for creating UMAP embeddings.</div><div class="ttdef"><b>Definition</b> initialize.hpp:22</div></div>
+<div class="ttc" id="anamespaceumappp_html_a2e721246517db54aba6d210b6cf71033"><div class="ttname"><a href="namespaceumappp.html#a2e721246517db54aba6d210b6cf71033">umappp::parallelize</a></div><div class="ttdeci">void parallelize(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> parallelize.hpp:28</div></div>
+<div class="ttc" id="asubpar_8hpp_html"><div class="ttname"><a href="https://subpar.github.io/subpar/subpar_8hpp.html">subpar.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

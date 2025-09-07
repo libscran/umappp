@@ -1,5 +1,5 @@
 <map id="umappp/initialize.hpp" name="umappp/initialize.hpp">
 <area shape="rect" id="Node000001" title="Initialize the UMAP algorithm." alt="" coords="5,5,147,31"/>
-<area shape="rect" id="Node000002" href="$umappp_8hpp.html" title="Overall header for the umappp library." alt="" coords="5,79,147,105"/>
+<area shape="rect" id="Node000002" href="$umappp_8hpp.html" title="Umbrella header for the umappp library." alt="" coords="5,79,147,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,46,79,79,73,79,73,46"/>
 </map>

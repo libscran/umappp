@@ -2,6 +2,6 @@
 <area shape="rect" id="Node000001" title="Defines the NeighborList alias." alt="" coords="5,5,175,31"/>
 <area shape="rect" id="Node000002" href="$initialize_8hpp.html" title="Initialize the UMAP algorithm." alt="" coords="19,79,161,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,46,93,79,87,79,87,46"/>
-<area shape="rect" id="Node000003" href="$umappp_8hpp.html" title="Overall header for the umappp library." alt="" coords="19,153,161,178"/>
+<area shape="rect" id="Node000003" href="$umappp_8hpp.html" title="Umbrella header for the umappp library." alt="" coords="19,153,161,178"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="93,120,93,152,87,152,87,120"/>
 </map>

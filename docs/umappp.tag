@@ -22,6 +22,12 @@
     <namespace>umappp</namespace>
   </compound>
   <compound kind="file">
+    <name>parallelize.hpp</name>
+    <path>umappp/</path>
+    <filename>parallelize_8hpp.html</filename>
+    <namespace>umappp</namespace>
+  </compound>
+  <compound kind="file">
     <name>Status.hpp</name>
     <path>umappp/</path>
     <filename>Status_8hpp.html</filename>
@@ -290,6 +296,13 @@
       <anchorfile>namespaceumappp.html</anchorfile>
       <anchor>aac099e1d61d98c0e03b65775bdd42669</anchor>
       <arglist>(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const std::size_t num_dim, Float_ *const embedding, Options options)</arglist>
+    </member>
+    <member kind="function">
+      <type>void</type>
+      <name>parallelize</name>
+      <anchorfile>namespaceumappp.html</anchorfile>
+      <anchor>a2e721246517db54aba6d210b6cf71033</anchor>
+      <arglist>(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</arglist>
     </member>
   </compound>
   <compound kind="page">

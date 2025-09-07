@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['umappp_0',['umappp',['../namespaceumappp.html',1,'']]]
+  ['subpar_0',['subpar',['https://subpar.github.io/subpar/namespacesubpar.html',1,'']]]
 ];

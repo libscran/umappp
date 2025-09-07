@@ -102,7 +102,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p>Methods for UMAP.  
+<p>Functions for creating UMAP embeddings.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -142,9 +142,12 @@ Functions</h2></td></tr>
 <tr class="memitem:aac099e1d61d98c0e03b65775bdd42669" id="r_aac099e1d61d98c0e03b65775bdd42669"><td class="memTemplParams" colspan="2">template&lt;typename Index_ , typename Float_ , class Matrix_  = knncolle::Matrix&lt;Index_, Float_&gt;&gt; </td></tr>
 <tr class="memitem:aac099e1d61d98c0e03b65775bdd42669"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Status.html">Status</a>&lt; Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aac099e1d61d98c0e03b65775bdd42669">initialize</a> (const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const std::size_t num_dim, Float_ *const embedding, <a class="el" href="structumappp_1_1Options.html">Options</a> options)</td></tr>
 <tr class="separator:aac099e1d61d98c0e03b65775bdd42669"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e721246517db54aba6d210b6cf71033" id="r_a2e721246517db54aba6d210b6cf71033"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
+<tr class="memitem:a2e721246517db54aba6d210b6cf71033"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2e721246517db54aba6d210b6cf71033">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
+<tr class="separator:a2e721246517db54aba6d210b6cf71033"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Methods for UMAP. </p>
+<div class="textblock"><p>Functions for creating UMAP embeddings. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="abef8d351328ea79485008055c3730dcc" name="abef8d351328ea79485008055c3730dcc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abef8d351328ea79485008055c3730dcc">&#9670;&#160;</a></span>NeighborList</h2>
@@ -164,7 +167,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the neighbor indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type for the distances.</td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the distances.</td></tr>
   </table>
   </dd>
 </dl>
@@ -201,9 +204,9 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 </div><div class="memdoc">
 <p>How should the initial coordinates of the embedding be obtained?</p>
 <ul>
-<li><code>SPECTRAL</code>: attempts initialization based on spectral decomposition of the graph Laplacian.</li>
+<li><code>SPECTRAL</code>: spectral decomposition of the normalized graph Laplacian.</li>
 <li><code>RANDOM</code>: fills the embedding with random draws from a normal distribution.</li>
-<li><code>NONE</code>: uses the existing values in the supplied embedding array. </li>
+<li><code>NONE</code>: uses existing values in the supplied embedding array. </li>
 </ul>
 
 </div>
@@ -242,7 +245,7 @@ template&lt;typename Index_ , typename Input_ , typename Float_ &gt; </div>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
-    <tr><td class="paramname">Input_</td><td>Floating-point type of the input data for the neighbor search. This is not used other than to define the <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a></code> type. </td></tr>
+    <tr><td class="paramname">Input_</td><td>Floating-point type of the input data for the neighbor search. This only used to define the <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a></code> type and is otherwise ignored. </td></tr>
     <tr><td class="paramname">Float_</td><td>Floating-point type of the input data, neighbor distances and output embedding.</td></tr>
   </table>
   </dd>
@@ -251,12 +254,12 @@ template&lt;typename Index_ , typename Input_ , typename Float_ &gt; </div>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">prebuilt</td><td>A neighbor search index built on the dataset of interest. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the UMAP embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise, the input values are ignored. On output, this contains the initial coordinates of the embedding. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. Further calls to <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will update the embeddings in <code>embedding</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. </dd></dl>
 
 </div>
 </div>
@@ -309,7 +312,7 @@ template&lt;typename Index_ , typename Float_ , class Matrix_  = knncolle::Matri
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
     <tr><td class="paramname">Float_</td><td>Floating-point type of the input data, neighbor distances and output embedding. </td></tr>
-    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be a <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or its base class (i.e., <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>).</td></tr>
+    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be a <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
@@ -317,15 +320,15 @@ template&lt;typename Index_ , typename Float_ , class Matrix_  = knncolle::Matri
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">data_dim</td><td>Number of dimensions of the input dataset. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_obs</td><td>Number of observations in the input dataset. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing the input high-dimensional data as a column-major matrix. Each row corresponds to a dimension (<code>data_dim</code>) and each column corresponds to an observation (<code>num_obs</code>). </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">builder</td><td>Algorithm to use for the neighbor search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing the input dataset as a column-major matrix. Each row corresponds to a dimension (<code>data_dim</code>) and each column corresponds to an observation (<code>num_obs</code>). </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">builder</td><td>Algorithm for the nearest neighbor search. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise, the input values are ignored. On output, this contains the initial coordinates of the embedding. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. Further calls to <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will update the embeddings in <code>embedding</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. </dd></dl>
 
 </div>
 </div>
@@ -362,20 +365,64 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the neighbor indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type for the distances.</td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the distances.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. Note the expectations in the <code>NeighborList</code> documentation. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">x</td><td>Indices and distances to the nearest neighbors for each observation. For each observation, neighbors should be unique and sorted in order of increasing distance; see the <code>NeighborList</code> description for details. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">num_dim</td><td>Number of dimensions of the embedding. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code>Options::initialize = InitializeMethod::NONE</code>, and may be used as input if <code>Options::initialize = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise it is only used as output. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array in which to store the embedding. This is treated as a column-major matrix where rows are dimensions (<code>num_dim</code>) and columns are observations (<code>x.size()</code>). Existing values in this array will be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::NONE</code>, and may be used as input if <code><a class="el" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = false</code>; otherwise, the input values are ignored. On output, this contains the initial coordinates of the embedding. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options. Note that <code><a class="el" href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">Options::num_neighbors</a></code> is ignored here.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. Further calls to <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will update the embeddings in <code>embedding</code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classumappp_1_1Status.html" title="Status of the UMAP optimization iterations.">Status</a></code> object containing the initial state of the UMAP algorithm. </dd></dl>
+
+</div>
+</div>
+<a id="a2e721246517db54aba6d210b6cf71033" name="a2e721246517db54aba6d210b6cf71033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e721246517db54aba6d210b6cf71033">&#9670;&#160;</a></span>parallelize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Task_ , class Run_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void umappp::parallelize </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>num_workers</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Task_</td>          <td class="paramname"><span class="paramname"><em>num_tasks</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Run_</td>          <td class="paramname"><span class="paramname"><em>run_task_range</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Task_</td><td>Integer type of the number of tasks. </td></tr>
+    <tr><td class="paramname">Run_</td><td>Function to execute a range of tasks.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_workers</td><td>Number of workers. </td></tr>
+    <tr><td class="paramname">num_tasks</td><td>Number of tasks. </td></tr>
+    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>By default, this is an alias to <code><a class="elRef" href="https://subpar.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. However, if the <code>UMAPPP_CUSTOM_PARALLEL</code> function-like macro is defined, it is called instead. Any user-defined macro should accept the same arguments as <code><a class="elRef" href="https://subpar.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. </p>
 
 </div>
 </div>

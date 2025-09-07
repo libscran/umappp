@@ -171,7 +171,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Positive value for the \(a\) parameter for the fuzzy set membership strength calculations. Larger values yield a sharper decay in membership strength with increasing distance between observations.</p>
-<p>If this or <code><a class="el" href="#aaca054463a188326cf0e491f6b55d5d8">Options::a</a></code> is set to zero, a suitable value for this parameter is automatically determined from <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
+<p>If this or <code><a class="el" href="#a930c1c1f134a31c87f9f8bc6f4595cce">Options::b</a></code> is set to zero, a suitable value for this parameter is automatically determined from <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
 
 </div>
 </div>
@@ -187,7 +187,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Value in \((0, 1)\) for the \(b\) parameter for the fuzzy set membership strength calculations. Larger values yield an earlier decay in membership strength with increasing distance between observations.</p>
-<p>If this or <code><a class="el" href="#aaca054463a188326cf0e491f6b55d5d8">Options::a</a></code> is set to zero, a suitable value for this parameter is automatically determined from the values provided to <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
+<p>If this or <code><a class="el" href="#aaca054463a188326cf0e491f6b55d5d8">Options::a</a></code> is set to zero, a suitable value for this parameter is automatically determined from <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
 
 </div>
 </div>
@@ -247,7 +247,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Scale of the randomly generated coordinates when <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>. Coordinates are sampled from a uniform distribution from \([-x, x)\) where \(x\) is this value. </p>
+<p>Scale of the randomly generated coordinates when <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>. Coordinates are sampled from a uniform distribution from \([-x, x)\) where \(x\) is <code>initialize_random_scale</code>. </p>
 
 </div>
 </div>
@@ -277,7 +277,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting). This is done with normally-distributed noise of mean zero and standard deviation of <code><a class="el" href="#a909d3b00da81949bb405ce07ce8e41cd">Options::initialize_spectral_jitter_sd</a></code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
+<p>Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting). This is done using normally-distributed noise of mean zero and standard deviation of <code><a class="el" href="#a909d3b00da81949bb405ce07ce8e41cd">Options::initialize_spectral_jitter_sd</a></code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
 
 </div>
 </div>
@@ -307,7 +307,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Maximum absolute magnitude of the coordinates after spectral initialization. All coordinates are scaled such that the maximum absolute magnitude is equal to this value. This ensures that outlier observations will not have large absolute distances that may interfere with optimization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
+<p>Maximum absolute magnitude of the coordinates after spectral initialization. All initial coordinates are scaled such that the maximum of the absolute values magnitude is equal to <code>initialize_spectral_scale</code>. This ensures that outlier observations will not have large absolute distances that may interfere with optimization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
 
 </div>
 </div>
@@ -322,7 +322,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial learning rate used in the gradient descent. Larger values can improve the speed of convergence but at the cost of stability. </p>
+<p>Initial learning rate used in the gradient descent. Larger values can accelerate convergence but at the risk of skipping over suitable local optima. </p>
 
 </div>
 </div>
@@ -337,7 +337,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The number of nearest neighbors that are assumed to be always connected, with maximum membership confidence. Larger values increase the connectivity of the embedding and reduce the focus on local structure. This may be a fractional number of neighbors. </p>
+<p>Number of nearest neighbors that are assumed to be always connected, with maximum membership confidence. Larger values increase the connectivity of the embedding and reduce the focus on local structure. This may be a fractional number of neighbors, in which case interpolation is performed when computing the membership confidence. </p>
 
 </div>
 </div>
@@ -352,7 +352,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Minimum distance between observations in the final low-dimensional embedding. Smaller values will increase local clustering while larger values favor a more even distribution of points throughout the low-dimensional space. This is interpreted relative to the spread of points in <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code>. </p>
+<p>Minimum distance between observations in the final low-dimensional embedding. Smaller values will increase local clustering while larger values favor a more even distribution of observations throughout the low-dimensional space. This is interpreted relative to <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code>. </p>
 
 </div>
 </div>
@@ -367,7 +367,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Mixing ratio to use when combining fuzzy sets. This symmetrizes the sets by ensuring that the confidence of point \(A\) belonging to point \(B\)'s set is the same as the confidence of \(B\) belonging to \(A\)'s set. A mixing ratio of 1 will take the union of confidences, a ratio of 0 will take the intersection, and intermediate values will interpolate between them. Larger values (up to 1) favor connectivity and more global structure. </p>
+<p>Mixing ratio in \([0, 1]\) when combining fuzzy sets. This symmetrizes the sets so that the confidence of observation \(A\) belonging to observation \(B\)'s set is the same as that of \(B\) belonging to \(A\)'s set. A mixing ratio of 1 will take the union of confidences, a ratio of 0 will take the intersection, and intermediate values will interpolate between them. Larger values favor connectivity and more global structure. </p>
 
 </div>
 </div>
@@ -382,7 +382,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Rate of sampling negative observations to compute repulsive forces. This is interpreted with respect to the number of neighbors with attractive forces, i.e., for each attractive interaction, <code>n</code> negative samples are taken for repulsive interactions. Smaller values can improve the speed of convergence but at the cost of stability. </p>
+<p>Rate of sampling negative observations to compute repulsive forces. Greater values will improve accuracy but increase compute time. </p>
 
 </div>
 </div>
@@ -397,7 +397,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve accuracy at the cost of computational work. If no value is provided, one is automatically chosen based on the size of the dataset:</p>
+<p>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve accuracy at the cost of increased compute time. If no value is provided, one is automatically chosen based on the size of the dataset:</p>
 <ul>
 <li>For datasets with no more than 10000 observations, the number of epochs is set to 500.</li>
 <li>For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200. This choice aims to reduce computational work for very large datasets. </li>
@@ -416,7 +416,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of neighbors to use to define the fuzzy sets. Larger values improve connectivity and favor preservation of global structure, at the cost of increased computational work. This argument is only used in certain <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads that perform identification of the nearest neighbors. </p>
+<p>Number of neighbors to use to define the fuzzy sets. Larger values improve connectivity and favor preservation of global structure, at the cost of increased compute time. This argument is only used in certain <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads that perform identification of the nearest neighbors. </p>
 
 </div>
 </div>
@@ -431,7 +431,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of threads to use. The parallelization scheme is determined by <code>parallelize()</code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
+<p>Number of threads to use. The parallelization scheme is determined by <code><a class="el" href="namespaceumappp.html#a2e721246517db54aba6d210b6cf71033">parallelize()</a></code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
 <p>If <code><a class="el" href="#a491527e816984728af1c161fd6dddea0">Options::parallel_optimization</a> = true</code>, this option will also affect the layout optimization, i.e., the gradient descent iterations. </p>
 
 </div>
@@ -463,8 +463,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Whether to enable parallel optimization. If set to <code>true</code>, this will use the number of threads specified in <code><a class="el" href="#ac77facf6e9030a00d3f8b19a467bbaaa">Options::num_threads</a></code> for the layout optimization step.</p>
-<p>By default, this is set to <code>false</code> as the increase in the number of threads is usually not cost-effective for layout optimization. Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor. We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance. Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a reduction in time.</p>
-<p>If the <code>UMAPPP_NO_PARALLEL_OPTIMIZATION</code> macro is defined, <b>umappp</b> will not be compiled with support for parallel optimization. This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest. In such cases, enabling parallel optimization and calling <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will raise an error. </p>
+<p>By default, this is set to <code>false</code> as the increase in the number of threads is usually not cost-effective for layout optimization. Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor. We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance. Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a significant speed-up.</p>
+<p>If the <code>UMAPPP_NO_PARALLEL_OPTIMIZATION</code> macro is defined, <b>umappp</b> will not be compiled with support for parallel optimization. This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest. In such cases, enabling parallel optimization and calling <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will throw an error. </p>
 
 </div>
 </div>

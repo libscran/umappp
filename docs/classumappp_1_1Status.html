@@ -130,7 +130,7 @@ class umappp::Status&lt; Index_, Float_ &gt;</div><p><a class="el" href="classum
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the neighbor indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type for the distances.</td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the distances.</td></tr>
   </table>
   </dd>
 </dl>
@@ -160,7 +160,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Current epoch. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Current epoch, i.e., the number of epochs that have already been performed by <code><a class="el" href="#a999431aa1af534b3da39309df0a42aa9">run()</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -216,7 +216,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>Total number of epochs. This is typically determined by the value of <code><a class="el" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">Options::num_epochs</a></code> used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Total number of epochs that can be performed by <code><a class="el" href="#a999431aa1af534b3da39309df0a42aa9">run()</a></code>. This is typically determined by the value of <code><a class="el" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">Options::num_epochs</a></code> used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -275,7 +275,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 <p>The status of the algorithm and the coordinates in <code>embedding()</code> are updated after completing <code><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs()</a></code>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current number of epochs (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs()</a></code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current epoch (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs()</a></code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -313,8 +313,8 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 <p>The status of the algorithm and the coordinates in <code>embedding()</code> are updated to the specified number of epochs.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current number of epochs (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code>epoch_limit</code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run to. The actual number of epochs performed is equal to the difference between <code>epoch_limit</code> and the current number of epochs in <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>. <code>epoch_limit</code> should be not less than <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code> and be no greater than the maximum number of epochs specified in <code><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs()</a></code>. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">embedding</td><td>Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations. On input, this should contain the embeddings at the current epoch (<code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>), and on output, this should contain the embedding at <code>epoch_limit</code>. Typically, this should be the same array that was used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">epoch_limit</td><td>Number of epochs to run to. The actual number of epochs performed is equal to the difference between <code>epoch_limit</code> and <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code>. <code>epoch_limit</code> should be not less than <code><a class="el" href="#a7b6b70dce24aa2f446f786df2140ed67">epoch()</a></code> and be no greater than the maximum number of epochs specified in <code><a class="el" href="#ac03b32aa0acd6f912afdc589c5fea105">num_epochs()</a></code>. </td></tr>
   </table>
   </dd>
 </dl>
