@@ -12,6 +12,7 @@
 
 #include <random>
 #include <cstddef>
+#include <optional>
 
 /**
  * @file initialize.hpp
@@ -26,9 +27,9 @@ namespace umappp {
 namespace internal {
 
 template<typename Index_>
-int choose_num_epochs(const int num_epochs, const Index_ size) {
-    if (num_epochs >= 0) {
-        return num_epochs;
+int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
+    if (num_epochs.has_value()) {
+        return *num_epochs;
     }
 
     // Choosing the number of epochs. We use a simple formula to decrease
@@ -115,8 +116,8 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
     options.num_epochs = internal::choose_num_epochs<Index_>(options.num_epochs, x.size());
 
     return Status<Index_, Float_>(
-        internal::similarities_to_epochs<Index_, Float_>(x, options.num_epochs, options.negative_sample_rate),
-        options,
+        internal::similarities_to_epochs<Index_, Float_>(x, *(options.num_epochs), options.negative_sample_rate),
+        std::move(options),
         num_dim
     );
 }

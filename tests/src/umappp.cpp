@@ -217,9 +217,9 @@ TEST(UmapTest, InitializeVariants) {
 }
 
 TEST(UmapTest, EpochDecay) {
-    EXPECT_EQ(umappp::internal::choose_num_epochs(-1, 1000), 500);
-    EXPECT_LT(umappp::internal::choose_num_epochs(-1, 20000), 500);
-    EXPECT_EQ(umappp::internal::choose_num_epochs(-1, 10000000), 201);
-    EXPECT_EQ(umappp::internal::choose_num_epochs(1000, 1000), 1000);
-    EXPECT_EQ(umappp::internal::choose_num_epochs(1000, 20000), 1000);
+    EXPECT_EQ(umappp::internal::choose_num_epochs({}, 1000), 500);
+    EXPECT_LT(umappp::internal::choose_num_epochs({}, 20000), 500);
+    EXPECT_EQ(umappp::internal::choose_num_epochs({}, 10000000), 201);
+    EXPECT_EQ(umappp::internal::choose_num_epochs({ 1000 }, 1000), 1000);
+    EXPECT_EQ(umappp::internal::choose_num_epochs({ 1000 }, 20000), 1000);
 }

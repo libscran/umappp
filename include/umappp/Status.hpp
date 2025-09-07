@@ -73,7 +73,7 @@ public:
 
     /**
      * @return Total number of epochs.
-     * This is typically determined by the value of `Options::max_epochs` used in `initialize()`.
+     * This is typically determined by the value of `Options::num_epochs` used in `initialize()`.
      */
     int num_epochs() const {
         return my_epochs.total_epochs;
@@ -96,7 +96,7 @@ public:
      * Typically, this should be the same array that was used in `initialize()`.
      * @param epoch_limit Number of epochs to run to.
      * The actual number of epochs performed is equal to the difference between `epoch_limit` and the current number of epochs in `epoch()`.
-     * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `max_epochs()`.
+     * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `num_epochs()`.
      */
     void run(Float_* const embedding, int epoch_limit) {
         if (my_options.num_threads == 1 || !my_options.parallel_optimization) {
@@ -128,11 +128,11 @@ public:
     }
 
     /** 
-     * The status of the algorithm and the coordinates in `embedding()` are updated after completing `max_epochs()`.
+     * The status of the algorithm and the coordinates in `embedding()` are updated after completing `num_epochs()`.
      *
      * @param[in, out] embedding Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations.
      * On input, this should contain the embeddings at the current number of epochs (`epoch()`),
-     * and on output, this should contain the embedding at `max_epochs()`.
+     * and on output, this should contain the embedding at `num_epochs()`.
      * Typically, this should be the same array that was used in `initialize()`.
      */
     void run(Float_* const embedding) {

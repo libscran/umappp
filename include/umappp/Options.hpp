@@ -2,6 +2,7 @@
 #define UMAPPP_OPTIONS_HPP
 
 #include <random>
+#include <optional>
 
 #include "sanisizer/sanisizer.hpp"
 
@@ -134,14 +135,13 @@ struct Options {
     /**
      * Number of epochs for the gradient descent, i.e., optimization iterations. 
      * Larger values improve accuracy at the cost of computational work.
-     * If the requested number of epochs is negative, a value is automatically chosen based on the size of the dataset:
+     * If no value is provided, one is automatically chosen based on the size of the dataset:
      *
      * - For datasets with no more than 10000 observations, the number of epochs is set to 500.
      * - For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200.
-     *
-     * This choice aims to reduce computational work for very large datasets. 
+     *   This choice aims to reduce computational work for very large datasets. 
      */
-    int num_epochs = -1;
+    std::optional<int> num_epochs;
 
     /**
      * Initial learning rate used in the gradient descent.
