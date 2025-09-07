@@ -83,17 +83,17 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>double</type>
+      <type>std::optional&lt; double &gt;</type>
       <name>a</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>aaca054463a188326cf0e491f6b55d5d8</anchor>
+      <anchor>a2f380ac348f039119329ffc5f6efc590</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>double</type>
+      <type>std::optional&lt; double &gt;</type>
       <name>b</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>a930c1c1f134a31c87f9f8bc6f4595cce</anchor>
+      <anchor>a50f96db3f65371291fd37af37befbd96</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
