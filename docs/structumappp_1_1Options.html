@@ -141,8 +141,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a02172c61fd15add0e37737b825578fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5473595a4570204c024ef89d065e236" id="r_ad5473595a4570204c024ef89d065e236"><td class="memItemLeft" align="right" valign="top">RngEngine::result_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5473595a4570204c024ef89d065e236">initialize_seed</a> = sanisizer::cap&lt;typename RngEngine::result_type&gt;(9876543210)</td></tr>
 <tr class="separator:ad5473595a4570204c024ef89d065e236"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9f6ed93fb2d025cf94f7e556d82cdb9" id="r_ab9f6ed93fb2d025cf94f7e556d82cdb9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9f6ed93fb2d025cf94f7e556d82cdb9">num_epochs</a> = -1</td></tr>
-<tr class="separator:ab9f6ed93fb2d025cf94f7e556d82cdb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cddf24dac3e44ed35123675c721fd26" id="r_a8cddf24dac3e44ed35123675c721fd26"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a></td></tr>
+<tr class="separator:a8cddf24dac3e44ed35123675c721fd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78185619fc269be49c58faa802b1c0cf" id="r_a78185619fc269be49c58faa802b1c0cf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78185619fc269be49c58faa802b1c0cf">learning_rate</a> = 1</td></tr>
 <tr class="separator:a78185619fc269be49c58faa802b1c0cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10686bad854f25acf6542787b5d0a071" id="r_a10686bad854f25acf6542787b5d0a071"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10686bad854f25acf6542787b5d0a071">negative_sample_rate</a> = 5</td></tr>
@@ -386,23 +386,22 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ab9f6ed93fb2d025cf94f7e556d82cdb9" name="ab9f6ed93fb2d025cf94f7e556d82cdb9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9f6ed93fb2d025cf94f7e556d82cdb9">&#9670;&#160;</a></span>num_epochs</h2>
+<a id="a8cddf24dac3e44ed35123675c721fd26" name="a8cddf24dac3e44ed35123675c721fd26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cddf24dac3e44ed35123675c721fd26">&#9670;&#160;</a></span>num_epochs</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int umappp::Options::num_epochs = -1</td>
+          <td class="memname">std::optional&lt;int&gt; umappp::Options::num_epochs</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve accuracy at the cost of computational work. If the requested number of epochs is negative, a value is automatically chosen based on the size of the dataset:</p>
+<p>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve accuracy at the cost of computational work. If no value is provided, one is automatically chosen based on the size of the dataset:</p>
 <ul>
 <li>For datasets with no more than 10000 observations, the number of epochs is set to 500.</li>
-<li>For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200.</li>
+<li>For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200. This choice aims to reduce computational work for very large datasets. </li>
 </ul>
-<p>This choice aims to reduce computational work for very large datasets. </p>
 
 </div>
 </div>

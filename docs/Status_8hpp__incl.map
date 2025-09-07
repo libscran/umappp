@@ -2,13 +2,15 @@
 <area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="82,5,215,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,70,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,34,70,73,67,68,128,29"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="31,153,182,178"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="147,32,117,138,112,137,142,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="6,153,157,178"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="145,32,96,140,91,137,140,30"/>
 <area shape="rect" id="Node000004" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="144,79,235,105"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="157,30,177,64,173,67,153,33"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="258,79,393,105"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="179,29,282,70,280,75,177,34"/>
-<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="177,107,134,144,130,140,174,103"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="207,153,271,178"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="200,103,224,138,220,141,195,106"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="258,79,393,105"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="179,29,282,70,280,75,177,34"/>
+<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="173,107,114,146,111,141,170,103"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="181,153,246,178"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="196,104,207,137,202,139,191,106"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="270,153,336,178"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="210,103,272,142,269,146,207,107"/>
 </map>

@@ -1,7 +1,9 @@
 <map id="umappp/Options.hpp" name="umappp/Options.hpp">
-<area shape="rect" id="Node000001" title="Options for the UMAP algorithm." alt="" coords="33,5,173,31"/>
+<area shape="rect" id="Node000001" title="Options for the UMAP algorithm." alt="" coords="57,5,197,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,33,61,69,57,66,90,29"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="94,79,245,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,29,150,66,146,69,112,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,34,66,71,63,67,110,29"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="94,79,160,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="130,31,130,63,124,63,124,31"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="184,79,336,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="151,29,225,69,223,74,148,34"/>
 </map>

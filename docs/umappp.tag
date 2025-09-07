@@ -147,10 +147,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>int</type>
+      <type>std::optional&lt; int &gt;</type>
       <name>num_epochs</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>ab9f6ed93fb2d025cf94f7e556d82cdb9</anchor>
+      <anchor>a8cddf24dac3e44ed35123675c721fd26</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
