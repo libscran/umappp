@@ -18,7 +18,7 @@ namespace umappp {
 /**
  * @brief Status of the UMAP optimization iterations.
  * @tparam Index_ Integer type of the neighbor indices.
- * @tparam Float_ Floating-point type for the distances.
+ * @tparam Float_ Floating-point type of the distances.
  *
  * Instances of this class should not be constructed directly, but instead returned by `initialize()`.
  */
@@ -65,14 +65,14 @@ public:
     }
 
     /**
-     * @return Current epoch.
+     * @return Current epoch, i.e., the number of epochs that have already been performed by `run()`.
      */
     int epoch() const {
         return my_epochs.current_epoch;
     }
 
     /**
-     * @return Total number of epochs.
+     * @return Total number of epochs that can be performed by `run()`.
      * This is typically determined by the value of `Options::num_epochs` used in `initialize()`.
      */
     int num_epochs() const {
@@ -91,11 +91,11 @@ public:
      * The status of the algorithm and the coordinates in `embedding()` are updated to the specified number of epochs. 
      *
      * @param[in, out] embedding Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations.
-     * On input, this should contain the embeddings at the current number of epochs (`epoch()`),
+     * On input, this should contain the embeddings at the current epoch (`epoch()`),
      * and on output, this should contain the embedding at `epoch_limit`.
      * Typically, this should be the same array that was used in `initialize()`.
      * @param epoch_limit Number of epochs to run to.
-     * The actual number of epochs performed is equal to the difference between `epoch_limit` and the current number of epochs in `epoch()`.
+     * The actual number of epochs performed is equal to the difference between `epoch_limit` and `epoch()`.
      * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `num_epochs()`.
      */
     void run(Float_* const embedding, int epoch_limit) {
@@ -131,7 +131,7 @@ public:
      * The status of the algorithm and the coordinates in `embedding()` are updated after completing `num_epochs()`.
      *
      * @param[in, out] embedding Pointer to an array containing a column-major matrix where rows are dimensions and columns are observations.
-     * On input, this should contain the embeddings at the current number of epochs (`epoch()`),
+     * On input, this should contain the embeddings at the current epoch (`epoch()`),
      * and on output, this should contain the embedding at `num_epochs()`.
      * Typically, this should be the same array that was used in `initialize()`.
      */

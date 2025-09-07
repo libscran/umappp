@@ -9,7 +9,7 @@
 
 **umappp** is a header-only C++ implementation of the Uniform Manifold Approximation and Projection (UMAP) algorithm (McInnes, Healy and Melville, 2018).
 UMAP is a non-linear dimensionality reduction technique that is most commonly used for visualization of complex datasets. 
-This is achieved by placing each observation on a low-dimensional (usually 2D) embedding in a manner that preserves the neighborhood of each observation from the high-dimensional original space.
+This is achieved by placing each observation on a low-dimensional (usually 2D) embedding in a manner that preserves the neighborhood of each observation from the original high-dimensional space.
 The aim is to ensure that the local structure of the data is faithfully recapitulated in lower dimensions 
 Further theoretical details can be found in the [original UMAP documentation](https://umap-learn.readthedocs.io/en/latest/how_umap_works.html);
 the implementation here is derived from the C++ code in the [**uwot** R package](https://github.com/jlmelville/uwot).

@@ -3,3 +3,4 @@ build
 *.png
 docs/latex
 docs/html
+docs/*.tag

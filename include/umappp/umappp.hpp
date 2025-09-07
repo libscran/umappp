@@ -3,7 +3,7 @@
 
 /**
  * @file umappp.hpp
- * @brief Overall header for the **umappp** library.
+ * @brief Umbrella header for the **umappp** library.
  */
 
 #include "Options.hpp"
@@ -12,7 +12,7 @@
 
 /**
  * @namespace umappp
- * @brief Methods for UMAP.
+ * @brief Functions for creating UMAP embeddings.
  */
 namespace umappp {}
 

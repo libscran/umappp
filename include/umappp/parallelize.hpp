@@ -1,9 +1,8 @@
-#ifndef UMAPPP_UTILS_HPP
-#define UMAPPP_UTILS_HPP
+#ifndef UMAPPP_PARALLELIZE_HPP
+#define UMAPPP_PARALLELIZE_HPP
 
 /**
- * @file utils.hpp
- *
+ * @file parallelize.hpp
  * @brief Utilities for parallelization.
  */
 
@@ -14,7 +13,7 @@
 namespace umappp {
 
 /**
- * @tparam Task_ Integer type for the number of tasks.
+ * @tparam Task_ Integer type of the number of tasks.
  * @tparam Run_ Function to execute a range of tasks.
  *
  * @param num_workers Number of workers.

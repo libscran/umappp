@@ -21,6 +21,11 @@ jobs:
       with:
         args: -O docs/knncolle.tag https://knncolle.github.io/knncolle/knncolle.tag
 
+    - name: Add subpar tagfile
+      uses: wei/wget@v1
+      with:
+        args: -O docs/subpar.tag https://ltla.github.io/subpar/subpar.tag
+
     - name: Doxygen Action
       uses: mattnotmitt/doxygen-action@v1
       with:

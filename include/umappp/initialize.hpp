@@ -55,21 +55,21 @@ int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
 
 /** 
  * @tparam Index_ Integer type of the neighbor indices.
- * @tparam Float_ Floating-point type for the distances.
+ * @tparam Float_ Floating-point type of the distances.
  *
  * @param x Indices and distances to the nearest neighbors for each observation.
- * Note the expectations in the `NeighborList` documentation.
+ * For each observation, neighbors should be unique and sorted in order of increasing distance; see the `NeighborList` description for details.
  * @param num_dim Number of dimensions of the embedding.
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise it is only used as output.
+ * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise, the input values are ignored.
+ * On output, this contains the initial coordinates of the embedding.
  * @param options Further options.
  * Note that `Options::num_neighbors` is ignored here.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
- * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Float_>
 Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::size_t num_dim, Float_* const embedding, Options options) {
@@ -125,20 +125,20 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
 /**
  * @tparam Index_ Integer type of the observation indices.
  * @tparam Input_ Floating-point type of the input data for the neighbor search.
- * This is not used other than to define the `knncolle::Prebuilt` type.
+ * This only used to define the `knncolle::Prebuilt` type and is otherwise ignored.
  * @tparam Float_ Floating-point type of the input data, neighbor distances and output embedding.
  *
  * @param prebuilt A neighbor search index built on the dataset of interest.
  * @param num_dim Number of dimensions of the UMAP embedding.
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise it is only used as output.
+ * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise, the input values are ignored.
+ * On output, this contains the initial coordinates of the embedding.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
- * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Input_, typename Float_>
 Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, const std::size_t num_dim, Float_* const embedding, Options options) { 
@@ -150,23 +150,23 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float
  * @tparam Index_ Integer type of the observation indices.
  * @tparam Float_ Floating-point type of the input data, neighbor distances and output embedding.
  * @tparam Matrix_ Class of the input matrix for the neighbor search.
- * This should be a `knncolle::SimpleMatrix` or its base class (i.e., `knncolle::Matrix`).
+ * This should be a `knncolle::SimpleMatrix` or `knncolle::Matrix`.
  * 
  * @param data_dim Number of dimensions of the input dataset.
  * @param num_obs Number of observations in the input dataset.
- * @param[in] data Pointer to an array containing the input high-dimensional data as a column-major matrix.
+ * @param[in] data Pointer to an array containing the input dataset as a column-major matrix.
  * Each row corresponds to a dimension (`data_dim`) and each column corresponds to an observation (`num_obs`).
- * @param builder Algorithm to use for the neighbor search.
+ * @param builder Algorithm for the nearest neighbor search.
  * @param num_dim Number of dimensions of the embedding.
  * @param[in, out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise it is only used as output.
+ * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
+ * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
+ * otherwise, the input values are ignored.
+ * On output, this contains the initial coordinates of the embedding.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
- * Further calls to `Status::run()` will update the embeddings in `embedding`.
  */
 template<typename Index_, typename Float_, class Matrix_ = knncolle::Matrix<Index_, Float_> >
 Status<Index_, Float_> initialize(
