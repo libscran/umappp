@@ -107,7 +107,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
     }
 
     // Finding a good a/b pair.
-    if (options.a <= 0 || options.b <= 0) {
+    if (!options.a.has_value() || !options.b.has_value()) {
         const auto found = internal::find_ab(options.spread, options.min_dist);
         options.a = found.first;
         options.b = found.second;

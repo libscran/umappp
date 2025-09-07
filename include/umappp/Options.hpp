@@ -54,6 +54,7 @@ struct Options {
 
     /**
      * Scale of the coordinates of the final low-dimensional embedding.
+     * Ignored if both `Options::a` and `Options::b` are provided.
      */
     double spread = 1;
 
@@ -61,6 +62,7 @@ struct Options {
      * Minimum distance between observations in the final low-dimensional embedding.
      * Smaller values will increase local clustering while larger values favor a more even distribution of observations throughout the low-dimensional space.
      * This is interpreted relative to `Options::spread`.
+     * Ignored if both `Options::a` and `Options::b` are provided.
      */
     double min_dist = 0.1;
 
@@ -68,17 +70,17 @@ struct Options {
      * Positive value for the \f$a\f$ parameter for the fuzzy set membership strength calculations.
      * Larger values yield a sharper decay in membership strength with increasing distance between observations.
      *
-     * If this or `Options::b` is set to zero, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
+     * If this or `Options::b` are unset, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
      */
-    double a = 0;
+    std::optional<double> a;
 
     /**
      * Value in \f$(0, 1)\f$ for the \f$b\f$ parameter for the fuzzy set membership strength calculations.
      * Larger values yield an earlier decay in membership strength with increasing distance between observations.
      *
-     * If this or `Options::a` is set to zero, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
+     * If this or `Options::a` are unset, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
      */
-    double b = 0;
+    std::optional<double> b;
 
     /**
      * Modifier for the repulsive force.
