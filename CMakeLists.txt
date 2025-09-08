@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14...3.25)
 
 project(umappp
-    VERSION 3.0.0
+    VERSION 3.1.0
     DESCRIPTION "A C++ implementation of the UMAP algorithm"
     LANGUAGES CXX)
 
