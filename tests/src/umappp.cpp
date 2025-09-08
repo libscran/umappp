@@ -7,6 +7,7 @@
 
 #include "umappp/initialize.hpp"
 #include "knncolle/knncolle.hpp"
+#include "aarand/aarand.hpp"
 
 #include <random>
 #include <cmath>
@@ -146,7 +147,7 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-TEST(UmapTest, SinglePrecision) {
+TEST(Umap, SinglePrecision) {
     int nobs = 87;
     int k = 5;
     int ndim = 7;
@@ -171,27 +172,66 @@ TEST(UmapTest, SinglePrecision) {
     }
 }
 
-TEST(UmapTest, InitializeVariants) {
-    int nobs = 87;
-    int k = 5;
-    int ndim = 7;
+static umappp::NeighborList<int, double> mock_neighbors(int n, int k) {
+    std::mt19937_64 rng(n * 13 + k);
 
-    std::mt19937_64 rng(nobs * k + 1); 
-    std::normal_distribution<double> dist(0, 1);
-    size_t total = nobs * ndim;
-    std::vector<double> data(total);
-    for (size_t r = 0; r < total; ++r) {
-        data[r] = dist(rng);
+    umappp::NeighborList<int, double> output(n);
+    std::vector<int> sampled(k);
+    for (int i = 0; i < n; ++i) {
+        aarand::sample(n, k, sampled.data(), rng);
+
+        // Forcibly connecting it to the previous observation, or wrapping around to the last observation.
+        // This ensures that we only have 1 component in the graph.
+        const int forced = (i == 0 ? n : i) - 1; 
+        bool found = false;
+        for (const auto o : sampled) {
+            if (o == forced) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            sampled[0] = forced;
+        }
+
+        aarand::shuffle(sampled.begin(), sampled.size(), rng);
+        double dist = 0;
+        for (const int o : sampled) {
+            dist += aarand::standard_uniform(rng);
+            output[i].emplace_back(o, dist);
+        }
     }
 
-    const auto double_builder = knncolle::VptreeBuilder<int, double, double>(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+    return output;
+}
+
+
+TEST(Umap, InitializationSpectralOk) {
+    int nobs = 87;
+    int k = 5;
+
+    const auto nnres = mock_neighbors(nobs, k);
     std::vector<double> ref(nobs * 2);
-    umappp::initialize(ndim, nobs, data.data(), double_builder, 2, ref.data(), umappp::Options());
+    umappp::initialize(nnres, 2, ref.data(), umappp::Options());
+    for (auto o : ref) {
+        EXPECT_NE(o, 0);
+    }
+
+    // Spectral is okay so switching fallback has no effect.
+    {
+        std::vector<double> output(nobs * 2);
+        umappp::initialize(nnres, 2, output.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_random_on_spectral_fail = false;
+            return opt;
+        }());
+        EXPECT_EQ(ref, output);
+    }
 
     // Trying with randoms.
     {
         std::vector<double> output(nobs * 2);
-        auto status = umappp::initialize(ndim, nobs, data.data(), double_builder, 2, output.data(), [&]{
+        auto status = umappp::initialize(nnres, 2, output.data(), [&]{
             umappp::Options opt;
             opt.initialize_method = umappp::InitializeMethod::RANDOM;
             return opt;
@@ -205,7 +245,7 @@ TEST(UmapTest, InitializeVariants) {
     // Trying with pre-existing inputs.
     {
         std::vector<double> output(nobs * 2);
-        auto status = umappp::initialize(ndim, nobs, data.data(), double_builder, 2, output.data(), [&]{
+        auto status = umappp::initialize(nnres, 2, output.data(), [&]{
             umappp::Options opt;
             opt.initialize_method = umappp::InitializeMethod::NONE;
             return opt;
@@ -213,10 +253,66 @@ TEST(UmapTest, InitializeVariants) {
         for (auto o : output) {
             EXPECT_EQ(o, 0);
         }
+        EXPECT_NE(ref, output);
     }
 }
 
-TEST(UmapTest, EpochDecay) {
+TEST(Umap, InitializationSpectralFail) {
+    int nobs1 = 40;
+    int nobs2 = 50;
+    int nobs = nobs1 + nobs2;
+    int k = 5;
+    auto nnres = mock_neighbors(nobs1, k);
+    const auto nnres2 = mock_neighbors(nobs2, k);
+
+    // Combining the components.
+    for (const auto& nn : nnres2) {
+        nnres.push_back(nn);
+        for (auto& n : nnres.back()) {
+            n.first += nobs1; // adjusting the neighbor index.
+        }
+    }
+
+    // Default fallback is random.
+    {
+        std::vector<double> ref(nobs * 2);
+        umappp::initialize(nnres, 2, ref.data(), umappp::Options());
+        for (auto o : ref) {
+            EXPECT_NE(o, 0);
+        }
+
+        std::vector<double> output(nobs * 2);
+        auto status = umappp::initialize(nnres, 2, output.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_method = umappp::InitializeMethod::RANDOM;
+            return opt;
+        }());
+        EXPECT_EQ(ref, output);
+    }
+
+    // Fallback to pre-existing inputs.
+    {
+        std::vector<double> ref(nobs * 2);
+        umappp::initialize(nnres, 2, ref.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_random_on_spectral_fail = false;
+            return opt;
+        }());
+
+        std::vector<double> output(nobs * 2);
+        auto status = umappp::initialize(nnres, 2, output.data(), [&]{
+            umappp::Options opt;
+            opt.initialize_method = umappp::InitializeMethod::NONE;
+            return opt;
+        }());
+        for (auto o : output) {
+            EXPECT_EQ(o, 0);
+        }
+        EXPECT_EQ(ref, output);
+    }
+}
+
+TEST(Umap, EpochDecay) {
     EXPECT_EQ(umappp::internal::choose_num_epochs({}, 1000), 500);
     EXPECT_LT(umappp::internal::choose_num_epochs({}, 20000), 500);
     EXPECT_EQ(umappp::internal::choose_num_epochs({}, 10000000), 201);

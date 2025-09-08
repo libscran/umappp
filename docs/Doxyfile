@@ -2329,7 +2329,8 @@ SKIP_FUNCTION_MACROS   = YES
 # run, you must also specify the path to the tagfile here.
 
 TAGFILES               = knncolle.tag=https://knncolle.github.io/knncolle \
-                         subpar.tag=https://subpar.github.io/subpar
+                         irlba.tag=https://ltla.github.io/CppIrlba \
+                         subpar.tag=https://ltla.github.io/subpar
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create a
 # tag file that is based on the input files it reads. See section "Linking to

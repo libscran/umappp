@@ -7,13 +7,15 @@ id <- sample(nrow(y), 500, replace=TRUE)
 mat <- y[id,] + matrix(rnorm(5000), ncol=10)
 
 library(BiocNeighbors)
-res <- findKNN(mat, k=15) 
+k <- 15
+res <- findKNN(mat, k=k) 
 
 library(uwot)
 library(testthat)
 
-test_that("initialization is done correctly", {
-    obs <- umappp:::initialize_umap(t(res$index - 1L), t(res$distance), ndim=2)
+test_that("probabilities are computed correctly", {
+    obs <- umappp:::create_probabilities(t(res$index - 1L), t(res$distance))
+    obsM <- new("dgCMatrix", x=obs$x, i=obs$i, p=obs$p, Dim=c(nrow(mat), nrow(mat)))
 
     # Reference calculation.
     d2sr <- uwot:::data2set(mat, NULL, metric="precomputed", method="umap",
@@ -26,15 +28,38 @@ test_that("initialization is done correctly", {
         ret_sigma=FALSE)
 
     V <- d2sr$V
-    init <- uwot:::spectral_init(d2sr$V)
-    rescale <- sign(colSums(init)/colSums(obs[[1]]))
-    init <- sweep(init, 2, rescale, "*")
-    expect_equal(init, obs[[1]], tol=1e-3) # higher tolerance required because uwot jiggles the inputs a bit.
+    expect_equal(obsM, V)
+})
+
+test_that("spectral initialization is done correctly", {
+    # Force connectedness in a single component so that spectral initialization won't fail.
+    for (i in seq_len(nrow(res$index))) {
+        target <- if (i == 1L) nrow(res$index) else i - 1L
+        if (target %in% res$index[i,]) {
+            next
+        }
+        res$index[i,k] <- target
+    }
+
+    test <- umappp:::create_probabilities(t(res$index - 1L), t(res$distance))
+    testM <- new("dgCMatrix", x=test$x, i=test$i, p=test$p, Dim=c(nrow(mat), nrow(mat)))
+    obs <- umappp:::initialize_umap(t(res$index - 1L), t(res$distance), ndim=2)
+
+    margins <- sqrt(Matrix::colSums(testM))
+    norm.lap <- -Matrix::t(Matrix::t(testM/margins)/margins)
+    diag(norm.lap) <- 1 
+    ires <- svd(norm.lap)
+    init <- ires$v[,500 - 1:2]
+    init <- init * 10 / max(abs(init))
+
+    sign.mult <- sign(colSums(init) / colSums(obs[[1]]))
+    init <- t(t(init) * sign.mult)
+    expect_equal(init, obs[[1]], tol=1e-3) # higher tolerance required due to numerical differences from IRLBA.
 
     n_epochs <- 500
-    V@x[V@x < max(V@x)/n_epochs] <- 0
-    V <- Matrix::drop0(V)
-    epochs_per_sample <- uwot:::make_epochs_per_sample(V@x, n_epochs)
+    testM@x[testM@x < max(testM@x)/n_epochs] <- 0
+    testM <- Matrix::drop0(testM)
+    epochs_per_sample <- uwot:::make_epochs_per_sample(testM@x, n_epochs)
     expect_equal(epochs_per_sample, obs[[2]][[3]])
 })
 

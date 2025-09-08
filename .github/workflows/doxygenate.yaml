@@ -21,6 +21,11 @@ jobs:
       with:
         args: -O docs/knncolle.tag https://knncolle.github.io/knncolle/knncolle.tag
 
+    - name: Add irlba tagfile
+      uses: wei/wget@v1
+      with:
+        args: -O docs/irlba.tag https://ltla.github.io/CppIrlba/irlba.tag
+
     - name: Add subpar tagfile
       uses: wei/wget@v1
       with:

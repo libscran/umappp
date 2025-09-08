@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "sanisizer/sanisizer.hpp"
+#include "irlba/irlba.hpp"
 
 /**
  * @file Options.hpp
@@ -99,6 +100,11 @@ struct Options {
      * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
      */
     bool initialize_random_on_spectral_fail = true;
+
+    /**
+     * Further options to pass to `irlba::compute()` for spectral initialization.
+     */
+    irlba::Options initialize_spectral_irlba_options;
 
     /**
      * Maximum absolute magnitude of the coordinates after spectral initialization.

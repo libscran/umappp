@@ -10,6 +10,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// create_probabilities
+Rcpp::List create_probabilities(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances);
+RcppExport SEXP _umappp_create_probabilities(SEXP indicesSEXP, SEXP distancesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type indices(indicesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type distances(distancesSEXP);
+    rcpp_result_gen = Rcpp::wrap(create_probabilities(indices, distances));
+    return rcpp_result_gen;
+END_RCPP
+}
 // initialize_umap
 Rcpp::List initialize_umap(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, int ndim);
 RcppExport SEXP _umappp_initialize_umap(SEXP indicesSEXP, SEXP distancesSEXP, SEXP ndimSEXP) {
@@ -41,6 +52,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_umappp_create_probabilities", (DL_FUNC) &_umappp_create_probabilities, 2},
     {"_umappp_initialize_umap", (DL_FUNC) &_umappp_initialize_umap, 3},
     {"_umappp_run_umap", (DL_FUNC) &_umappp_run_umap, 8},
     {NULL, NULL, 0}

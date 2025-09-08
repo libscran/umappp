@@ -23,7 +23,7 @@ namespace internal {
  * It is assumed that 'edges' has already been symmetrized.
  */
 template<typename Index_, typename Float_>
-bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const Y, const int nthreads, double scale) {
+bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const Y, const irlba::Options& irlba_opt, const int nthreads, double scale) {
     const Index_ nobs = edges.size();
     auto sums = sanisizer::create<std::vector<double> >(nobs); // we deliberately use double-precision to avoid difficult problems from overflow/underflow inside IRLBA.
     std::vector<std::size_t> pointers(sanisizer::sum<typename std::vector<std::size_t>::size_type>(nobs, 1));
@@ -104,7 +104,10 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::
     > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
     irlba::EigenThreadScope tscope(nthreads);
 
-    const auto actual = irlba::compute(mat, num_dim + 1, irlba::Options{});
+    const auto actual = irlba::compute(mat, num_dim + 1, irlba_opt);
+    if (!actual.converged) {
+        return false;
+    }
     const auto ev = actual.U.rightCols(num_dim); 
 
     // Getting the maximum value; this is assumed to be non-zero,
@@ -117,6 +120,7 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::
             Y[sanisizer::nd_offset<std::size_t>(d, num_dim, c)] = ev.coeff(c, d) * expansion;
         }
     }
+
     return true;
 }
 
@@ -153,6 +157,7 @@ bool spectral_init(
     const NeighborList<Index_, Float_>& edges,
     const std::size_t num_dim,
     Float_* const vals,
+    const irlba::Options& irlba_opt,
     const int nthreads,
     const double scale,
     const bool jitter,
@@ -163,7 +168,7 @@ bool spectral_init(
         return false;
     }
 
-    if (!normalized_laplacian(edges, num_dim, vals, nthreads, scale)) {
+    if (!normalized_laplacian(edges, num_dim, vals, irlba_opt, nthreads, scale)) {
         return false;
     }
 
