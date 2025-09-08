@@ -60,12 +60,11 @@ int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
  * @param x Indices and distances to the nearest neighbors for each observation.
  * For each observation, neighbors should be unique and sorted in order of increasing distance; see the `NeighborList` description for details.
  * @param num_dim Number of dimensions of the embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * @param[out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise, the input values are ignored.
  * On output, this contains the initial coordinates of the embedding.
+ * Existing values in this array will not be modified if `Options::initialize_method = InitializeMethod::NONE`, 
+ * or if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails and `Options::initialize_random_on_spectral_fail = false`.
  * @param options Further options.
  * Note that `Options::num_neighbors` is ignored here.
  *
@@ -131,12 +130,11 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
  *
  * @param prebuilt A neighbor search index built on the dataset of interest.
  * @param num_dim Number of dimensions of the UMAP embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * @param[out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise, the input values are ignored.
  * On output, this contains the initial coordinates of the embedding.
+ * Existing values in this array will not be modified if `Options::initialize_method = InitializeMethod::NONE`, 
+ * or if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails and `Options::initialize_random_on_spectral_fail = false`.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.
@@ -159,12 +157,11 @@ Status<Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float
  * Each row corresponds to a dimension (`data_dim`) and each column corresponds to an observation (`num_obs`).
  * @param builder Algorithm for the nearest neighbor search.
  * @param num_dim Number of dimensions of the embedding.
- * @param[in, out] embedding Pointer to an array in which to store the embedding.
+ * @param[out] embedding Pointer to an array in which to store the embedding.
  * This is treated as a column-major matrix where rows are dimensions (`num_dim`) and columns are observations (`x.size()`).
- * Existing values in this array will be used as input if `Options::initialize_method = InitializeMethod::NONE`, 
- * and may be used as input if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_random_on_spectral_fail = false`;
- * otherwise, the input values are ignored.
  * On output, this contains the initial coordinates of the embedding.
+ * Existing values in this array will not be modified if `Options::initialize_method = InitializeMethod::NONE`, 
+ * or if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails and `Options::initialize_random_on_spectral_fail = false`.
  * @param options Further options.
  *
  * @return A `Status` object containing the initial state of the UMAP algorithm.

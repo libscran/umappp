@@ -18,6 +18,8 @@ namespace umappp {
  * How should the initial coordinates of the embedding be obtained?
  *
  * - `SPECTRAL`: spectral decomposition of the normalized graph Laplacian.
+ *   Specifically, the initial coordinates are defined from the eigenvectors corresponding to the smallest non-zero eigenvalues.
+ *   This fails in the presence of multiple graph components or if the approximate SVD (via `irlba::compute()`) fails to converge.
  * - `RANDOM`: fills the embedding with random draws from a normal distribution.
  * - `NONE`: uses existing values in the supplied embedding array.
  */
@@ -68,16 +70,16 @@ struct Options {
     double min_dist = 0.1;
 
     /**
-     * Positive value for the \f$a\f$ parameter for the fuzzy set membership strength calculations.
-     * Larger values yield a sharper decay in membership strength with increasing distance between observations.
+     * Positive value for the \f$a\f$ parameter for the fuzzy set membership confidence calculations.
+     * Larger values yield a sharper decay in membership confidence with increasing distance between observations.
      *
      * If this or `Options::b` are unset, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
      */
     std::optional<double> a;
 
     /**
-     * Value in \f$(0, 1)\f$ for the \f$b\f$ parameter for the fuzzy set membership strength calculations.
-     * Larger values yield an earlier decay in membership strength with increasing distance between observations.
+     * Value in \f$(0, 1)\f$ for the \f$b\f$ parameter for the fuzzy set membership confidence calculations.
+     * Larger values yield an earlier decay in membership confidence with increasing distance between observations.
      *
      * If this or `Options::a` are unset, a suitable value for this parameter is automatically determined from `Options::spread` and `Options::min_dist`.
      */
@@ -97,7 +99,7 @@ struct Options {
     /**
      * Whether to fall back to random sampling from a normal distribution (i.e., same as `InitializeMethod::RANDOM`) if spectral initialization fails.
      * If `false`, any existing values in the input array will be used, i.e., same as `InitializeMethod::NONE`.
-     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails.
      */
     bool initialize_random_on_spectral_fail = true;
 
@@ -108,35 +110,38 @@ struct Options {
 
     /**
      * Maximum absolute magnitude of the coordinates after spectral initialization.
-     * All initial coordinates are scaled such that the maximum of the absolute values magnitude is equal to `initialize_spectral_scale`.
+     * All initial coordinates are scaled such that the maximum of their absolute values is equal to `initialize_spectral_scale`.
      * This ensures that outlier observations will not have large absolute distances that may interfere with optimization.
-     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization does not fail.
      */
     double initialize_spectral_scale = 10;
 
     /**
      * Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting).
      * This is done using normally-distributed noise of mean zero and standard deviation of `Options::initialize_spectral_jitter_sd`.
-     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization does not fail.
      */
     bool initialize_spectral_jitter = false;
 
     /**
      * Standard deviation of the jitter to apply after spectral initialization.
-     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_spectral_jitter = true`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization does not fail and `Options::initialize_spectral_jitter = true`.
      */
     double initialize_spectral_jitter_sd = 0.0001;
 
     /**
-     * Scale of the randomly generated coordinates when `Options::initialize_method = InitializeMethod::RANDOM`.
-     * Coordinates are sampled from a uniform distribution from \f$[-x, x)\f$ where \f$x\f$ is `initialize_random_scale`.
+     * Scale of the randomly generated initial coordinates.
+     * Specifically, Coordinates are sampled from a uniform distribution from \f$[-x, x)\f$ where \f$x\f$ is `initialize_random_scale`.
+     * Only relevant if `Options::initialize_method = InitializeMethod::RANDOM`,
+     * or `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails and `Options::initialize_random_on_spectral_fail = true`.
      */
     double initialize_random_scale = 10;
 
     /**
-     * Seed for the random number generation during initialization.
-     * Only relevant if `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_spectral_jitter = true`,
-     * or `Options::initialize_method = InitializeMethod::RANDOM`.
+     * Seed for the random number generator during initialization.
+     * Only relevant if `Options::initialize_method = InitializeMethod::RANDOM`;
+     * or `Options::initialize_method = InitializeMethod::SPECTRAL` and `Options::initialize_spectral_jitter = true`;
+     * or `Options::initialize_method = InitializeMethod::SPECTRAL` and spectral initialization fails and `Options::initialize_random_on_spectral_fail = true`.
      */
     typename RngEngine::result_type initialize_seed = sanisizer::cap<typename RngEngine::result_type>(9876543210);
 
@@ -146,7 +151,8 @@ struct Options {
      * If no value is provided, one is automatically chosen based on the size of the dataset:
      *
      * - For datasets with no more than 10000 observations, the number of epochs is set to 500.
-     * - For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200.
+     * - For larger datasets with more than 10000 observations, the number of epochs is inversely proportional to the number of observations.
+     *   Specifically, the number of epochs starts at 500 for 10000 observations and decreases asymptotically to a lower limit of 200.
      *   This choice aims to reduce computational work for very large datasets. 
      */
     std::optional<int> num_epochs;
