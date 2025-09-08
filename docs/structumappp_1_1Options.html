@@ -182,7 +182,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Positive value for the \(a\) parameter for the fuzzy set membership strength calculations. Larger values yield a sharper decay in membership strength with increasing distance between observations.</p>
+<p>Positive value for the \(a\) parameter for the fuzzy set membership confidence calculations. Larger values yield a sharper decay in membership confidence with increasing distance between observations.</p>
 <p>If this or <code><a class="el" href="#a50f96db3f65371291fd37af37befbd96">Options::b</a></code> are unset, a suitable value for this parameter is automatically determined from <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
 
 </div>
@@ -198,7 +198,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Value in \((0, 1)\) for the \(b\) parameter for the fuzzy set membership strength calculations. Larger values yield an earlier decay in membership strength with increasing distance between observations.</p>
+<p>Value in \((0, 1)\) for the \(b\) parameter for the fuzzy set membership confidence calculations. Larger values yield an earlier decay in membership confidence with increasing distance between observations.</p>
 <p>If this or <code><a class="el" href="#a2f380ac348f039119329ffc5f6efc590">Options::a</a></code> are unset, a suitable value for this parameter is automatically determined from <code><a class="el" href="#ac0cfcd94c28783773138d3a98aec4ab5">Options::spread</a></code> and <code><a class="el" href="#a77eae193d6a7b4aa0e7ead6ec744efa2">Options::min_dist</a></code>. </p>
 
 </div>
@@ -244,7 +244,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to fall back to random sampling from a normal distribution (i.e., same as <code>InitializeMethod::RANDOM</code>) if spectral initialization fails. If <code>false</code>, any existing values in the input array will be used, i.e., same as <code>InitializeMethod::NONE</code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
+<p>Whether to fall back to random sampling from a normal distribution (i.e., same as <code>InitializeMethod::RANDOM</code>) if spectral initialization fails. If <code>false</code>, any existing values in the input array will be used, i.e., same as <code>InitializeMethod::NONE</code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization fails. </p>
 
 </div>
 </div>
@@ -259,7 +259,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Scale of the randomly generated coordinates when <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>. Coordinates are sampled from a uniform distribution from \([-x, x)\) where \(x\) is <code>initialize_random_scale</code>. </p>
+<p>Scale of the randomly generated initial coordinates. Specifically, Coordinates are sampled from a uniform distribution from \([-x, x)\) where \(x\) is <code>initialize_random_scale</code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>, or <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization fails and <code><a class="el" href="#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = true</code>. </p>
 
 </div>
 </div>
@@ -274,7 +274,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Seed for the random number generation during initialization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="#a4ed2af4df0eda07e9f2b0ec295a0bb81">Options::initialize_spectral_jitter</a> = true</code>, or <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>. </p>
+<p>Seed for the random number generator during initialization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::RANDOM</code>; or <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="#a4ed2af4df0eda07e9f2b0ec295a0bb81">Options::initialize_spectral_jitter</a> = true</code>; or <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization fails and <code><a class="el" href="#ae56c083ae1f66e42ab645ac9efc59823">Options::initialize_random_on_spectral_fail</a> = true</code>. </p>
 
 </div>
 </div>
@@ -304,7 +304,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting). This is done using normally-distributed noise of mean zero and standard deviation of <code><a class="el" href="#a909d3b00da81949bb405ce07ce8e41cd">Options::initialize_spectral_jitter_sd</a></code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
+<p>Whether to jitter the coordinates after spectral initialization to separate duplicate observations (e.g., to avoid overplotting). This is done using normally-distributed noise of mean zero and standard deviation of <code><a class="el" href="#a909d3b00da81949bb405ce07ce8e41cd">Options::initialize_spectral_jitter_sd</a></code>. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization does not fail. </p>
 
 </div>
 </div>
@@ -319,7 +319,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Standard deviation of the jitter to apply after spectral initialization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and <code><a class="el" href="#a4ed2af4df0eda07e9f2b0ec295a0bb81">Options::initialize_spectral_jitter</a> = true</code>. </p>
+<p>Standard deviation of the jitter to apply after spectral initialization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization does not fail and <code><a class="el" href="#a4ed2af4df0eda07e9f2b0ec295a0bb81">Options::initialize_spectral_jitter</a> = true</code>. </p>
 
 </div>
 </div>
@@ -334,7 +334,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Maximum absolute magnitude of the coordinates after spectral initialization. All initial coordinates are scaled such that the maximum of the absolute values magnitude is equal to <code>initialize_spectral_scale</code>. This ensures that outlier observations will not have large absolute distances that may interfere with optimization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code>. </p>
+<p>Maximum absolute magnitude of the coordinates after spectral initialization. All initial coordinates are scaled such that the maximum of their absolute values is equal to <code>initialize_spectral_scale</code>. This ensures that outlier observations will not have large absolute distances that may interfere with optimization. Only relevant if <code><a class="el" href="#a53dbb1c346dfdbbc10a3c33763e456d6">Options::initialize_method</a> = InitializeMethod::SPECTRAL</code> and spectral initialization does not fail. </p>
 
 </div>
 </div>
@@ -427,7 +427,7 @@ Public Attributes</h2></td></tr>
 <p>Number of epochs for the gradient descent, i.e., optimization iterations. Larger values improve accuracy at the cost of increased compute time. If no value is provided, one is automatically chosen based on the size of the dataset:</p>
 <ul>
 <li>For datasets with no more than 10000 observations, the number of epochs is set to 500.</li>
-<li>For larger datasets, the number of epochs decreases from 500 according to the number of cells beyond 10000, to a lower limit of 200. This choice aims to reduce computational work for very large datasets. </li>
+<li>For larger datasets with more than 10000 observations, the number of epochs is inversely proportional to the number of observations. Specifically, the number of epochs starts at 500 for 10000 observations and decreases asymptotically to a lower limit of 200. This choice aims to reduce computational work for very large datasets. </li>
 </ul>
 
 </div>
