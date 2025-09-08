@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['subpar_0',['subpar',['https://subpar.github.io/subpar/namespacesubpar.html',1,'']]]
+  ['knncolle_0',['knncolle',['https://knncolle.github.io/knncolle/namespaceknncolle.html',1,'']]]
 ];

@@ -1,17 +1,18 @@
 var searchData=
 [
-  ['negative_5fsample_5frate_0',['negative_sample_rate',['../structumappp_1_1Options.html#a10686bad854f25acf6542787b5d0a071',1,'umappp::Options']]],
-  ['neighborlist_1',['NeighborList',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b',1,'knncolle::NeighborList'],['../namespaceumappp.html#abef8d351328ea79485008055c3730dcc',1,'umappp::NeighborList']]],
-  ['neighborlist_2ehpp_2',['NeighborList.hpp',['../NeighborList_8hpp.html',1,'']]],
-  ['neighborqueue_3',['NeighborQueue',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html',1,'knncolle::NeighborQueue&lt; typename Index_, typename Distance_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#abc66097ed7fa8f7cbbd0ee82328b9152',1,'knncolle::NeighborQueue::NeighborQueue()']]],
-  ['neighborqueue_2ehpp_4',['NeighborQueue.hpp',['https://knncolle.github.io/knncolle/NeighborQueue_8hpp.html',1,'']]],
-  ['new_5fextractor_5',['new_extractor',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html#a4ab89fa80a485216d6890c4ca97ac51e',1,'knncolle::Matrix::new_extractor()'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html#a4d4300b24909ffd9916a29b095a8edb5',1,'knncolle::SimpleMatrix::new_extractor()']]],
-  ['next_6',['next',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html#a3d82e911202727619399f7dec238b28a',1,'knncolle::MatrixExtractor::next()'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrixExtractor.html#a41129e636ddcf0dcf5f80dd21568e72b',1,'knncolle::SimpleMatrixExtractor::next()']]],
-  ['normalize_7',['normalize',['https://knncolle.github.io/knncolle/classknncolle_1_1DistanceMetric.html#a4a468569d0823bf3211b2ee5c46a81d9',1,'knncolle::DistanceMetric']]],
-  ['normalizedmatrix_8',['NormalizedMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html#a1098d7699574f9d509508b6a1fe23a32',1,'knncolle::L2NormalizedBuilder']]],
-  ['num_5fdimensions_9',['num_dimensions',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforcePrebuilt.html#af1f2788bc10105e686b9ed2ab831d154',1,'knncolle::BruteforcePrebuilt::num_dimensions()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html#a3c1fdc018a4e777cb69945c0861d56e9',1,'knncolle::Matrix::num_dimensions()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#ac041712392f74d5fd8f030e2c0adcdc6',1,'knncolle::Prebuilt::num_dimensions()'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html#a1503a47fa9b74ad63d780aaec2943c04',1,'knncolle::SimpleMatrix::num_dimensions()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreePrebuilt.html#a137105c6ffa68f8aef6c7b864623e302',1,'knncolle::VptreePrebuilt::num_dimensions()'],['../classumappp_1_1Status.html#a9306a1a34e3e5bd1290f121d7475098b',1,'umappp::Status::num_dimensions()']]],
-  ['num_5fepochs_10',['num_epochs',['../structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26',1,'umappp::Options::num_epochs'],['../classumappp_1_1Status.html#ac03b32aa0acd6f912afdc589c5fea105',1,'umappp::Status::num_epochs()']]],
-  ['num_5fneighbors_11',['num_neighbors',['../structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520',1,'umappp::Options']]],
-  ['num_5fobservations_12',['num_observations',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforcePrebuilt.html#aa2058e2a905ac6c83389c5ad5b062049',1,'knncolle::BruteforcePrebuilt::num_observations()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html#a7b0961f03e8b232a1bfb9d86e171eaab',1,'knncolle::Matrix::num_observations()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#a560fec57d6ec36d288b6cd80e9f4c7bd',1,'knncolle::Prebuilt::num_observations()'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html#a9f504a7ae05efc06f4d69510df9a3daa',1,'knncolle::SimpleMatrix::num_observations()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreePrebuilt.html#a4ddff52bf80e043c07a43281b067a935',1,'knncolle::VptreePrebuilt::num_observations()'],['../classumappp_1_1Status.html#a9e26e13bb55ddec29f22a61a8347aa62',1,'umappp::Status::num_observations()']]],
-  ['num_5fthreads_13',['num_threads',['../structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa',1,'umappp::Options']]]
+  ['make_5fscaled_0',['make_Scaled',['https://ltla.github.io/CppIrlba/namespaceirlba.html#a21118aed5175a55b5b277edcd291aa27',1,'irlba']]],
+  ['manhattandistance_1',['ManhattanDistance',['https://knncolle.github.io/knncolle/classknncolle_1_1ManhattanDistance.html',1,'knncolle']]],
+  ['matrix_2',['Matrix',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html',1,'knncolle']]],
+  ['matrix_2ehpp_3',['Matrix.hpp',['https://knncolle.github.io/knncolle/Matrix_8hpp.html',1,'']]],
+  ['matrix_3c_20index_5f_2c_20data_5f_20_3e_4',['Matrix&lt; Index_, Data_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html',1,'knncolle']]],
+  ['matrix_3c_20index_5f_2c_20normalized_5f_20_3e_5',['Matrix&lt; Index_, Normalized_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html',1,'knncolle']]],
+  ['matrixextractor_6',['MatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html',1,'knncolle']]],
+  ['matrixextractor_3c_20data_5f_20_3e_7',['MatrixExtractor&lt; Data_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html',1,'knncolle']]],
+  ['matrixextractor_3c_20normalized_5f_20_3e_8',['MatrixExtractor&lt; Normalized_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html',1,'knncolle']]],
+  ['max_5fiterations_9',['max_iterations',['https://ltla.github.io/CppIrlba/structirlba_1_1Options.html#afc7f9a04a63cc7033c2103cdebab3612',1,'irlba::Options']]],
+  ['min_5fdist_10',['min_dist',['../structumappp_1_1Options.html#a77eae193d6a7b4aa0e7ead6ec744efa2',1,'umappp::Options']]],
+  ['mix_5fratio_11',['mix_ratio',['../structumappp_1_1Options.html#a0a08f1f212c33576eec90cb8eb2a28e8',1,'umappp::Options']]],
+  ['mockmatrix_12',['MockMatrix',['https://ltla.github.io/CppIrlba/classirlba_1_1MockMatrix.html',1,'irlba']]],
+  ['mockmatrix_2ehpp_13',['MockMatrix.hpp',['https://ltla.github.io/CppIrlba/MockMatrix_8hpp.html',1,'']]],
+  ['multiply_14',['multiply',['https://ltla.github.io/CppIrlba/classirlba_1_1MockMatrix.html#af184ef507c5ceb99c89d782075cb5c1c',1,'irlba::MockMatrix']]]
 ];

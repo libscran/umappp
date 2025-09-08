@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['range_2ehpp_0',['range.hpp',['https://subpar.github.io/subpar/range_8hpp.html',1,'']]],
-  ['report_5fall_5fneighbors_2ehpp_1',['report_all_neighbors.hpp',['https://knncolle.github.io/knncolle/report__all__neighbors_8hpp.html',1,'']]]
+  ['parallel_2ehpp_0',['parallel.hpp',['https://ltla.github.io/CppIrlba/parallel_8hpp.html',1,'']]],
+  ['parallelize_2ehpp_1',['parallelize.hpp',['../parallelize_8hpp.html',1,'']]],
+  ['prebuilt_2ehpp_2',['Prebuilt.hpp',['https://knncolle.github.io/knncolle/Prebuilt_8hpp.html',1,'']]]
 ];

@@ -1,9 +1,11 @@
 <map id="umappp/Options.hpp" name="umappp/Options.hpp">
-<area shape="rect" id="Node000001" title="Options for the UMAP algorithm." alt="" coords="57,5,197,31"/>
+<area shape="rect" id="Node000001" title="Options for the UMAP algorithm." alt="" coords="123,5,264,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,34,66,71,63,67,110,29"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="168,34,79,75,77,70,166,29"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="94,79,160,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="130,31,130,63,124,63,124,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,33,150,69,147,66,181,29"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="184,79,336,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="151,29,225,69,223,74,148,34"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="206,29,240,66,237,69,203,33"/>
+<area shape="rect" id="Node000005" href="/github/workspace/docs/irlba.tag$irlba_8hpp.html" title=" " alt="" coords="360,79,457,105"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="231,29,358,71,356,76,229,34"/>
 </map>

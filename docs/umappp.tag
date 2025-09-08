@@ -118,6 +118,13 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
+      <type>irlba::Options</type>
+      <name>initialize_spectral_irlba_options</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>ab59ecfb67968e7c7085406de23f6e3b5</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
       <type>double</type>
       <name>initialize_spectral_scale</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
