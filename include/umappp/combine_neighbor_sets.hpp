@@ -63,7 +63,7 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_rat
                 if (mix_ratio == 1) {
                     target.emplace_back(i, y.second);
                 } else if (mix_ratio == 0) {
-                    y.second = 0; // mark for deletion.
+                    y.second = 0; // mark for deletion once the loop is done; we can't do it here as we would invalid 'last' and 'original'. 
                 } else {
                     y.second *= mix_ratio;
                     target.emplace_back(i, y.second);
@@ -74,15 +74,19 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_rat
 
     // Removing zero probabilities.
     if (mix_ratio == 0) {
-        for (auto& current : x) {
-            typename std::remove_reference<decltype(current)>::type replacement;
-            replacement.reserve(current.size());
-            for (const auto& y : current) {
-                if (y.second) {
-                    replacement.push_back(y);
+        for (Index_ i = 0; i < num_obs; ++i) {
+            auto& current = x[i];
+            auto current_size = current.size();
+            decltype(current_size) counter = 0;
+            for (decltype(current_size) j = 0; j < current_size; ++j) {
+                if (current[j].second != 0) {
+                    if (counter != j) {
+                        current[counter] = current[j];
+                    }
+                    ++counter;
                 }
             }
-            std::swap(current, replacement);
+            current.resize(counter);
         }
     }
 
