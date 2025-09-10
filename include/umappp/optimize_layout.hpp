@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <type_traits>
 
 #ifndef UMAPPP_NO_PARALLEL_OPTIMIZATION
 #include <thread>
@@ -21,15 +20,11 @@
 #include "sanisizer/sanisizer.hpp"
 
 #include "NeighborList.hpp"
+#include "utils.hpp"
 
 namespace umappp {
 
 namespace internal {
-
-template<typename Input_>
-std::remove_cv_t<std::remove_reference_t<Input_> > I(const Input_ x) {
-    return x;
-}
 
 template<typename Index_, typename Float_>
 struct EpochData {

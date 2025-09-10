@@ -12,6 +12,7 @@
 
 #include "NeighborList.hpp"
 #include "Options.hpp"
+#include "utils.hpp"
 
 namespace umappp {
 
@@ -97,9 +98,9 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::
      */
 
     const irlba::ParallelSparseMatrix<
-        decltype(values),
-        decltype(indices),
-        decltype(pointers)
+        decltype(I(values)),
+        decltype(I(indices)),
+        decltype(I(pointers))
         // Eigen::VectorXd // TODO: deliberately double-precision here, but not available in 2.0.0
     > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
     irlba::EigenThreadScope tscope(nthreads);
@@ -131,7 +132,7 @@ bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
     }
 
     // We assume that 'edges' is symmetric so we can use a simple recursive algorithm.
-    decltype(edges.size()) in_component = 1;
+    decltype(I(edges.size())) in_component = 1;
     std::vector<Index_> remaining(1, 0);
     std::vector<unsigned char> traversed(edges.size(), 0);
     traversed[0] = 1;

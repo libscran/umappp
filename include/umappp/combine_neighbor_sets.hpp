@@ -8,6 +8,7 @@
 #include "sanisizer/sanisizer.hpp"
 
 #include "NeighborList.hpp"
+#include "utils.hpp"
 
 namespace umappp {
 
@@ -77,8 +78,8 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_rat
         for (Index_ i = 0; i < num_obs; ++i) {
             auto& current = x[i];
             auto current_size = current.size();
-            decltype(current_size) counter = 0;
-            for (decltype(current_size) j = 0; j < current_size; ++j) {
+            decltype(I(current_size)) counter = 0;
+            for (decltype(I(current_size)) j = 0; j < current_size; ++j) {
                 if (current[j].second != 0) {
                     if (counter != j) {
                         current[counter] = current[j];
