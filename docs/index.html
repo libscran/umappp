@@ -106,9 +106,15 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"><span class="comment">// Assuming `data` contains high-dimensional data in column-major format,</span></div>
 <div class="line"><span class="comment">// i.e., each column is a observation and each row is a dimension.</span></div>
-<div class="line"><span class="keywordtype">int</span> nrow = 10;</div>
-<div class="line"><span class="keywordtype">int</span> ncol = 2000;</div>
-<div class="line">std::vector&lt;double&gt; data(nrow * ncol);</div>
+<div class="line"><span class="comment">// We fill it with some random noise for the purposes of this example.</span></div>
+<div class="line"><span class="keywordtype">int</span> ndim = 10;</div>
+<div class="line"><span class="keywordtype">int</span> nobs = 2000;</div>
+<div class="line">std::vector&lt;double&gt; data(ndim * nobs);</div>
+<div class="line">std::mt19937_64 rng(1000);</div>
+<div class="line">std::normal_distribution&lt;double&gt; ndist;</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; x : data) {</div>
+<div class="line">    x = ndist(rng);</div>
+<div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Configuring the neighbor search algorithm; here, we&#39;ll be using an exact</span></div>
 <div class="line"><span class="comment">// search based on VP trees with a Euclidean distance metric.</span></div>
@@ -118,7 +124,7 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"><span class="comment">// Set number of dimensions in the output embedding.</span></div>
 <div class="line"><span class="keywordtype">size_t</span> out_dim = 2;</div>
-<div class="line">std::vector&lt;double&gt; embedding(npts * out_dim);</div>
+<div class="line">std::vector&lt;double&gt; embedding(nobs * out_dim);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Initialize the UMAP state:</span></div>
 <div class="line"><a class="code hl_struct" href="structumappp_1_1Options.html">umappp::Options</a> opt;</div>
