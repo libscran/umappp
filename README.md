@@ -23,9 +23,15 @@ Given a pointer to a column-major input array with `ndim` rows and `nobs` column
 
 // Assuming `data` contains high-dimensional data in column-major format,
 // i.e., each column is a observation and each row is a dimension.
-int nrow = 10;
-int ncol = 2000;
-std::vector<double> data(nrow * ncol);
+// We fill it with some random noise for the purposes of this example.
+int ndim = 10;
+int nobs = 2000;
+std::vector<double> data(ndim * nobs);
+std::mt19937_64 rng(1000);
+std::normal_distribution<double> ndist;
+for (auto& x : data) {
+    x = ndist(rng);
+}
 
 // Configuring the neighbor search algorithm; here, we'll be using an exact
 // search based on VP trees with a Euclidean distance metric.
@@ -35,7 +41,7 @@ knncolle::VptreeBuilder<int, double, double> vp_builder(
 
 // Set number of dimensions in the output embedding.
 size_t out_dim = 2;
-std::vector<double> embedding(npts * out_dim);
+std::vector<double> embedding(nobs * out_dim);
 
 // Initialize the UMAP state:
 umappp::Options opt;
