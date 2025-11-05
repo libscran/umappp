@@ -118,10 +118,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>irlba::Options</type>
+      <type>irlba::Options&lt; Eigen::VectorXd &gt;</type>
       <name>initialize_spectral_irlba_options</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>ab59ecfb67968e7c7085406de23f6e3b5</anchor>
+      <anchor>a22fa6e0b34661f83f1d311e6e3fa2b0a</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">

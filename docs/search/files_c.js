@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['searcher_2ehpp_0',['Searcher.hpp',['https://knncolle.github.io/knncolle/Searcher_8hpp.html',1,'']]],
-  ['simple_2ehpp_1',['simple.hpp',['https://ltla.github.io/subpar/simple_8hpp.html',1,'']]],
-  ['status_2ehpp_2',['Status.hpp',['../Status_8hpp.html',1,'']]],
-  ['subpar_2ehpp_3',['subpar.hpp',['https://ltla.github.io/subpar/subpar_8hpp.html',1,'']]]
+  ['scaled_2ehpp_0',['scaled.hpp',['https://ltla.github.io/CppIrlba/scaled_8hpp.html',1,'']]],
+  ['searcher_2ehpp_1',['Searcher.hpp',['https://knncolle.github.io/knncolle/Searcher_8hpp.html',1,'']]],
+  ['simple_2ehpp_2',['simple.hpp',['https://ltla.github.io/CppIrlba/simple_8hpp.html',1,'(Global Namespace)'],['https://ltla.github.io/subpar/simple_8hpp.html',1,'(Global Namespace)']]],
+  ['sparse_2ehpp_3',['sparse.hpp',['https://ltla.github.io/CppIrlba/sparse_8hpp.html',1,'']]],
+  ['status_2ehpp_4',['Status.hpp',['../Status_8hpp.html',1,'']]],
+  ['subpar_2ehpp_5',['subpar.hpp',['https://ltla.github.io/subpar/subpar_8hpp.html',1,'']]]
 ];

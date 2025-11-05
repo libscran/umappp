@@ -204,7 +204,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 </div><div class="memdoc">
 <p>How should the initial coordinates of the embedding be obtained?</p>
 <ul>
-<li><code>SPECTRAL</code>: spectral decomposition of the normalized graph Laplacian. Specifically, the initial coordinates are defined from the eigenvectors corresponding to the smallest non-zero eigenvalues. This fails in the presence of multiple graph components or if the approximate SVD (via <code><a class="elRef" href="https://ltla.github.io/CppIrlba/namespaceirlba.html#a6fe58ca810293f76a81ff7ab05d041f4">irlba::compute()</a></code>) fails to converge.</li>
+<li><code>SPECTRAL</code>: spectral decomposition of the normalized graph Laplacian. Specifically, the initial coordinates are defined from the eigenvectors corresponding to the smallest non-zero eigenvalues. This fails in the presence of multiple graph components or if the approximate SVD (via <code><a class="elRef" href="https://ltla.github.io/CppIrlba/namespaceirlba.html#abff001679bf73625640310429e8d1aa6">irlba::compute()</a></code>) fails to converge.</li>
 <li><code>RANDOM</code>: fills the embedding with random draws from a normal distribution.</li>
 <li><code>NONE</code>: uses existing values in the supplied embedding array. </li>
 </ul>

@@ -1,18 +1,21 @@
 <map id="umappp/Status.hpp" name="umappp/Status.hpp">
-<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="105,5,238,31"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="29,79,93,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,34,94,73,91,68,151,29"/>
+<area shape="rect" id="Node000001" title="Status of the UMAP algorithm." alt="" coords="194,5,328,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="118,79,182,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="244,34,183,73,180,68,241,29"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="5,153,157,178"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="167,33,99,141,94,138,162,30"/>
-<area shape="rect" id="Node000004" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="168,79,258,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="181,30,201,64,196,67,176,33"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="282,79,416,105"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="203,29,306,70,304,75,201,34"/>
-<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="192,108,118,147,115,143,189,103"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,33,232,68,196,107,162,130,127,148,125,144,159,126,193,103,228,65,252,30"/>
+<area shape="rect" id="Node000004" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="257,79,348,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="270,30,290,64,285,67,266,33"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="371,79,506,105"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="292,29,395,70,393,75,290,34"/>
+<area shape="poly" id="edge6_Node000004_Node000003" title=" " alt="" coords="266,108,134,150,132,145,264,103"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="181,153,245,178"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="216,105,216,137,210,137,210,105"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="289,107,242,145,238,141,286,103"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="269,153,336,178"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="230,103,277,141,274,145,226,107"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="305,105,305,137,300,137,300,105"/>
 <area shape="rect" id="Node000007" href="/github/workspace/docs/irlba.tag$irlba_8hpp.html" title=" " alt="" coords="359,153,456,178"/>
-<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="247,103,361,144,359,149,245,108"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="315,103,372,142,369,147,312,107"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="480,153,575,178"/>
+<area shape="poly" id="edge9_Node000004_Node000008" title=" " alt="" coords="341,103,476,145,474,150,340,108"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="395,154,338,115,341,111,398,150"/>
 </map>

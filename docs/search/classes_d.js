@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['vptreebuilder_0',['VptreeBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html',1,'knncolle']]],
-  ['vptreeprebuilt_1',['VptreePrebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1VptreePrebuilt.html',1,'knncolle']]],
-  ['vptreesearcher_2',['VptreeSearcher',['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeSearcher.html',1,'knncolle']]]
+  ['workspace_0',['Workspace',['https://ltla.github.io/CppIrlba/classirlba_1_1Workspace.html',1,'irlba']]],
+  ['workspace_3c_20eigenvector_5f_20_3e_1',['Workspace&lt; EigenVector_ &gt;',['https://ltla.github.io/CppIrlba/classirlba_1_1Workspace.html',1,'irlba']]]
 ];

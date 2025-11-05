@@ -3,7 +3,7 @@
 <area shape="rect" id="Node000002" href="$NeighborList_8hpp.html" title="Defines the NeighborList alias." alt="" coords="65,79,184,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="675,30,210,82,200,83,200,78,210,76,675,24"/>
 <area shape="rect" id="Node000005" href="/github/workspace/docs/knncolle.tag$knncolle_8hpp.html" title=" " alt="" coords="163,153,308,178"/>
-<area shape="poly" id="edge18_Node000001_Node000005" title=" " alt="" coords="675,21,567,23,442,31,382,38,329,49,285,63,256,81,246,93,241,107,236,138,231,137,235,106,242,90,252,77,283,58,327,44,381,33,441,25,566,17,675,16"/>
+<area shape="poly" id="edge20_Node000001_Node000005" title=" " alt="" coords="675,21,567,23,442,31,382,38,329,49,285,63,256,81,246,93,241,107,236,138,231,137,235,106,242,90,252,77,283,58,327,44,381,33,441,25,566,17,675,16"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="266,79,448,105"/>
 <area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="680,34,438,78,437,73,679,29"/>
 <area shape="rect" id="Node000007" title=" " alt="" coords="472,79,558,105"/>
@@ -14,27 +14,30 @@
 <area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="762,30,805,67,802,71,758,34"/>
 <area shape="rect" id="Node000010" href="$Status_8hpp.html" title="Status of the UMAP algorithm." alt="" coords="960,79,1044,105"/>
 <area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="790,29,946,72,945,77,789,34"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="818,153,882,178"/>
-<area shape="poly" id="edge20_Node000001_Node000011" title=" " alt="" coords="818,27,863,45,884,59,900,78,906,95,902,113,879,143,875,140,897,110,900,95,896,80,880,63,861,50,816,32"/>
-<area shape="rect" id="Node000014" title=" " alt="" coords="1155,226,1220,252"/>
-<area shape="poly" id="edge19_Node000001_Node000014" title=" " alt="" coords="817,26,925,43,1046,69,1104,85,1154,105,1194,126,1219,151,1224,167,1223,184,1209,215,1204,213,1218,183,1219,168,1214,154,1190,131,1152,109,1102,91,1045,74,924,48,817,31"/>
-<area shape="rect" id="Node000015" title=" " alt="" coords="1252,226,1318,252"/>
-<area shape="poly" id="edge21_Node000001_Node000015" title=" " alt="" coords="817,18,885,23,965,33,1050,50,1132,77,1166,91,1192,106,1214,124,1240,151,1261,181,1277,210,1272,213,1257,183,1236,154,1211,128,1189,110,1164,96,1130,81,1049,56,964,38,885,28,817,24"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="742,153,806,178"/>
+<area shape="poly" id="edge22_Node000001_Node000011" title=" " alt="" coords="818,27,863,45,884,59,900,78,905,92,900,106,888,118,869,129,822,150,820,145,867,125,885,114,896,103,900,92,896,80,880,63,861,50,816,32"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="1156,226,1221,252"/>
+<area shape="poly" id="edge21_Node000001_Node000014" title=" " alt="" coords="817,20,871,26,932,37,996,53,1056,77,1085,92,1106,107,1144,151,1165,181,1180,211,1175,213,1160,184,1140,154,1102,111,1082,96,1054,81,994,58,931,42,870,31,816,26"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="1245,226,1311,252"/>
+<area shape="poly" id="edge23_Node000001_Node000015" title=" " alt="" coords="817,18,879,22,951,33,1025,50,1096,77,1147,107,1193,144,1261,212,1257,216,1190,148,1144,111,1094,81,1024,55,950,38,879,28,817,23"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="87,153,138,178"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="125,105,120,138,115,137,120,104"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="5,153,63,178"/>
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="111,107,63,145,59,141,108,103"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="145,103,205,142,202,146,142,107"/>
-<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="977,108,891,148,889,143,975,103"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="844,226,995,252"/>
-<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="989,107,967,128,947,154,934,183,926,212,921,211,929,181,942,151,963,124,985,103"/>
-<area shape="rect" id="Node000013" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="957,153,1047,178"/>
-<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="1005,105,1005,137,999,137,999,105"/>
-<area shape="rect" id="Node000017" title=" " alt="" coords="1071,153,1205,178"/>
-<area shape="poly" id="edge17_Node000010_Node000017" title=" " alt="" coords="1026,103,1103,143,1100,147,1024,108"/>
-<area shape="poly" id="edge15_Node000013_Node000012" title=" " alt="" coords="990,181,946,218,943,214,986,177"/>
-<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="1034,176,1143,218,1141,223,1032,181"/>
-<area shape="poly" id="edge14_Node000013_Node000015" title=" " alt="" coords="1048,176,1237,223,1236,228,1047,181"/>
-<area shape="rect" id="Node000016" href="/github/workspace/docs/irlba.tag$irlba_8hpp.html" title=" " alt="" coords="1019,226,1116,252"/>
-<area shape="poly" id="edge16_Node000013_Node000016" title=" " alt="" coords="1015,177,1048,213,1044,217,1011,180"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="964,108,822,152,820,147,963,103"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="741,226,892,252"/>
+<area shape="poly" id="edge11_Node000010_Node000012" title=" " alt="" coords="1004,106,999,142,991,162,979,180,944,207,905,224,903,219,942,202,975,177,986,160,993,140,999,105"/>
+<area shape="rect" id="Node000013" href="$Options_8hpp.html" title="Options for the UMAP algorithm." alt="" coords="1040,153,1130,178"/>
+<area shape="poly" id="edge12_Node000010_Node000013" title=" " alt="" coords="1018,103,1061,140,1058,144,1014,107"/>
+<area shape="rect" id="Node000018" title=" " alt="" coords="831,153,965,178"/>
+<area shape="poly" id="edge19_Node000010_Node000018" title=" " alt="" coords="986,107,930,146,927,141,983,103"/>
+<area shape="poly" id="edge15_Node000013_Node000012" title=" " alt="" coords="1040,181,878,224,876,219,1039,176"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="1104,177,1160,215,1157,220,1101,181"/>
+<area shape="poly" id="edge14_Node000013_Node000015" title=" " alt="" coords="1118,176,1232,218,1230,223,1117,181"/>
+<area shape="rect" id="Node000016" href="/github/workspace/docs/irlba.tag$irlba_8hpp.html" title=" " alt="" coords="916,226,1013,252"/>
+<area shape="poly" id="edge16_Node000013_Node000016" title=" " alt="" coords="1059,181,992,220,989,215,1056,177"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="1038,226,1132,252"/>
+<area shape="poly" id="edge18_Node000013_Node000017" title=" " alt="" coords="1087,179,1087,211,1082,211,1082,179"/>
+<area shape="poly" id="edge17_Node000016_Node000013" title=" " alt="" coords="991,223,1058,185,1060,189,993,228"/>
 </map>

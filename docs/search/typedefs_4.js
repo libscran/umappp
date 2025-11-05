@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['type_0',['type',['https://ltla.github.io/CppIrlba/structirlba_1_1get__adjoint__workspace.html#aa1f56f68aab200debc3dc95b00c93cc7',1,'irlba::get_adjoint_workspace::type'],['https://ltla.github.io/CppIrlba/structirlba_1_1get__adjoint__workspace_3_01Matrix___00_01decltype_07_07void_08_01std_1_1declval_4f3685937219667b9e24bd9d6fe2308f.html#a9a28ce11b98d1f5d759ea594f3b342b5',1,'irlba::get_adjoint_workspace&lt; Matrix_, decltype((void) std::declval&lt; typename Matrix_::Index &gt;(), 0)&gt;::type'],['https://ltla.github.io/CppIrlba/structirlba_1_1get__workspace.html#aa165e4e08be9630e8f934020a0d464b8',1,'irlba::get_workspace::type'],['https://ltla.github.io/CppIrlba/structirlba_1_1get__workspace_3_01Matrix___00_01decltype_07_07void_08_01std_1_1declval_3_01typen223c127db2904cd5f8dc8c9aacb0fa94.html#ab01e88f05b487ad54813707dd7e25c7f',1,'irlba::get_workspace&lt; Matrix_, decltype((void) std::declval&lt; typename Matrix_::Index &gt;(), 0)&gt;::type']]]
-];
