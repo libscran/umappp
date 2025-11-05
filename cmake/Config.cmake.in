@@ -5,6 +5,7 @@ find_dependency(ltla_aarand CONFIG REQUIRED)
 find_dependency(ltla_sanisizer 0.1.3 CONFIG REQUIRED)
 find_dependency(ltla_subpar 0.4.0 CONFIG REQUIRED)
 find_dependency(ltla_irlba CONFIG REQUIRED)
+find_dependency(Eigen3 5.0.0 CONFIG REQUIRED)
 find_dependency(knncolle_knncolle 3.0.0 CONFIG REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/libscran_umapppTargets.cmake")

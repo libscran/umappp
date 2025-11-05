@@ -7,7 +7,7 @@
 
 #include "aarand/aarand.hpp"
 #include "irlba/irlba.hpp"
-#include "irlba/parallel.hpp"
+#include "Eigen/Dense"
 #include "sanisizer/sanisizer.hpp"
 
 #include "NeighborList.hpp"
@@ -24,7 +24,14 @@ namespace internal {
  * It is assumed that 'edges' has already been symmetrized.
  */
 template<typename Index_, typename Float_>
-bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::size_t num_dim, Float_* const Y, const irlba::Options& irlba_opt, const int nthreads, double scale) {
+bool normalized_laplacian(
+    const NeighborList<Index_, Float_>& edges,
+    const std::size_t num_dim,
+    Float_* const Y,
+    const irlba::Options<Eigen::VectorXd>& irlba_opt,
+    const int nthreads,
+    double scale
+) {
     const Index_ nobs = edges.size();
     auto sums = sanisizer::create<std::vector<double> >(nobs); // we deliberately use double-precision to avoid difficult problems from overflow/underflow inside IRLBA.
     std::vector<std::size_t> pointers(sanisizer::sum<typename std::vector<std::size_t>::size_type>(nobs, 1));
@@ -98,10 +105,11 @@ bool normalized_laplacian(const NeighborList<Index_, Float_>& edges, const std::
      */
 
     const irlba::ParallelSparseMatrix<
+        Eigen::VectorXd,
+        Eigen::MatrixXd,
         decltype(I(values)),
         decltype(I(indices)),
         decltype(I(pointers))
-        // Eigen::VectorXd // TODO: deliberately double-precision here, but not available in 2.0.0
     > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
     irlba::EigenThreadScope tscope(nthreads);
 
@@ -158,13 +166,13 @@ bool spectral_init(
     const NeighborList<Index_, Float_>& edges,
     const std::size_t num_dim,
     Float_* const vals,
-    const irlba::Options& irlba_opt,
+    const irlba::Options<Eigen::VectorXd>& irlba_opt,
     const int nthreads,
     const double scale,
     const bool jitter,
     const double jitter_sd,
-    const RngEngine::result_type seed)
-{
+    const RngEngine::result_type seed
+) {
     if (has_multiple_components(edges)) {
         return false;
     }
