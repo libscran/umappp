@@ -116,14 +116,14 @@ $(function(){ initResizable(false); });
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classumappp_1_1Status.html">   26</a></span><span class="keyword">class </span><a class="code hl_class" href="classumappp_1_1Status.html">Status</a> {</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_class" href="classumappp_1_1Status.html">Status</a>(internal::EpochData&lt;Index_, Float_&gt; epochs, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options, <span class="keyword">const</span> std::size_t num_dim) :</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_class" href="classumappp_1_1Status.html">Status</a>(EpochData&lt;Index_, Float_&gt; epochs, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options, <span class="keyword">const</span> std::size_t num_dim) :</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        my_epochs(std::move(epochs)),</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        my_options(std::move(options)),</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        my_engine(my_options.optimize_seed),</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        my_num_dim(num_dim)</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {}</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    internal::EpochData&lt;Index_, Float_&gt; my_epochs;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    EpochData&lt;Index_, Float_&gt; my_epochs;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> my_options;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_typedef" href="namespaceumappp.html#ab1662c248bcdf57584da2c3bacf72e13">RngEngine</a> my_engine;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::size_t my_num_dim;</div>
@@ -162,7 +162,7 @@ $(function(){ initResizable(false); });
 <div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">  101</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">run</a>(Float_* <span class="keyword">const</span> embedding, <span class="keywordtype">int</span> epoch_limit) {</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a> == 1 || !my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#a491527e816984728af1c161fd6dddea0">parallel_optimization</a>) {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            internal::optimize_layout&lt;Index_, Float_&gt;(</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            optimize_layout&lt;Index_, Float_&gt;(</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                my_num_dim,</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                embedding,</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                my_epochs,</div>
@@ -174,7 +174,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                epoch_limit</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            );</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            internal::optimize_layout_parallel&lt;Index_, Float_&gt;(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            optimize_layout_parallel&lt;Index_, Float_&gt;(</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                my_num_dim,</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                embedding,</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                my_epochs,</div>

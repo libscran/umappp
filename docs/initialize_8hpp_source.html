@@ -119,113 +119,109 @@ $(function(){ initResizable(false); });
 <div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceumappp.html">   22</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceumappp.html">umappp</a> {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span>internal {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_&gt;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">int</span> choose_num_epochs(<span class="keyword">const</span> std::optional&lt;int&gt; num_epochs, <span class="keyword">const</span> Index_ size) {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (num_epochs.has_value()) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> *num_epochs;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// Choosing the number of epochs. We use a simple formula to decrease</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// the number of epochs with increasing size, with the aim being that</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// the &#39;extra work&#39; beyond the minimal 200 epochs should be the same</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// regardless of the number of observations. Given one calculation per</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="comment">// observation per epoch, this amounts to 300 * 10000 calculations at</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// the lower bound, so we simply choose a number of epochs that</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// equalizes the number of calculations for any number of observations.</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">constexpr</span> Index_ limit = 10000;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minimal = 200, maximal = 300;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (size &lt;= limit) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> minimal + maximal;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> minimal + <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(maximal * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(limit) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(size)));</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
-<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">   74</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(<a class="code hl_typedef" href="namespaceumappp.html#abef8d351328ea79485008055c3730dcc">NeighborList&lt;Index_, Float_&gt;</a> x, <span class="keyword">const</span> std::size_t num_dim, Float_* <span class="keyword">const</span> embedding, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options) {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    internal::NeighborSimilaritiesOptions&lt;Float_&gt; nsopt;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    nsopt.local_connectivity = options.<a class="code hl_variable" href="structumappp_1_1Options.html#ae78c4c99731aa85ed8b6496c23c8ada0">local_connectivity</a>;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    nsopt.bandwidth = options.<a class="code hl_variable" href="structumappp_1_1Options.html#a6d3525b86af984de0cb5471b6e4f12a9">bandwidth</a>;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    nsopt.num_threads = options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    internal::neighbor_similarities(x, nsopt);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    internal::combine_neighbor_sets(x, <span class="keyword">static_cast&lt;</span>Float_<span class="keyword">&gt;</span>(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a0a08f1f212c33576eec90cb8eb2a28e8">mix_ratio</a>));</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">bool</span> use_random = (options.<a class="code hl_variable" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">initialize_method</a> == InitializeMethod::RANDOM);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (options.<a class="code hl_variable" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">initialize_method</a> == InitializeMethod::SPECTRAL) {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> spectral_okay = internal::spectral_init(</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            x,</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            num_dim,</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            embedding,</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">initialize_spectral_irlba_options</a>,</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>,</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#aeb724cdb1153c9f2fb43fe64249376f3">initialize_spectral_scale</a>,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a4ed2af4df0eda07e9f2b0ec295a0bb81">initialize_spectral_jitter</a>,</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a909d3b00da81949bb405ce07ce8e41cd">initialize_spectral_jitter_sd</a>,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad5473595a4570204c024ef89d065e236">initialize_seed</a></div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        );</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        use_random = (options.<a class="code hl_variable" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">initialize_random_on_spectral_fail</a> &amp;&amp; !spectral_okay);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">if</span> (use_random) {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        internal::random_init&lt;Index_&gt;(</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            x.size(),</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            num_dim,</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            embedding,</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad5473595a4570204c024ef89d065e236">initialize_seed</a>,</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a02172c61fd15add0e37737b825578fe8">initialize_random_scale</a></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        );</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// Finding a good a/b pair.</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structumappp_1_1Options.html#a2f380ac348f039119329ffc5f6efc590">a</a>.has_value() || !options.<a class="code hl_variable" href="structumappp_1_1Options.html#a50f96db3f65371291fd37af37befbd96">b</a>.has_value()) {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keyword">auto</span> found = internal::find_ab(options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac0cfcd94c28783773138d3a98aec4ab5">spread</a>, options.<a class="code hl_variable" href="structumappp_1_1Options.html#a77eae193d6a7b4aa0e7ead6ec744efa2">min_dist</a>);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        options.<a class="code hl_variable" href="structumappp_1_1Options.html#a2f380ac348f039119329ffc5f6efc590">a</a> = found.first;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        options.<a class="code hl_variable" href="structumappp_1_1Options.html#a50f96db3f65371291fd37af37befbd96">b</a> = found.second;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a> = internal::choose_num_epochs&lt;Index_&gt;(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a>, x.size());</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a>(</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        internal::similarities_to_epochs&lt;Index_, Float_&gt;(x, *(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a>), options.<a class="code hl_variable" href="structumappp_1_1Options.html#a10686bad854f25acf6542787b5d0a071">negative_sample_rate</a>),</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        std::move(options),</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        num_dim</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    );</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_&gt;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">int</span> choose_num_epochs(<span class="keyword">const</span> std::optional&lt;int&gt; num_epochs, <span class="keyword">const</span> Index_ size) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (num_epochs.has_value()) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">return</span> *num_epochs;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// Choosing the number of epochs. We use a simple formula to decrease</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// the number of epochs with increasing size, with the aim being that</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// the &#39;extra work&#39; beyond the minimal 200 epochs should be the same</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// regardless of the number of observations. Given one calculation per</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// observation per epoch, this amounts to 300 * 10000 calculations at</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// the lower bound, so we simply choose a number of epochs that</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="comment">// equalizes the number of calculations for any number of observations.</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">constexpr</span> Index_ limit = 10000;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> minimal = 200, maximal = 300;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (size &lt;= limit) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> minimal + maximal;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> minimal + <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::ceil(maximal * <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(limit) / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(size)));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">   70</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(<a class="code hl_typedef" href="namespaceumappp.html#abef8d351328ea79485008055c3730dcc">NeighborList&lt;Index_, Float_&gt;</a> x, <span class="keyword">const</span> std::size_t num_dim, Float_* <span class="keyword">const</span> embedding, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    NeighborSimilaritiesOptions&lt;Float_&gt; nsopt;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    nsopt.local_connectivity = options.<a class="code hl_variable" href="structumappp_1_1Options.html#ae78c4c99731aa85ed8b6496c23c8ada0">local_connectivity</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    nsopt.bandwidth = options.<a class="code hl_variable" href="structumappp_1_1Options.html#a6d3525b86af984de0cb5471b6e4f12a9">bandwidth</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    nsopt.num_threads = options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    neighbor_similarities(x, nsopt);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    combine_neighbor_sets(x, <span class="keyword">static_cast&lt;</span>Float_<span class="keyword">&gt;</span>(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a0a08f1f212c33576eec90cb8eb2a28e8">mix_ratio</a>));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">bool</span> use_random = (options.<a class="code hl_variable" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">initialize_method</a> == InitializeMethod::RANDOM);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (options.<a class="code hl_variable" href="structumappp_1_1Options.html#a53dbb1c346dfdbbc10a3c33763e456d6">initialize_method</a> == InitializeMethod::SPECTRAL) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> spectral_okay = spectral_init(</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            x,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            num_dim,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            embedding,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">initialize_spectral_irlba_options</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#aeb724cdb1153c9f2fb43fe64249376f3">initialize_spectral_scale</a>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a4ed2af4df0eda07e9f2b0ec295a0bb81">initialize_spectral_jitter</a>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a909d3b00da81949bb405ce07ce8e41cd">initialize_spectral_jitter_sd</a>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad5473595a4570204c024ef89d065e236">initialize_seed</a></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        );</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        use_random = (options.<a class="code hl_variable" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">initialize_random_on_spectral_fail</a> &amp;&amp; !spectral_okay);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">if</span> (use_random) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        random_init&lt;Index_&gt;(</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            x.size(),</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            num_dim,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            embedding,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad5473595a4570204c024ef89d065e236">initialize_seed</a>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            options.<a class="code hl_variable" href="structumappp_1_1Options.html#a02172c61fd15add0e37737b825578fe8">initialize_random_scale</a></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        );</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="comment">// Finding a good a/b pair.</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (!options.<a class="code hl_variable" href="structumappp_1_1Options.html#a2f380ac348f039119329ffc5f6efc590">a</a>.has_value() || !options.<a class="code hl_variable" href="structumappp_1_1Options.html#a50f96db3f65371291fd37af37befbd96">b</a>.has_value()) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keyword">const</span> <span class="keyword">auto</span> found = find_ab(options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac0cfcd94c28783773138d3a98aec4ab5">spread</a>, options.<a class="code hl_variable" href="structumappp_1_1Options.html#a77eae193d6a7b4aa0e7ead6ec744efa2">min_dist</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        options.<a class="code hl_variable" href="structumappp_1_1Options.html#a2f380ac348f039119329ffc5f6efc590">a</a> = found.first;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        options.<a class="code hl_variable" href="structumappp_1_1Options.html#a50f96db3f65371291fd37af37befbd96">b</a> = found.second;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a> = choose_num_epochs&lt;Index_&gt;(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a>, x.size());</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a>(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        similarities_to_epochs&lt;Index_, Float_&gt;(x, *(options.<a class="code hl_variable" href="structumappp_1_1Options.html#a8cddf24dac3e44ed35123675c721fd26">num_epochs</a>), options.<a class="code hl_variable" href="structumappp_1_1Options.html#a10686bad854f25acf6542787b5d0a071">negative_sample_rate</a>),</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        std::move(options),</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        num_dim</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    );</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
 </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Input_, <span class="keyword">typename</span> Float_&gt;</div>
-<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="namespaceumappp.html#a632e1639cfdffd6d24d9f5a6a1b63501">  143</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(<span class="keyword">const</span> <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt&lt;Index_, Input_, Float_&gt;</a>&amp; prebuilt, <span class="keyword">const</span> std::size_t num_dim, Float_* <span class="keyword">const</span> embedding, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options) { </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">auto</span> output = <a class="code hl_functionRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a2c6d8b116464bab254bda34216338c3c">knncolle::find_nearest_neighbors</a>(prebuilt, options.<a class="code hl_variable" href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">num_neighbors</a>, options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>);</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(std::move(output), num_dim, embedding, std::move(options));</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>}</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Input_, <span class="keyword">typename</span> Float_&gt;</div>
+<div class="foldopen" id="foldopen00139" data-start="{" data-end="}">
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="namespaceumappp.html#a632e1639cfdffd6d24d9f5a6a1b63501">  139</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(<span class="keyword">const</span> <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt&lt;Index_, Input_, Float_&gt;</a>&amp; prebuilt, <span class="keyword">const</span> std::size_t num_dim, Float_* <span class="keyword">const</span> embedding, <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options) { </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keyword">auto</span> output = <a class="code hl_functionRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a2c6d8b116464bab254bda34216338c3c">knncolle::find_nearest_neighbors</a>(prebuilt, options.<a class="code hl_variable" href="structumappp_1_1Options.html#a95cc4a76b0d051fc15fb4dbbc9cb6520">num_neighbors</a>, options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a>);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(std::move(output), num_dim, embedding, std::move(options));</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}</div>
 </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_, <span class="keyword">class</span> Matrix_ = knncolle::Matrix&lt;Index_, Float_&gt; &gt;</div>
-<div class="foldopen" id="foldopen00170" data-start="{" data-end="}">
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="namespaceumappp.html#aac099e1d61d98c0e03b65775bdd42669">  170</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">const</span> std::size_t data_dim,</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keyword">const</span> Index_ num_obs,</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">const</span> Float_* <span class="keyword">const</span> data,</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder&lt;Index_, Float_, Float_, Matrix_&gt;</a>&amp; builder,</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> std::size_t num_dim,</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    Float_* <span class="keyword">const</span> embedding,</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options)</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>{ </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">const</span> <span class="keyword">auto</span> prebuilt = builder.<a class="code hl_functionRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html#a93cac638de3e4ad31919bc5d677d16b7">build_unique</a>(<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix&lt;Index_, Float_&gt;</a>(data_dim, num_obs, data));</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(*prebuilt, num_dim, embedding, std::move(options));</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>}</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_, <span class="keyword">class</span> Matrix_ = knncolle::Matrix&lt;Index_, Float_&gt; &gt;</div>
+<div class="foldopen" id="foldopen00166" data-start="{" data-end="}">
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="namespaceumappp.html#aac099e1d61d98c0e03b65775bdd42669">  166</a></span><a class="code hl_class" href="classumappp_1_1Status.html">Status&lt;Index_, Float_&gt;</a> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> std::size_t data_dim,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">const</span> Index_ num_obs,</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">const</span> Float_* <span class="keyword">const</span> data,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keyword">const</span> <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder&lt;Index_, Float_, Float_, Matrix_&gt;</a>&amp; builder,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keyword">const</span> std::size_t num_dim,</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    Float_* <span class="keyword">const</span> embedding,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_struct" href="structumappp_1_1Options.html">Options</a> options)</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>{ </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">const</span> <span class="keyword">auto</span> prebuilt = builder.<a class="code hl_functionRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html#a93cac638de3e4ad31919bc5d677d16b7">build_unique</a>(<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix&lt;Index_, Float_&gt;</a>(data_dim, num_obs, data));</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize</a>(*prebuilt, num_dim, embedding, std::move(options));</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}</div>
 </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>}</div>
 </div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aNeighborList_8hpp_html"><div class="ttname"><a href="NeighborList_8hpp.html">NeighborList.hpp</a></div><div class="ttdoc">Defines the NeighborList alias.</div></div>
 <div class="ttc" id="aStatus_8hpp_html"><div class="ttname"><a href="Status_8hpp.html">Status.hpp</a></div><div class="ttdoc">Status of the UMAP algorithm.</div></div>
 <div class="ttc" id="aclassknncolle_1_1Builder_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a></div></div>
@@ -237,7 +233,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="anamespaceknncolle_html_a2c6d8b116464bab254bda34216338c3c"><div class="ttname"><a href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a2c6d8b116464bab254bda34216338c3c">knncolle::find_nearest_neighbors</a></div><div class="ttdeci">NeighborList&lt; Index_, Distance_ &gt; find_nearest_neighbors(const Prebuilt&lt; Index_, Data_, Distance_ &gt; &amp;index, int k, int num_threads=1)</div></div>
 <div class="ttc" id="anamespaceumappp_html"><div class="ttname"><a href="namespaceumappp.html">umappp</a></div><div class="ttdoc">Functions for creating UMAP embeddings.</div><div class="ttdef"><b>Definition</b> initialize.hpp:22</div></div>
 <div class="ttc" id="anamespaceumappp_html_abef8d351328ea79485008055c3730dcc"><div class="ttname"><a href="namespaceumappp.html#abef8d351328ea79485008055c3730dcc">umappp::NeighborList</a></div><div class="ttdeci">knncolle::NeighborList&lt; Index_, Float_ &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> NeighborList.hpp:29</div></div>
-<div class="ttc" id="anamespaceumappp_html_afcfe5559148af79e84c1eca05b15c515"><div class="ttname"><a href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, const std::size_t num_dim, Float_ *const embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:74</div></div>
+<div class="ttc" id="anamespaceumappp_html_afcfe5559148af79e84c1eca05b15c515"><div class="ttname"><a href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">umappp::initialize</a></div><div class="ttdeci">Status&lt; Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; x, const std::size_t num_dim, Float_ *const embedding, Options options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:70</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:37</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a02172c61fd15add0e37737b825578fe8"><div class="ttname"><a href="structumappp_1_1Options.html#a02172c61fd15add0e37737b825578fe8">umappp::Options::initialize_random_scale</a></div><div class="ttdeci">double initialize_random_scale</div><div class="ttdef"><b>Definition</b> Options.hpp:139</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a0a08f1f212c33576eec90cb8eb2a28e8"><div class="ttname"><a href="structumappp_1_1Options.html#a0a08f1f212c33576eec90cb8eb2a28e8">umappp::Options::mix_ratio</a></div><div class="ttdeci">double mix_ratio</div><div class="ttdef"><b>Definition</b> Options.hpp:57</div></div>
