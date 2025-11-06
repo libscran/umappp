@@ -24,8 +24,6 @@ namespace umappp {
 /**
  * @cond
  */
-namespace internal {
-
 template<typename Index_>
 int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
     if (num_epochs.has_value()) {
@@ -46,8 +44,6 @@ int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
     } else {
         return minimal + static_cast<int>(std::ceil(maximal * static_cast<double>(limit) / static_cast<double>(size)));
     }
-}
-
 }
 /**
  * @endcond
@@ -72,17 +68,17 @@ int choose_num_epochs(const std::optional<int> num_epochs, const Index_ size) {
  */
 template<typename Index_, typename Float_>
 Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::size_t num_dim, Float_* const embedding, Options options) {
-    internal::NeighborSimilaritiesOptions<Float_> nsopt;
+    NeighborSimilaritiesOptions<Float_> nsopt;
     nsopt.local_connectivity = options.local_connectivity;
     nsopt.bandwidth = options.bandwidth;
     nsopt.num_threads = options.num_threads;
-    internal::neighbor_similarities(x, nsopt);
+    neighbor_similarities(x, nsopt);
 
-    internal::combine_neighbor_sets(x, static_cast<Float_>(options.mix_ratio));
+    combine_neighbor_sets(x, static_cast<Float_>(options.mix_ratio));
 
     bool use_random = (options.initialize_method == InitializeMethod::RANDOM);
     if (options.initialize_method == InitializeMethod::SPECTRAL) {
-        const bool spectral_okay = internal::spectral_init(
+        const bool spectral_okay = spectral_init(
             x,
             num_dim,
             embedding,
@@ -97,7 +93,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
     }
 
     if (use_random) {
-        internal::random_init<Index_>(
+        random_init<Index_>(
             x.size(),
             num_dim,
             embedding,
@@ -108,15 +104,15 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
 
     // Finding a good a/b pair.
     if (!options.a.has_value() || !options.b.has_value()) {
-        const auto found = internal::find_ab(options.spread, options.min_dist);
+        const auto found = find_ab(options.spread, options.min_dist);
         options.a = found.first;
         options.b = found.second;
     }
 
-    options.num_epochs = internal::choose_num_epochs<Index_>(options.num_epochs, x.size());
+    options.num_epochs = choose_num_epochs<Index_>(options.num_epochs, x.size());
 
     return Status<Index_, Float_>(
-        internal::similarities_to_epochs<Index_, Float_>(x, *(options.num_epochs), options.negative_sample_rate),
+        similarities_to_epochs<Index_, Float_>(x, *(options.num_epochs), options.negative_sample_rate),
         std::move(options),
         num_dim
     );

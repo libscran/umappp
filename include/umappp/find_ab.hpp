@@ -8,8 +8,6 @@
 
 namespace umappp {
 
-namespace internal {
-
 /*
  * This function attempts to find 'a' and 'b' to fit:
  *
@@ -167,8 +165,6 @@ std::pair<Float_, Float_> find_ab(const Float_ spread, const Float_ min_dist) {
     }
 
     return std::make_pair(a, b);
-}
-
 }
 
 }

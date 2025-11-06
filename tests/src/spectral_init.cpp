@@ -13,7 +13,7 @@
 
 static umappp::NeighborList<int, double> mock_probabilities(int n) {
     // Mocking a sparse symmetric matrix of probabilities,
-    // akin to that produced by umappp::internal::combine_neighbor_sets().
+    // akin to that produced by umappp::combine_neighbor_sets().
     std::mt19937_64 rng(n);
 
     umappp::NeighborList<int, double> edges(n);
@@ -101,7 +101,7 @@ TEST_P(SpectralInitTest, Basic) {
     iopt.convergence_tolerance = 1e-8; // improve accuracy for eigenvector check.
 
     auto edges = mock_probabilities(order);
-    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), iopt, 1, max_scale, false, jitter_sd, seed));
+    EXPECT_TRUE(umappp::spectral_init(edges, ndim, output.data(), iopt, 1, max_scale, false, jitter_sd, seed));
 
     for (auto o : output) { // filled with _something_.
         EXPECT_TRUE(o != 0);
@@ -114,12 +114,12 @@ TEST_P(SpectralInitTest, Basic) {
 
     // Same result with multiple threads.
     std::vector<double> copy(ndim * order);
-    umappp::internal::spectral_init(edges, ndim, copy.data(), iopt, 3, max_scale, false, jitter_sd, seed);
+    umappp::spectral_init(edges, ndim, copy.data(), iopt, 3, max_scale, false, jitter_sd, seed);
     EXPECT_EQ(output, copy);
 
     // Throwing in some jitter.
     std::fill(copy.begin(), copy.end(), 0);
-    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, copy.data(), iopt, 1, max_scale, true, jitter_sd, seed));
+    EXPECT_TRUE(umappp::spectral_init(edges, ndim, copy.data(), iopt, 1, max_scale, true, jitter_sd, seed));
     EXPECT_NE(output, copy);
 }
 
@@ -141,7 +141,7 @@ TEST_P(SpectralInitTest, MultiComponents) {
     }
 
     std::vector<double> output(edges1.size() + edges2.size());
-    EXPECT_FALSE(umappp::internal::spectral_init(edges, ndim, output.data(), irlba::Options{}, 1, max_scale, false, jitter_sd, seed));
+    EXPECT_FALSE(umappp::spectral_init(edges, ndim, output.data(), irlba::Options{}, 1, max_scale, false, jitter_sd, seed));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -179,26 +179,26 @@ TEST(ComponentTest, Simple) {
 
     auto copy = edges;
     symmetrize(copy);
-    EXPECT_TRUE(umappp::internal::has_multiple_components(copy));
+    EXPECT_TRUE(umappp::has_multiple_components(copy));
 
     // Merging into one component.
     edges[3].emplace_back(1, 0.5);
 
     copy = edges;
     symmetrize(copy);
-    EXPECT_FALSE(umappp::internal::has_multiple_components(copy));
+    EXPECT_FALSE(umappp::has_multiple_components(copy));
 
     {
         int order = 5;
         umappp::NeighborList<int, double> edges(order);
-        EXPECT_TRUE(umappp::internal::has_multiple_components(edges));
+        EXPECT_TRUE(umappp::has_multiple_components(edges));
 
         // Sticking in an edge to merge nodes.
         edges[3].emplace_back(1, 0.5);
 
         auto copy = edges;
         symmetrize(copy);
-        EXPECT_TRUE(umappp::internal::has_multiple_components(copy));
+        EXPECT_TRUE(umappp::has_multiple_components(copy));
     }
         
     {
@@ -215,7 +215,7 @@ TEST(ComponentTest, Simple) {
         edges[5].emplace_back(0, 0.5);
 
         symmetrize(edges);
-        EXPECT_TRUE(umappp::internal::has_multiple_components(edges));
+        EXPECT_TRUE(umappp::has_multiple_components(edges));
     }
 }
 
@@ -231,21 +231,21 @@ TEST(SpectralInit, OddJitter) { // test coverage when the number of coordinates 
     const double jitter_sd = 0.001;
     const int jitter_seed = 69;
 
-    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, output.data(), iopt, nthreads, scale, true, jitter_sd, jitter_seed));
+    EXPECT_TRUE(umappp::spectral_init(edges, ndim, output.data(), iopt, nthreads, scale, true, jitter_sd, jitter_seed));
     for (auto o : output) {
         EXPECT_NE(o, 0);
     }
 
     // Comparing it against the no-jitter reference, especially for the last entry.
     std::vector<double> ref(edges.size() * ndim);
-    EXPECT_TRUE(umappp::internal::spectral_init(edges, ndim, ref.data(), iopt, nthreads, scale, false, jitter_sd, jitter_seed));
+    EXPECT_TRUE(umappp::spectral_init(edges, ndim, ref.data(), iopt, nthreads, scale, false, jitter_sd, jitter_seed));
     EXPECT_NE(ref, output);
     EXPECT_NE(ref.back(), output.back());
 }
 
 TEST(RandomInit, Basic) {
     std::vector<double> output(15);
-    umappp::internal::random_init(5, 3, output.data(), 69, 10);
+    umappp::random_init(5, 3, output.data(), 69, 10);
     for (auto o : output) {
         EXPECT_NE(o, 0); // filled with _something_.
         EXPECT_GE(o, -10);

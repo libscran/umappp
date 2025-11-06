@@ -17,13 +17,13 @@ Rcpp::List create_probabilities(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix
         }
     }
 
-    umappp::internal::NeighborSimilaritiesOptions<double> nsopt;
+    umappp::NeighborSimilaritiesOptions<double> nsopt;
     nsopt.local_connectivity = 1;
     nsopt.bandwidth = 1;
     nsopt.num_threads = 1;
-    umappp::internal::neighbor_similarities(x, nsopt);
+    umappp::neighbor_similarities(x, nsopt);
 
-    umappp::internal::combine_neighbor_sets(x, 1.0);
+    umappp::combine_neighbor_sets(x, 1.0);
 
     std::size_t total_size = 0;
     Rcpp::IntegerVector pointers(nc + 1);

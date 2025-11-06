@@ -28,7 +28,7 @@ public:
     /**
      * @cond
      */
-    Status(internal::EpochData<Index_, Float_> epochs, Options options, const std::size_t num_dim) :
+    Status(EpochData<Index_, Float_> epochs, Options options, const std::size_t num_dim) :
         my_epochs(std::move(epochs)),
         my_options(std::move(options)),
         my_engine(my_options.optimize_seed),
@@ -39,7 +39,7 @@ public:
      */
 
 private:
-    internal::EpochData<Index_, Float_> my_epochs;
+    EpochData<Index_, Float_> my_epochs;
     Options my_options;
     RngEngine my_engine;
     std::size_t my_num_dim;
@@ -100,7 +100,7 @@ public:
      */
     void run(Float_* const embedding, int epoch_limit) {
         if (my_options.num_threads == 1 || !my_options.parallel_optimization) {
-            internal::optimize_layout<Index_, Float_>(
+            optimize_layout<Index_, Float_>(
                 my_num_dim,
                 embedding,
                 my_epochs,
@@ -112,7 +112,7 @@ public:
                 epoch_limit
             );
         } else {
-            internal::optimize_layout_parallel<Index_, Float_>(
+            optimize_layout_parallel<Index_, Float_>(
                 my_num_dim,
                 embedding,
                 my_epochs,

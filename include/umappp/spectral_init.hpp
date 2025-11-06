@@ -16,8 +16,6 @@
 
 namespace umappp {
 
-namespace internal {
-
 /* Peeled from the function of the same name in the uwot package,
  * see https://github.com/jlmelville/uwot/blob/master/R/init.R for details.
  *
@@ -107,10 +105,18 @@ bool normalized_laplacian(
     const irlba::ParallelSparseMatrix<
         Eigen::VectorXd,
         Eigen::MatrixXd,
-        decltype(I(values)),
-        decltype(I(indices)),
-        decltype(I(pointers))
-    > mat(nobs, nobs, std::move(values), std::move(indices), std::move(pointers), /* column_major = */ true, nthreads);
+        I<decltype(values)>,
+        I<decltype(indices)>,
+        I<decltype(pointers)>
+    > mat(
+        nobs,
+        nobs,
+        std::move(values),
+        std::move(indices),
+        std::move(pointers),
+        /* column_major = */ true,
+        nthreads
+    );
     irlba::EigenThreadScope tscope(nthreads);
 
     const auto actual = irlba::compute(mat, num_dim + 1, irlba_opt);
@@ -140,7 +146,7 @@ bool has_multiple_components(const NeighborList<Index_, Float_>& edges) {
     }
 
     // We assume that 'edges' is symmetric so we can use a simple recursive algorithm.
-    decltype(I(edges.size())) in_component = 1;
+    I<decltype(edges.size())> in_component = 1;
     std::vector<Index_> remaining(1, 0);
     std::vector<unsigned char> traversed(edges.size(), 0);
     traversed[0] = 1;
@@ -216,8 +222,6 @@ void random_init(
         vals[i] = aarand::standard_uniform<Float_>(rng) * mult - shift; ; // values from (-scale, scale).
     }
     return;
-}
-
 }
 
 }

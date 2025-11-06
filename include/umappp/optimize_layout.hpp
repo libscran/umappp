@@ -24,11 +24,9 @@
 
 namespace umappp {
 
-namespace internal {
-
 template<typename Index_, typename Float_>
 struct EpochData {
-    EpochData(const Index_ nobs) : cumulative_num_edges(sanisizer::sum<decltype(I(cumulative_num_edges.size()))>(nobs, 1)) {}
+    EpochData(const Index_ nobs) : cumulative_num_edges(sanisizer::sum<I<decltype(cumulative_num_edges.size())> >(nobs, 1)) {}
 
     int total_epochs;
     int current_epoch = 0;
@@ -222,9 +220,9 @@ void optimize_single_observation(const BusyWaiterInput<Index_, Float_>& input, B
     const auto source = state.embedding + sanisizer::product_unsafe<std::size_t>(input.observation, state.num_dim);
     std::copy_n(source, state.num_dim, state.self_modified.data());
 
-    decltype(I(input.negative_sample_selections.size())) position = 0;
+    I<decltype(input.negative_sample_selections.size())> position = 0;
     const auto num_neighbors = input.negative_sample_count.size();
-    for (decltype(I(num_neighbors)) n = 0; n < num_neighbors; ++n) {
+    for (I<decltype(num_neighbors)> n = 0; n < num_neighbors; ++n) {
         const auto number = input.negative_sample_count[n];
         if (number == skip_ns_sentinel) {
             continue;
@@ -559,8 +557,6 @@ void optimize_layout_parallel(
 #else
     throw std::runtime_error("umappp was not compiled with support for parallel optimization");
 #endif
-}
-
 }
 
 }

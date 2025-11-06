@@ -114,15 +114,15 @@ protected:
 
 TEST_P(CombineNeighborSetTest, Combining) {
     auto Union = neighbors;
-    umappp::internal::combine_neighbor_sets<>(Union, 1.0);
+    umappp::combine_neighbor_sets<>(Union, 1.0);
     slow_symmetrization(neighbors, Union, 1);
 
     auto intersect = neighbors;
-    umappp::internal::combine_neighbor_sets<>(intersect, 0.0);
+    umappp::combine_neighbor_sets<>(intersect, 0.0);
     slow_symmetrization(neighbors, intersect, 0);
 
     auto middle = neighbors;
-    umappp::internal::combine_neighbor_sets<>(middle, 0.5);
+    umappp::combine_neighbor_sets<>(middle, 0.5);
     slow_symmetrization(neighbors, middle, 0.5);
 
     // Comparing the number of edges.

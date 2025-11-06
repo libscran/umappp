@@ -53,10 +53,10 @@ TEST_P(SimilarityTest, Newton) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
     auto copy = neighbors;
 
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::NeighborSimilaritiesOptions<double> opts;
     opts.local_connectivity = connectivity;
     opts.min_k_dist_scale = 1e-8; // turn off protection for the time being.
-    umappp::internal::neighbor_similarities(neighbors, opts);
+    umappp::neighbor_similarities(neighbors, opts);
 
     for (const auto& s : neighbors) {
         double prev = 1;
@@ -81,7 +81,7 @@ TEST_P(SimilarityTest, Newton) {
 
     // Same results in parallel.
     opts.num_threads = 3;
-    umappp::internal::neighbor_similarities(copy, opts);
+    umappp::neighbor_similarities(copy, opts);
     for (int i = 0; i < nobs; ++i) {
         EXPECT_EQ(copy[i], neighbors[i]);
     }
@@ -90,10 +90,10 @@ TEST_P(SimilarityTest, Newton) {
 TEST_P(SimilarityTest, BinarySearch) {
     auto neighbors = generate_neighbors(ndim, nobs, data, k);
 
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::NeighborSimilaritiesOptions<double> opts;
     opts.local_connectivity = connectivity;
     opts.min_k_dist_scale = 1e-8; // turn off protection for the time being.
-    umappp::internal::neighbor_similarities<false>(neighbors, opts); 
+    umappp::neighbor_similarities<false>(neighbors, opts); 
 
     for (const auto& s : neighbors) {
         double prev = 1;
@@ -129,8 +129,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(NeighborSimilarities, Empty) {
     umappp::NeighborList<int, double> neighbors(1);
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
-    umappp::internal::neighbor_similarities(neighbors, opts);
+    umappp::NeighborSimilaritiesOptions<double> opts;
+    umappp::neighbor_similarities(neighbors, opts);
     EXPECT_TRUE(neighbors.front().empty());
 }
 
@@ -141,8 +141,8 @@ TEST(NeighborSimilarities, AllZeroDistance) {
         neighbors[i].resize(20);
     }
 
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
-    umappp::internal::neighbor_similarities(neighbors, opts);
+    umappp::NeighborSimilaritiesOptions<double> opts;
+    umappp::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -160,8 +160,8 @@ TEST(NeighborSimilarities, NoAboveRho) {
         }
     }
 
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
-    umappp::internal::neighbor_similarities(neighbors, opts);
+    umappp::NeighborSimilaritiesOptions<double> opts;
+    umappp::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -179,9 +179,9 @@ TEST(NeighborSimilarities, TooHighConnectivity) {
         }
     }
 
-    umappp::internal::NeighborSimilaritiesOptions<double> opts;
+    umappp::NeighborSimilaritiesOptions<double> opts;
     opts.local_connectivity = 100.0;
-    umappp::internal::neighbor_similarities(neighbors, opts);
+    umappp::neighbor_similarities(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_EQ(s.second, 1);
@@ -202,10 +202,10 @@ TEST(NeighborSimilarities, BoundedSigma) {
     }
     auto copy = neighbors;
 
-    umappp::internal::NeighborSimilaritiesOptions<float> opts;
+    umappp::NeighborSimilaritiesOptions<float> opts;
     opts.bandwidth = 0;
     opts.min_k_dist_scale = 0.1;
-    umappp::internal::neighbor_similarities<false, int, float>(neighbors, opts);
+    umappp::neighbor_similarities<false, int, float>(neighbors, opts);
     for (int i = 0; i < 3; ++i) {
         for (auto s : neighbors[i]) {
             EXPECT_LE(s.second, 1);
@@ -215,7 +215,7 @@ TEST(NeighborSimilarities, BoundedSigma) {
 
     // If the protection is disabled, all values but the first are equal to 0 as sigma is too small.
     opts.min_k_dist_scale = 0;
-    umappp::internal::neighbor_similarities<false, int, float>(copy, opts);
+    umappp::neighbor_similarities<false, int, float>(copy, opts);
     for (int i = 0; i < 3; ++i) {
         for (size_t j = 0; j < copy[i].size(); ++j) {
             if (j == 0) {

@@ -12,8 +12,6 @@
 
 namespace umappp {
 
-namespace internal {
-
 template<typename Index_, typename Float_>
 void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_ratio) {
     const Index_ num_obs = x.size(); // assume that Index_ is large enough to store the number of observations.
@@ -78,8 +76,8 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_rat
         for (Index_ i = 0; i < num_obs; ++i) {
             auto& current = x[i];
             auto current_size = current.size();
-            decltype(I(current_size)) counter = 0;
-            for (decltype(I(current_size)) j = 0; j < current_size; ++j) {
+            I<decltype(current_size)> counter = 0;
+            for (I<decltype(current_size)> j = 0; j < current_size; ++j) {
                 if (current[j].second != 0) {
                     if (counter != j) {
                         current[counter] = current[j];
@@ -98,8 +96,6 @@ void combine_neighbor_sets(NeighborList<Index_, Float_>& x, const Float_ mix_rat
     }
 
     return;
-}
-
 }
 
 }

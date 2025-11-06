@@ -44,8 +44,8 @@ protected:
             }
         }
 
-        umappp::internal::neighbor_similarities(stored, umappp::internal::NeighborSimilaritiesOptions<double>());
-        umappp::internal::combine_neighbor_sets(stored, 1.0);
+        umappp::neighbor_similarities(stored, umappp::NeighborSimilaritiesOptions<double>());
+        umappp::combine_neighbor_sets(stored, 1.0);
         return;
     }
 
@@ -58,7 +58,7 @@ protected:
 TEST_P(OptimizeTest, Epochs) {
     stored[0][0].second = 1e-8; // check for correct removal.
 
-    auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
     EXPECT_EQ(epoch.cumulative_num_edges.size(), nobs + 1);
     EXPECT_EQ(epoch.edge_targets.size(), epoch.epochs_per_sample.size());
     EXPECT_EQ(epoch.edge_targets.size(), epoch.cumulative_num_edges.back());
@@ -77,47 +77,47 @@ TEST_P(OptimizeTest, Epochs) {
 }
 
 TEST_P(OptimizeTest, BasicRun) {
-    auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
 
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
-    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     EXPECT_NE(embedding, data); // some kind of change happened!
 }
 
 TEST_P(OptimizeTest, RestartedRun) {
-    auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
 
     std::vector<double> embedding(data);
     std::mt19937_64 rng(10);
-    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 100);
-    umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, 100);
+    umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     // Same results from a full single run.
     std::vector<double> embedding2(data);
     rng.seed(10);
-    epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
-    umappp::internal::optimize_layout<>(5, embedding2.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
+    epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
+    umappp::optimize_layout<>(5, embedding2.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
 
     EXPECT_EQ(embedding, embedding2);
 }
 
 TEST_P(OptimizeTest, ParallelRun) {
-    auto epoch = umappp::internal::similarities_to_epochs(stored, 500, 5.0);
+    auto epoch = umappp::similarities_to_epochs(stored, 500, 5.0);
     auto epoch2 = epoch;
 
     std::vector<double> embedding(data);
     {
         std::mt19937_64 rng(100);
-        umappp::internal::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
+        umappp::optimize_layout<>(5, embedding.data(), epoch, 2.0, 1.0, 1.0, 1.0, rng, epoch.total_epochs);
     }
 
     // Trying with more threads.
     std::vector<double> embedding2(data);
     {
         std::mt19937_64 rng(100);
-        umappp::internal::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, epoch2.total_epochs, 3);
+        umappp::optimize_layout_parallel<>(5, embedding2.data(), epoch2, 2.0, 1.0, 1.0, 1.0, rng, epoch2.total_epochs, 3);
     }
 
     EXPECT_NE(data, embedding); // some kind of change happened!

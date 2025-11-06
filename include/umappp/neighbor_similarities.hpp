@@ -14,8 +14,6 @@
 
 namespace umappp {
 
-namespace internal {
-
 /**
  * The aim of this function is to convert distances into probability-like
  * similarities using a Gaussian kernel. Our aim is to find 'sigma' such that:
@@ -206,8 +204,6 @@ void neighbor_similarities(NeighborList<Index_, Float_>& x, const NeighborSimila
     });
 
     return;
-}
-
 }
 
 }
