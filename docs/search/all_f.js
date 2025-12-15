@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['sanitize_5fnum_5fworkers_0',['sanitize_num_workers',['https://ltla.github.io/subpar/namespacesubpar.html#a9a5cb3009789142bac13ce0e81f19082',1,'subpar']]],
+  ['sanitize_5fnum_5fworkers_0',['sanitize_num_workers',['https://ltla.github.io/subpar/namespacesubpar.html#a7f48f62226f93e5bf735ce35220bcd09',1,'subpar']]],
   ['scaled_2ehpp_1',['scaled.hpp',['https://ltla.github.io/CppIrlba/scaled_8hpp.html',1,'']]],
   ['scaledadjointworkspace_2',['ScaledAdjointWorkspace',['https://ltla.github.io/CppIrlba/classirlba_1_1ScaledAdjointWorkspace.html',1,'irlba']]],
   ['scaledmatrix_3',['ScaledMatrix',['https://ltla.github.io/CppIrlba/classirlba_1_1ScaledMatrix.html',1,'irlba::ScaledMatrix&lt; class EigenVector_, class EigenMatrix_, class MatrixPointer_, class ScalePointer_ &gt;'],['https://ltla.github.io/CppIrlba/classirlba_1_1ScaledMatrix.html#a866e5f0b08ae01a026b63fbcbeb8e041',1,'irlba::ScaledMatrix::ScaledMatrix()']]],

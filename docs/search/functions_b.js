@@ -1,8 +1,8 @@
 var searchData=
 [
   ['parallelize_0',['parallelize',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073',1,'knncolle::parallelize()'],['https://ltla.github.io/CppIrlba/namespaceirlba.html#a7ddcae16077f8210cfab2f59ee3effed',1,'irlba::parallelize()'],['../namespaceumappp.html#a2e721246517db54aba6d210b6cf71033',1,'umappp::parallelize()']]],
-  ['parallelize_5frange_1',['parallelize_range',['https://ltla.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe',1,'subpar']]],
-  ['parallelize_5fsimple_2',['parallelize_simple',['https://ltla.github.io/subpar/namespacesubpar.html#abd9eeb2cbaaf14382b926674c47b9d73',1,'subpar']]],
+  ['parallelize_5frange_1',['parallelize_range',['https://ltla.github.io/subpar/namespacesubpar.html#a6299ecb1a7d6184a37af21dfe09cc92e',1,'subpar']]],
+  ['parallelize_5fsimple_2',['parallelize_simple',['https://ltla.github.io/subpar/namespacesubpar.html#ab039ee0d9f8d12394d4c59bb994c98ca',1,'subpar']]],
   ['parallelsparsematrix_3',['ParallelSparseMatrix',['https://ltla.github.io/CppIrlba/classirlba_1_1ParallelSparseMatrix.html#a95f1f0793968638d2a7086beb2b6dab2',1,'irlba::ParallelSparseMatrix::ParallelSparseMatrix()'],['https://ltla.github.io/CppIrlba/classirlba_1_1ParallelSparseMatrix.html#a396d19eeb0b384636072b6fe41512ad0',1,'irlba::ParallelSparseMatrix::ParallelSparseMatrix(Eigen::Index nrow, Eigen::Index ncol, ValueArray_ x, IndexArray_ i, PointerArray_ p, bool column_major, int num_threads)']]],
   ['pca_4',['pca',['https://ltla.github.io/CppIrlba/namespaceirlba.html#a641f100ff5163f650781c9db49958a4b',1,'irlba::pca(const InputEigenMatrix_ &amp;matrix, bool center, bool scale, Eigen::Index number, OutputEigenMatrix_ &amp;scores, OutputEigenMatrix_ &amp;rotation, EigenVector_ &amp;variances, const Options&lt; EigenVector_ &gt; &amp;options)'],['https://ltla.github.io/CppIrlba/namespaceirlba.html#a36261b9ee1f9f74d841685e568f7c1ce',1,'irlba::pca(const InputEigenMatrix_ &amp;matrix, bool center, bool scale, Eigen::Index number, const Options&lt; EigenVector_ &gt; &amp;options)']]]
 ];

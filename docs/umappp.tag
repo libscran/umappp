@@ -202,10 +202,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>int</type>
+      <type>bool</type>
       <name>parallel_optimization</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>a491527e816984728af1c161fd6dddea0</anchor>
+      <anchor>a2f2457c204affe802fc5c01a8d74fa36</anchor>
       <arglist></arglist>
     </member>
   </compound>

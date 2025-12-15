@@ -165,8 +165,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a4503b993486aa9d764050410a3c0e591"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac77facf6e9030a00d3f8b19a467bbaaa" id="r_ac77facf6e9030a00d3f8b19a467bbaaa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a> = 1</td></tr>
 <tr class="separator:ac77facf6e9030a00d3f8b19a467bbaaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a491527e816984728af1c161fd6dddea0" id="r_a491527e816984728af1c161fd6dddea0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a491527e816984728af1c161fd6dddea0">parallel_optimization</a> = false</td></tr>
-<tr class="separator:a491527e816984728af1c161fd6dddea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f2457c204affe802fc5c01a8d74fa36" id="r_a2f2457c204affe802fc5c01a8d74fa36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f2457c204affe802fc5c01a8d74fa36">parallel_optimization</a> = false</td></tr>
+<tr class="separator:a2f2457c204affe802fc5c01a8d74fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </p>
@@ -459,7 +459,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Number of threads to use. The parallelization scheme is determined by <code><a class="el" href="namespaceumappp.html#a2e721246517db54aba6d210b6cf71033">parallelize()</a></code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
-<p>If <code><a class="el" href="#a491527e816984728af1c161fd6dddea0">Options::parallel_optimization</a> = true</code>, this option will also affect the layout optimization, i.e., the gradient descent iterations. </p>
+<p>If <code><a class="el" href="#a2f2457c204affe802fc5c01a8d74fa36">Options::parallel_optimization</a> = true</code>, this option will also affect the layout optimization, i.e., the gradient descent iterations. </p>
 
 </div>
 </div>
@@ -478,14 +478,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a491527e816984728af1c161fd6dddea0" name="a491527e816984728af1c161fd6dddea0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a491527e816984728af1c161fd6dddea0">&#9670;&#160;</a></span>parallel_optimization</h2>
+<a id="a2f2457c204affe802fc5c01a8d74fa36" name="a2f2457c204affe802fc5c01a8d74fa36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f2457c204affe802fc5c01a8d74fa36">&#9670;&#160;</a></span>parallel_optimization</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int umappp::Options::parallel_optimization = false</td>
+          <td class="memname">bool umappp::Options::parallel_optimization = false</td>
         </tr>
       </table>
 </div><div class="memdoc">
