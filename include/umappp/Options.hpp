@@ -204,7 +204,7 @@ struct Options {
      * This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest.
      * In such cases, enabling parallel optimization and calling `Status::run()` will throw an error.
      */
-    int parallel_optimization = false;
+    bool parallel_optimization = false;
 };
 
 }
