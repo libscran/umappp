@@ -24,7 +24,7 @@ jobs:
     - name: Add irlba tagfile
       uses: wei/wget@v1
       with:
-        args: -O docs/irlba.tag https://ltla.github.io/CppIrlba/irlba.tag
+        args: -O docs/irlba.tag https://libscran.github.io/irlba/irlba.tag
 
     - name: Add subpar tagfile
       uses: wei/wget@v1
