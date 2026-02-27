@@ -107,7 +107,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;sanisizer/sanisizer.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://ltla.github.io/CppIrlba/irlba_8hpp.html">irlba/irlba.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;irlba/irlba.hpp&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;Eigen/Dense&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceumappp.html">umappp</a> {</div>
@@ -138,7 +138,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">  105</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structumappp_1_1Options.html#ae56c083ae1f66e42ab645ac9efc59823">initialize_random_on_spectral_fail</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">  110</a></span>    <a class="code hl_structRef" href="https://ltla.github.io/CppIrlba/structirlba_1_1Options.html">irlba::Options&lt;Eigen::VectorXd&gt;</a> <a class="code hl_variable" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">initialize_spectral_irlba_options</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">  110</a></span>    <a class="code hl_structRef" href="https://libscran.github.io/irlba/structirlba_1_1Options.html">irlba::Options&lt;Eigen::VectorXd&gt;</a> <a class="code hl_variable" href="structumappp_1_1Options.html#a22fa6e0b34661f83f1d311e6e3fa2b0a">initialize_spectral_irlba_options</a>;</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structumappp_1_1Options.html#aeb724cdb1153c9f2fb43fe64249376f3">  118</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structumappp_1_1Options.html#aeb724cdb1153c9f2fb43fe64249376f3">initialize_spectral_scale</a> = 10;</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
@@ -169,11 +169,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>}</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="airlba_8hpp_html"><div class="ttname"><a href="https://ltla.github.io/CppIrlba/irlba_8hpp.html">irlba.hpp</a></div></div>
 <div class="ttc" id="anamespaceumappp_html"><div class="ttname"><a href="namespaceumappp.html">umappp</a></div><div class="ttdoc">Functions for creating UMAP embeddings.</div><div class="ttdef"><b>Definition</b> initialize.hpp:22</div></div>
 <div class="ttc" id="anamespaceumappp_html_aaa5af620ed59b3a603d5b9eacf510d69"><div class="ttname"><a href="namespaceumappp.html#aaa5af620ed59b3a603d5b9eacf510d69">umappp::InitializeMethod</a></div><div class="ttdeci">InitializeMethod</div><div class="ttdef"><b>Definition</b> Options.hpp:27</div></div>
 <div class="ttc" id="anamespaceumappp_html_ab1662c248bcdf57584da2c3bacf72e13"><div class="ttname"><a href="namespaceumappp.html#ab1662c248bcdf57584da2c3bacf72e13">umappp::RngEngine</a></div><div class="ttdeci">std::mt19937_64 RngEngine</div><div class="ttdef"><b>Definition</b> Options.hpp:32</div></div>
-<div class="ttc" id="astructirlba_1_1Options_html"><div class="ttname"><a href="https://ltla.github.io/CppIrlba/structirlba_1_1Options.html">irlba::Options</a></div></div>
+<div class="ttc" id="astructirlba_1_1Options_html"><div class="ttname"><a href="https://libscran.github.io/irlba/structirlba_1_1Options.html">irlba::Options</a></div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:37</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a02172c61fd15add0e37737b825578fe8"><div class="ttname"><a href="structumappp_1_1Options.html#a02172c61fd15add0e37737b825578fe8">umappp::Options::initialize_random_scale</a></div><div class="ttdeci">double initialize_random_scale</div><div class="ttdef"><b>Definition</b> Options.hpp:139</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a0a08f1f212c33576eec90cb8eb2a28e8"><div class="ttname"><a href="structumappp_1_1Options.html#a0a08f1f212c33576eec90cb8eb2a28e8">umappp::Options::mix_ratio</a></div><div class="ttdeci">double mix_ratio</div><div class="ttdef"><b>Definition</b> Options.hpp:57</div></div>

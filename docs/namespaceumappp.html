@@ -142,9 +142,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aac099e1d61d98c0e03b65775bdd42669" id="r_aac099e1d61d98c0e03b65775bdd42669"><td class="memTemplParams" colspan="2">template&lt;typename Index_ , typename Float_ , class Matrix_  = knncolle::Matrix&lt;Index_, Float_&gt;&gt; </td></tr>
 <tr class="memitem:aac099e1d61d98c0e03b65775bdd42669"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classumappp_1_1Status.html">Status</a>&lt; Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aac099e1d61d98c0e03b65775bdd42669">initialize</a> (const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const std::size_t num_dim, Float_ *const embedding, <a class="el" href="structumappp_1_1Options.html">Options</a> options)</td></tr>
 <tr class="separator:aac099e1d61d98c0e03b65775bdd42669"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e721246517db54aba6d210b6cf71033" id="r_a2e721246517db54aba6d210b6cf71033"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
-<tr class="memitem:a2e721246517db54aba6d210b6cf71033"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2e721246517db54aba6d210b6cf71033">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
-<tr class="separator:a2e721246517db54aba6d210b6cf71033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98c605feb3ffb5ba9c522c60c4384a2" id="r_aa98c605feb3ffb5ba9c522c60c4384a2"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
+<tr class="memitem:aa98c605feb3ffb5ba9c522c60c4384a2"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa98c605feb3ffb5ba9c522c60c4384a2">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
+<tr class="separator:aa98c605feb3ffb5ba9c522c60c4384a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions for creating UMAP embeddings. </p>
@@ -204,7 +204,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 </div><div class="memdoc">
 <p>How should the initial coordinates of the embedding be obtained?</p>
 <ul>
-<li><code>SPECTRAL</code>: spectral decomposition of the normalized graph Laplacian. Specifically, the initial coordinates are defined from the eigenvectors corresponding to the smallest non-zero eigenvalues. This fails in the presence of multiple graph components or if the approximate SVD (via <code><a class="elRef" href="https://ltla.github.io/CppIrlba/namespaceirlba.html#abff001679bf73625640310429e8d1aa6">irlba::compute()</a></code>) fails to converge.</li>
+<li><code>SPECTRAL</code>: spectral decomposition of the normalized graph Laplacian. Specifically, the initial coordinates are defined from the eigenvectors corresponding to the smallest non-zero eigenvalues. This fails in the presence of multiple graph components or if the approximate SVD (via <code>irlba::compute()</code>) fails to converge.</li>
 <li><code>RANDOM</code>: fills the embedding with random draws from a normal distribution.</li>
 <li><code>NONE</code>: uses existing values in the supplied embedding array. </li>
 </ul>
@@ -382,8 +382,8 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="a2e721246517db54aba6d210b6cf71033" name="a2e721246517db54aba6d210b6cf71033"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e721246517db54aba6d210b6cf71033">&#9670;&#160;</a></span>parallelize()</h2>
+<a id="aa98c605feb3ffb5ba9c522c60c4384a2" name="aa98c605feb3ffb5ba9c522c60c4384a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa98c605feb3ffb5ba9c522c60c4384a2">&#9670;&#160;</a></span>parallelize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -391,7 +391,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 template&lt;typename Task_ , class Run_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void umappp::parallelize </td>
+          <td class="memname">int umappp::parallelize </td>
           <td>(</td>
           <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>num_workers</em></span>, </td>
         </tr>
@@ -416,13 +416,14 @@ template&lt;typename Task_ , class Run_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">num_workers</td><td>Number of workers. </td></tr>
-    <tr><td class="paramname">num_tasks</td><td>Number of tasks. </td></tr>
-    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker.</td></tr>
+    <tr><td class="paramname">num_workers</td><td>Number of workers. This should be positive. </td></tr>
+    <tr><td class="paramname">num_tasks</td><td>Number of tasks. This should be non-negative. </td></tr>
+    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker, see the argument of the same name in <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<p>By default, this is an alias to <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a6299ecb1a7d6184a37af21dfe09cc92e">subpar::parallelize_range()</a></code>. However, if the <code>UMAPPP_CUSTOM_PARALLEL</code> function-like macro is defined, it is called instead. Any user-defined macro should accept the same arguments as <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a6299ecb1a7d6184a37af21dfe09cc92e">subpar::parallelize_range()</a></code>. </p>
+<p>return Number of used workers. This will be no greater than <code>num_workers</code>.</p>
+<p>By default, this function is an alias to <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>. Its purpose is to enable <b>umappp</b>-specific customization to the parallization scheme without affecting other libraries that use <b>subpar</b>. If the <code>UMAPPP_CUSTOM_PARALLEL</code> macro is defined, it will be used instead of <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code> whenever <code><a class="el" href="#aa98c605feb3ffb5ba9c522c60c4384a2">parallelize()</a></code> is called. Any user-defined macro should follow the same requirements as the <code>SUBPAR_CUSTOM_PARALLELIZE_RANGE</code> override for <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>. </p>
 
 </div>
 </div>

@@ -305,10 +305,10 @@
       <arglist>(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const std::size_t num_dim, Float_ *const embedding, Options options)</arglist>
     </member>
     <member kind="function">
-      <type>void</type>
+      <type>int</type>
       <name>parallelize</name>
       <anchorfile>namespaceumappp.html</anchorfile>
-      <anchor>a2e721246517db54aba6d210b6cf71033</anchor>
+      <anchor>aa98c605feb3ffb5ba9c522c60c4384a2</anchor>
       <arglist>(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</arglist>
     </member>
   </compound>
