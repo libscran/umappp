@@ -202,10 +202,17 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>bool</type>
-      <name>parallel_optimization</name>
+      <type>int</type>
+      <name>num_threads_spectral</name>
       <anchorfile>structumappp_1_1Options.html</anchorfile>
-      <anchor>a2f2457c204affe802fc5c01a8d74fa36</anchor>
+      <anchor>a99b231e39d55c84956fa1670a33d78d8</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>num_threads_optimize</name>
+      <anchorfile>structumappp_1_1Options.html</anchorfile>
+      <anchor>ad0daeca21fe0f85a82d34f357fdcd614</anchor>
       <arglist></arglist>
     </member>
   </compound>

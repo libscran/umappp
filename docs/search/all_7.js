@@ -14,8 +14,9 @@ var searchData=
   ['initialize_5fspectral_5fscale_11',['initialize_spectral_scale',['../structumappp_1_1Options.html#aeb724cdb1153c9f2fb43fe64249376f3',1,'umappp::Options']]],
   ['initializemethod_12',['InitializeMethod',['../namespaceumappp.html#aaa5af620ed59b3a603d5b9eacf510d69',1,'umappp']]],
   ['interface_2ehpp_13',['interface.hpp',['https://libscran.github.io/irlba/interface_8hpp.html',1,'']]],
-  ['invariant_5fsubspace_5ftolerance_14',['invariant_subspace_tolerance',['https://libscran.github.io/irlba/structirlba_1_1Options.html#ab6e3d538d647a3c72b7ea655c7486a57',1,'irlba::Options']]],
-  ['irlba_15',['irlba',['https://libscran.github.io/irlba/classirlba_1_1AdjointWorkspace.html',1,'']]],
-  ['is_5ffull_16',['is_full',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae459f76b2e81b65b7f437e01eea1689b',1,'knncolle::NeighborQueue']]],
-  ['iterations_17',['iterations',['https://libscran.github.io/irlba/structirlba_1_1PcaResults.html#abdc9a3e29efba76992af948627bbbe89',1,'irlba::PcaResults::iterations'],['https://libscran.github.io/irlba/structirlba_1_1Results.html#a5788fc587a38a96d46bd75bc6c180559',1,'irlba::Results::iterations']]]
+  ['invariant_5fsubspace_5ftolerance_14',['invariant_subspace_tolerance',['https://libscran.github.io/irlba/structirlba_1_1Options.html#a017eaae25536867fdbc75f21eb34316d',1,'irlba::Options']]],
+  ['irlba_15',['irlba',['https://libscran.github.io/irlba/namespaceirlba.html',1,'']]],
+  ['irlba_2ehpp_16',['irlba.hpp',['https://libscran.github.io/irlba/irlba_8hpp.html',1,'']]],
+  ['is_5ffull_17',['is_full',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae459f76b2e81b65b7f437e01eea1689b',1,'knncolle::NeighborQueue']]],
+  ['iterations_18',['iterations',['https://libscran.github.io/irlba/structirlba_1_1Metrics.html#a1b87b64b881cfb8b8fd705754516d9c9',1,'irlba::Metrics']]]
 ];

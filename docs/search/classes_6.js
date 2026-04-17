@@ -5,5 +5,6 @@ var searchData=
   ['matrix_3c_20eigenvector_5f_2c_20eigenmatrix_5f_20_3e_2',['Matrix&lt; EigenVector_, EigenMatrix_ &gt;',['https://libscran.github.io/irlba/classirlba_1_1Matrix.html',1,'irlba']]],
   ['matrix_3c_20index_5f_2c_20data_5f_20_3e_3',['Matrix&lt; Index_, Data_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html',1,'knncolle']]],
   ['matrix_3c_20index_5f_2c_20normalized_5f_20_3e_4',['Matrix&lt; Index_, Normalized_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html',1,'knncolle']]],
-  ['matrixextractor_5',['MatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html',1,'knncolle']]]
+  ['matrixextractor_5',['MatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1MatrixExtractor.html',1,'knncolle']]],
+  ['metrics_6',['Metrics',['https://libscran.github.io/irlba/structirlba_1_1Metrics.html',1,'irlba']]]
 ];

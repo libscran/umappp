@@ -161,7 +161,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keyword">public</span>:</div>
 <div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">  101</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">run</a>(Float_* <span class="keyword">const</span> embedding, <span class="keywordtype">int</span> epoch_limit) {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a> == 1 || !my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#a2f2457c204affe802fc5c01a8d74fa36">parallel_optimization</a>) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad0daeca21fe0f85a82d34f357fdcd614">num_threads_optimize</a> == 1) {</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            optimize_layout&lt;Index_, Float_&gt;(</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                my_num_dim,</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                embedding,</div>
@@ -184,7 +184,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#a78185619fc269be49c58faa802b1c0cf">learning_rate</a>,</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                my_engine,</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                epoch_limit,</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                my_options.<a class="code hl_variable" href="structumappp_1_1Options.html#ad0daeca21fe0f85a82d34f357fdcd614">num_threads_optimize</a></div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            );</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        }</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
@@ -213,11 +213,10 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="anamespaceumappp_html_ab1662c248bcdf57584da2c3bacf72e13"><div class="ttname"><a href="namespaceumappp.html#ab1662c248bcdf57584da2c3bacf72e13">umappp::RngEngine</a></div><div class="ttdeci">std::mt19937_64 RngEngine</div><div class="ttdef"><b>Definition</b> Options.hpp:32</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html"><div class="ttname"><a href="structumappp_1_1Options.html">umappp::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:37</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a29ce6d5b81d7c0652e24cac1aabeec10"><div class="ttname"><a href="structumappp_1_1Options.html#a29ce6d5b81d7c0652e24cac1aabeec10">umappp::Options::repulsion_strength</a></div><div class="ttdeci">double repulsion_strength</div><div class="ttdef"><b>Definition</b> Options.hpp:93</div></div>
-<div class="ttc" id="astructumappp_1_1Options_html_a2f2457c204affe802fc5c01a8d74fa36"><div class="ttname"><a href="structumappp_1_1Options.html#a2f2457c204affe802fc5c01a8d74fa36">umappp::Options::parallel_optimization</a></div><div class="ttdeci">bool parallel_optimization</div><div class="ttdef"><b>Definition</b> Options.hpp:207</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a2f380ac348f039119329ffc5f6efc590"><div class="ttname"><a href="structumappp_1_1Options.html#a2f380ac348f039119329ffc5f6efc590">umappp::Options::a</a></div><div class="ttdeci">std::optional&lt; double &gt; a</div><div class="ttdef"><b>Definition</b> Options.hpp:79</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a50f96db3f65371291fd37af37befbd96"><div class="ttname"><a href="structumappp_1_1Options.html#a50f96db3f65371291fd37af37befbd96">umappp::Options::b</a></div><div class="ttdeci">std::optional&lt; double &gt; b</div><div class="ttdef"><b>Definition</b> Options.hpp:87</div></div>
 <div class="ttc" id="astructumappp_1_1Options_html_a78185619fc269be49c58faa802b1c0cf"><div class="ttname"><a href="structumappp_1_1Options.html#a78185619fc269be49c58faa802b1c0cf">umappp::Options::learning_rate</a></div><div class="ttdeci">double learning_rate</div><div class="ttdef"><b>Definition</b> Options.hpp:165</div></div>
-<div class="ttc" id="astructumappp_1_1Options_html_ac77facf6e9030a00d3f8b19a467bbaaa"><div class="ttname"><a href="structumappp_1_1Options.html#ac77facf6e9030a00d3f8b19a467bbaaa">umappp::Options::num_threads</a></div><div class="ttdeci">int num_threads</div><div class="ttdef"><b>Definition</b> Options.hpp:192</div></div>
+<div class="ttc" id="astructumappp_1_1Options_html_ad0daeca21fe0f85a82d34f357fdcd614"><div class="ttname"><a href="structumappp_1_1Options.html#ad0daeca21fe0f85a82d34f357fdcd614">umappp::Options::num_threads_optimize</a></div><div class="ttdeci">int num_threads_optimize</div><div class="ttdef"><b>Definition</b> Options.hpp:217</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

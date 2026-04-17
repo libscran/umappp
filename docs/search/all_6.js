@@ -8,7 +8,5 @@ var searchData=
   ['get_5fpath_5',['get_path',['https://knncolle.github.io/knncolle/classknncolle_1_1LoadDistanceMetricNotFoundError.html#a1cd58ee3d4aeb55028816b935e5bf3b1',1,'knncolle::LoadDistanceMetricNotFoundError::get_path()'],['https://knncolle.github.io/knncolle/classknncolle_1_1LoadPrebuiltNotFoundError.html#ab9cb32c6bb99ec8216e4ca14e0d0432a',1,'knncolle::LoadPrebuiltNotFoundError::get_path()']]],
   ['get_5fpointers_6',['get_pointers',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#ad28e10195596f59f6f089c1e89f3f2ea',1,'irlba::ParallelSparseMatrix']]],
   ['get_5fprimary_5fboundaries_7',['get_primary_boundaries',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#a40caa4287650837e5b149e8b5ae37219',1,'irlba::ParallelSparseMatrix']]],
-  ['get_5fsecondary_5fboundaries_8',['get_secondary_boundaries',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#af0ae59f466ead930a77a3f771a9aae8e',1,'irlba::ParallelSparseMatrix']]],
-  ['get_5fsecondary_5fnonzero_5fboundaries_9',['get_secondary_nonzero_boundaries',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#ac48259f75c9588d8d9698edf0b804904',1,'irlba::ParallelSparseMatrix']]],
-  ['get_5fvalues_10',['get_values',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#a78d57d5921d40f01a45543bb6b9cd277',1,'irlba::ParallelSparseMatrix']]]
+  ['get_5fvalues_8',['get_values',['https://libscran.github.io/irlba/classirlba_1_1ParallelSparseMatrix.html#a78d57d5921d40f01a45543bb6b9cd277',1,'irlba::ParallelSparseMatrix']]]
 ];

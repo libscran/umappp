@@ -165,8 +165,10 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a4503b993486aa9d764050410a3c0e591"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac77facf6e9030a00d3f8b19a467bbaaa" id="r_ac77facf6e9030a00d3f8b19a467bbaaa"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac77facf6e9030a00d3f8b19a467bbaaa">num_threads</a> = 1</td></tr>
 <tr class="separator:ac77facf6e9030a00d3f8b19a467bbaaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f2457c204affe802fc5c01a8d74fa36" id="r_a2f2457c204affe802fc5c01a8d74fa36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f2457c204affe802fc5c01a8d74fa36">parallel_optimization</a> = false</td></tr>
-<tr class="separator:a2f2457c204affe802fc5c01a8d74fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99b231e39d55c84956fa1670a33d78d8" id="r_a99b231e39d55c84956fa1670a33d78d8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99b231e39d55c84956fa1670a33d78d8">num_threads_spectral</a> = 1</td></tr>
+<tr class="separator:a99b231e39d55c84956fa1670a33d78d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0daeca21fe0f85a82d34f357fdcd614" id="r_ad0daeca21fe0f85a82d34f357fdcd614"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0daeca21fe0f85a82d34f357fdcd614">num_threads_optimize</a> = 1</td></tr>
+<tr class="separator:ad0daeca21fe0f85a82d34f357fdcd614"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structumappp_1_1Options.html" title="Options for initialize().">Options</a> for <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. </p>
@@ -289,7 +291,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Further options to pass to <code>irlba::compute()</code> for spectral initialization. </p>
+<p>Further options to pass to <code><a class="elRef" href="https://libscran.github.io/irlba/namespaceirlba.html#a3ef50b4731ec01ea6a1a035e4863390b">irlba::compute()</a></code> for spectral initialization. </p>
 
 </div>
 </div>
@@ -458,8 +460,41 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of threads to use. The parallelization scheme is determined by <code><a class="el" href="namespaceumappp.html#aa98c605feb3ffb5ba9c522c60c4384a2">parallelize()</a></code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
-<p>If <code><a class="el" href="#a2f2457c204affe802fc5c01a8d74fa36">Options::parallel_optimization</a> = true</code>, this option will also affect the layout optimization, i.e., the gradient descent iterations. </p>
+<p>Number of threads to use in most steps of <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. The parallelization scheme is determined by <code><a class="el" href="namespaceumappp.html#aa98c605feb3ffb5ba9c522c60c4384a2">parallelize()</a></code> for most calculations. The exception is the nearest-neighbor search in some of the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads, where the scheme is determined by <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a5faf80c12bbfbab853c41f6d001fe073">knncolle::parallelize()</a></code> instead.</p>
+<p>See also <code><a class="el" href="#a99b231e39d55c84956fa1670a33d78d8">Options::num_threads_spectral</a></code> and <code><a class="el" href="#ad0daeca21fe0f85a82d34f357fdcd614">Options::num_threads_optimize</a></code>. </p>
+
+</div>
+</div>
+<a id="ad0daeca21fe0f85a82d34f357fdcd614" name="ad0daeca21fe0f85a82d34f357fdcd614"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0daeca21fe0f85a82d34f357fdcd614">&#9670;&#160;</a></span>num_threads_optimize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int umappp::Options::num_threads_optimize = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of threads to use during optimization in <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code>. The parallelization scheme uses spin-locks to quickly distribute per-observation calcultion to each thread. The parallelized result is exactly the same as that obtained with <code>num_threads_optimize = 1</code>.</p>
+<p>By default, this is set to 1 as the increase in the number of threads is usually not cost-effective for layout optimization. Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor. We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance. Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a significant speed-up.</p>
+<p>If the <code>UMAPPP_NO_PARALLEL_OPTIMIZATION</code> macro is defined, <b>umappp</b> will not be compiled with support for parallel optimization. This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest. In such cases, <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will throw an error if <code>num_threads_optimize &gt; 1</code>. </p>
+
+</div>
+</div>
+<a id="a99b231e39d55c84956fa1670a33d78d8" name="a99b231e39d55c84956fa1670a33d78d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99b231e39d55c84956fa1670a33d78d8">&#9670;&#160;</a></span>num_threads_spectral</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int umappp::Options::num_threads_spectral = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of threads to use for spectral initialization in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code>. The parallelization scheme is determined by <code><a class="elRef" href="https://libscran.github.io/irlba/namespaceirlba.html#a7ddcae16077f8210cfab2f59ee3effed">irlba::parallelize()</a></code>.</p>
+<p>Changing the number of threads will slightly change the initialization due to differences in floating-point round-off. This will result in moderate changes to the UMAP coordinates as the differences accumulate across epochs. </p>
 
 </div>
 </div>
@@ -475,23 +510,6 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Seed for the random number generator when sampling negative observations in the optimization step. </p>
-
-</div>
-</div>
-<a id="a2f2457c204affe802fc5c01a8d74fa36" name="a2f2457c204affe802fc5c01a8d74fa36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f2457c204affe802fc5c01a8d74fa36">&#9670;&#160;</a></span>parallel_optimization</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool umappp::Options::parallel_optimization = false</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Whether to enable parallel optimization. If set to <code>true</code>, this will use the number of threads specified in <code><a class="el" href="#ac77facf6e9030a00d3f8b19a467bbaaa">Options::num_threads</a></code> for the layout optimization step.</p>
-<p>By default, this is set to <code>false</code> as the increase in the number of threads is usually not cost-effective for layout optimization. Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor. We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance. Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a significant speed-up.</p>
-<p>If the <code>UMAPPP_NO_PARALLEL_OPTIMIZATION</code> macro is defined, <b>umappp</b> will not be compiled with support for parallel optimization. This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest. In such cases, enabling parallel optimization and calling <code><a class="el" href="classumappp_1_1Status.html#a999431aa1af534b3da39309df0a42aa9">Status::run()</a></code> will throw an error. </p>
 
 </div>
 </div>
