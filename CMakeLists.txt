@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14...3.25)
 
 project(umappp
-    VERSION 3.3.0
+    VERSION 3.3.1
     DESCRIPTION "A C++ implementation of the UMAP algorithm"
     LANGUAGES CXX)
 
@@ -23,7 +23,7 @@ if(UMAPPP_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
     find_package(ltla_aarand 1.1.0 CONFIG REQUIRED)
-    find_package(ltla_irlba 3.0.0 CONFIG REQUIRED)
+    find_package(ltla_irlba 3.1.0 CONFIG REQUIRED)
     find_package(Eigen3 5.0.0 CONFIG REQUIRED)
     find_package(ltla_subpar 0.5.0 CONFIG REQUIRED)
     find_package(ltla_sanisizer 0.2.0 CONFIG REQUIRED)
