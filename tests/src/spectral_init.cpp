@@ -113,9 +113,13 @@ TEST_P(SpectralInitTest, Basic) {
     check_eigenvectors(edges, output, ndim);
 
     // Same result with multiple threads.
+    // This has some small round-off error in the sums as well as potential indeterminate sign,
+    // so we relax the comparison slightly.
     std::vector<double> copy(ndim * order);
     umappp::spectral_init(edges, ndim, copy.data(), iopt, 3, max_scale, false, jitter_sd, seed);
-    EXPECT_EQ(output, copy);
+    for (std::size_t i = 0, end = copy.size(); i < end; ++i) {
+        EXPECT_FLOAT_EQ(std::abs(output[i]), std::abs(copy[i]));
+    }
 
     // Throwing in some jitter.
     std::fill(copy.begin(), copy.end(), 0);

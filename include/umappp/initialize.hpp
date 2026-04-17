@@ -83,7 +83,7 @@ Status<Index_, Float_> initialize(NeighborList<Index_, Float_> x, const std::siz
             num_dim,
             embedding,
             options.initialize_spectral_irlba_options,
-            options.num_threads,
+            options.num_threads_spectral,
             options.initialize_spectral_scale,
             options.initialize_spectral_jitter,
             options.initialize_spectral_jitter_sd,

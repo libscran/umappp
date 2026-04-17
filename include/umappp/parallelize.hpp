@@ -27,7 +27,7 @@ namespace umappp {
  * This will be no greater than `num_workers`.
  *
  * By default, this function is an alias to `subpar::parallelize_range()`.
- * Its purpose is to enable **umappp**-specific customization to the parallization scheme without affecting other libraries that use **subpar**.
+ * Its purpose is to enable **umappp**-specific customization to the parallelization scheme without affecting other libraries that use **subpar**.
  * If the `UMAPPP_CUSTOM_PARALLEL` macro is defined, it will be used instead of `subpar::parallelize_range()` whenever `parallelize()` is called. 
  * Any user-defined macro should follow the same requirements as the `SUBPAR_CUSTOM_PARALLELIZE_RANGE` override for `subpar::parallelize_range()`.
  */

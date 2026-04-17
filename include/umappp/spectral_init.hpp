@@ -120,7 +120,7 @@ bool normalized_laplacian(
     irlba::EigenThreadScope tscope(nthreads);
 
     const auto actual = irlba::compute(mat, num_dim + 1, irlba_opt);
-    if (!actual.converged) {
+    if (!actual.metrics.converged) {
         return false;
     }
     const auto ev = actual.U.rightCols(num_dim); 

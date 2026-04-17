@@ -183,28 +183,38 @@ struct Options {
     typename RngEngine::result_type optimize_seed = sanisizer::cap<typename RngEngine::result_type>(1234567890);
 
     /**
-     * Number of threads to use.
+     * Number of threads to use in most steps of `initialize()`. 
      * The parallelization scheme is determined by `parallelize()` for most calculations.
      * The exception is the nearest-neighbor search in some of the `initialize()` overloads, where the scheme is determined by `knncolle::parallelize()` instead.
-     * 
-     * If `Options::parallel_optimization = true`, this option will also affect the layout optimization, i.e., the gradient descent iterations.
+     *
+     * See also `Options::num_threads_spectral` and `Options::num_threads_optimize`.
      */
     int num_threads = 1;
 
     /**
-     * Whether to enable parallel optimization.
-     * If set to `true`, this will use the number of threads specified in `Options::num_threads` for the layout optimization step.
+     * Number of threads to use for spectral initialization in `initialize()`.
+     * The parallelization scheme is determined by `irlba::parallelize()`. 
      *
-     * By default, this is set to `false` as the increase in the number of threads is usually not cost-effective for layout optimization.
+     * Changing the number of threads will slightly change the initialization due to differences in floating-point round-off.
+     * This will result in moderate changes to the UMAP coordinates as the differences accumulate across epochs. 
+     */
+    int num_threads_spectral = 1;
+
+    /**
+     * Number of threads to use during optimization in `Status::run()`.
+     * The parallelization scheme uses spin-locks to quickly distribute per-observation calcultion to each thread.
+     * The parallelized result is exactly the same as that obtained with `num_threads_optimize = 1`.
+     *
+     * By default, this is set to 1 as the increase in the number of threads is usually not cost-effective for layout optimization.
      * Specifically, while CPU usage scales with the number of threads, the time spent does not decrease by the same factor.
      * We also expect that the number of available CPUs is at least equal to the requested number of threads, otherwise contention will greatly degrade performance.
      * Nonetheless, users can enable parallel optimization if cost is no issue - usually a higher number of threads (above 4) is required to see a significant speed-up.
      *
      * If the `UMAPPP_NO_PARALLEL_OPTIMIZATION` macro is defined, **umappp** will not be compiled with support for parallel optimization.
      * This may be desirable in environments that have no support for threading or atomics, or to reduce the binary size if parallelization is not of interest.
-     * In such cases, enabling parallel optimization and calling `Status::run()` will throw an error.
+     * In such cases, `Status::run()` will throw an error if `num_threads_optimize > 1`.
      */
-    bool parallel_optimization = false;
+    int num_threads_optimize = 1;
 };
 
 }

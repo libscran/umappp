@@ -104,7 +104,9 @@ Rcpp::NumericMatrix run_umap(
     opt.b = b;
     opt.optimize_seed = seed;
     opt.num_threads = num_threads;
-    opt.parallel_optimization = parallel_optimization;
+    if (parallel_optimization) {
+        opt.num_threads_optimize = num_threads;
+    }
 
     auto optr = static_cast<double*>(output.begin());
     auto status = umappp::initialize(std::move(x), ndim, optr, opt);

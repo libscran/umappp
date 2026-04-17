@@ -128,7 +128,7 @@ TEST_P(UmapTest, Basic) {
         }
 
         // Same results with multiple threads and parallel optimization enabled.
-        opt.parallel_optimization = true;
+        opt.num_threads_optimize = 3;
         {
             std::vector<double> copy(nobs * outdim);
             auto status = umappp::initialize(neighbors, outdim, copy.data(), opt);

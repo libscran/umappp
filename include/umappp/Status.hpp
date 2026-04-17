@@ -99,7 +99,7 @@ public:
      * `epoch_limit` should be not less than `epoch()` and be no greater than the maximum number of epochs specified in `num_epochs()`.
      */
     void run(Float_* const embedding, int epoch_limit) {
-        if (my_options.num_threads == 1 || !my_options.parallel_optimization) {
+        if (my_options.num_threads_optimize == 1) {
             optimize_layout<Index_, Float_>(
                 my_num_dim,
                 embedding,
@@ -122,7 +122,7 @@ public:
                 my_options.learning_rate,
                 my_engine,
                 epoch_limit,
-                my_options.num_threads
+                my_options.num_threads_optimize
             );
         }
     }
