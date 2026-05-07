@@ -173,7 +173,10 @@ struct Options {
     /**
      * Number of neighbors to use to define the fuzzy sets.
      * Larger values improve connectivity and favor preservation of global structure, at the cost of increased compute time.
-     * This argument is only used in certain `initialize()` overloads that perform identification of the nearest neighbors. 
+     *
+     * This argument is only used in `initialize()` overloads that perform identification of the nearest neighbors. 
+     * It is ignored in the `initialize()` overload that accepts a precomputed `NeighborList`,
+     * in which case the number of neighbors is determined from the input.
      */
     int num_neighbors = 15;
 
