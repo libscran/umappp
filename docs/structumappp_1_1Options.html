@@ -445,7 +445,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Number of neighbors to use to define the fuzzy sets. Larger values improve connectivity and favor preservation of global structure, at the cost of increased compute time. This argument is only used in certain <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads that perform identification of the nearest neighbors. </p>
+<p>Number of neighbors to use to define the fuzzy sets. Larger values improve connectivity and favor preservation of global structure, at the cost of increased compute time.</p>
+<p>This argument is only used in <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overloads that perform identification of the nearest neighbors. It is ignored in the <code><a class="el" href="namespaceumappp.html#afcfe5559148af79e84c1eca05b15c515">initialize()</a></code> overload that accepts a precomputed <code>NeighborList</code>, in which case the number of neighbors is determined from the input. </p>
 
 </div>
 </div>
